@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define GAMEGUI_DLL_NAME "GameGUIMP.dll"
 #endif
 
-extern CGame *_pGame = NULL;
 // global game object
 CGameGUI _GameGUI;
 
@@ -33,31 +32,10 @@ static struct GameGUI_interface _Interface;
 // initialize game and load settings
 void Initialize(const CTFileName &fnGameSettings)
 {
-  try {
-    #ifndef NDEBUG 
-      #define GAMEDLL "Bin\\Debug\\GameMPD.dll"
-    #else
-      #define GAMEDLL "Bin\\GameMP.dll"
-    #endif
-    CTFileName fnmExpanded;
-    ExpandFilePath(EFP_READ, CTString(GAMEDLL), fnmExpanded);
-    HMODULE hGame = LoadLibrary(CString(fnmExpanded));
-    if (hGame==NULL) {
-      ThrowF_t("%s", GetWindowsError(GetLastError()));
-    }
-    CGame* (*GAME_Create)(void) = (CGame* (*)(void))GetProcAddress(hGame, "GAME_Create");
-    if (GAME_Create==NULL) {
-      ThrowF_t("%s", GetWindowsError(GetLastError()));
-    }
-    _pGame = GAME_Create();
-
-  } catch (char *strError) {
-    FatalError("%s", strError);
-  }
-  // init game - this will load persistent symbols
-  _pGame->Initialize(fnGameSettings);
-
+  // [Cecil] Load Game library through the API
+  GetAPI()->LoadGameLib(fnGameSettings);
 }
+
 // save settings and cleanup
 void End(void)
 {

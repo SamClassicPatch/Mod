@@ -55,15 +55,10 @@ static CControls _ctrlCommonControls;
 static CStaticStackArray<TIME>  _atmFrameTimes;
 static CStaticStackArray<INDEX> _actTriangles;  // world, model, particle, total
 
-
-// one and only Game object
-extern CGame *_pGame = NULL;
-
 extern "C" __declspec (dllexport) CGame *GAME_Create(void)
 {
-  _pGame = new CGame;
-
-  return _pGame;
+  // [Cecil] This gets hooked into Core's '_pGame'
+  return new CGame;
 }
 
 // recorded profiling stats

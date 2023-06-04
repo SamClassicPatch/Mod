@@ -42,13 +42,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <afxcmn.h>			// MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
+// [Cecil] Use patched EngineGUI
+#define CORE_NO_GAME_HEADER
+#include <PatchedGui/EngineGUI.h>
 
-#include <EngineGUI/EngineGUI.h>
 #include <Game/Game.h>
 #include <GameGUI/GameGUI.h>
 #include <Engine/GameShell.h>
-
-extern class CGame *_pGame;
 
 /////////////////////////////////////////////////////////////////////////////
 

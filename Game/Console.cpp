@@ -16,8 +16,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdAfx.h"
 #include "LCDDrawing.h"
 
-extern CGame *_pGame;
-
 // console variables
 static const FLOAT tmConsoleFade   = 0.5f;  // how many seconds it takes console to fade in/out
 static FLOAT fConsoleFadeValue     = 0.0f;  // faded value of console (0..1)

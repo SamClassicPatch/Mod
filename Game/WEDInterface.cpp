@@ -15,8 +15,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdAfx.h"
 
-extern CGame *_pGame;
-
 extern INDEX gam_iQuickStartDifficulty;
 extern INDEX gam_iQuickStartMode;
 extern INDEX gam_iStartDifficulty;

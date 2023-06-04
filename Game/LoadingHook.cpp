@@ -20,8 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define USECUSTOMTEXT 0
 
-extern CGame *_pGame;
-
 #if USECUSTOMTEXT
   static CTString _strCustomText = "";
 #endif

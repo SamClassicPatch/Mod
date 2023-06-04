@@ -17,8 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "LCDDrawing.h"
 #include "CompMessage.h"
 
-extern CGame *_pGame;
-
 static const FLOAT tmComputerFade   = 1.0f;  // how many seconds it takes computer to fade in/out
 static FLOAT fComputerFadeValue     = 0.0f;  // faded value of computer (0..1)
 static CTimerValue tvComputerLast;
