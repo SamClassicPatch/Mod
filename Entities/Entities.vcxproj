@@ -81,7 +81,7 @@
     <ExecutablePath>$(SdkExe)</ExecutablePath>
     <IncludePath>$(SamEngineIncludes);$(SdkIncl)</IncludePath>
     <LibraryPath>$(SamEngineLibraries);$(SdkLibs)</LibraryPath>
-    <TargetName>EntitiesMP</TargetName>
+    <TargetName>Entities_Custom</TargetName>
     <OutDir>$(BinDir)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_TSE105|Win32'">
@@ -90,7 +90,7 @@
     <ExecutablePath>$(SdkExe)</ExecutablePath>
     <IncludePath>$(SamEngineIncludes);$(SdkIncl)</IncludePath>
     <LibraryPath>$(SamEngineLibraries);$(SdkLibs)</LibraryPath>
-    <TargetName>EntitiesMP</TargetName>
+    <TargetName>Entities_Custom</TargetName>
     <OutDir>$(BinDir)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_TFE105|Win32'">
@@ -99,7 +99,7 @@
     <ExecutablePath>$(SdkExe)</ExecutablePath>
     <IncludePath>$(SamEngineIncludes);$(SdkIncl)</IncludePath>
     <LibraryPath>$(SamEngineLibraries);$(SdkLibs)</LibraryPath>
-    <TargetName>Entities</TargetName>
+    <TargetName>Entities_Custom</TargetName>
     <OutDir>$(BinDir)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_TSE107|Win32'">
@@ -109,7 +109,7 @@
     <ExecutablePath>$(SdkExe)</ExecutablePath>
     <IncludePath>$(SamEngineIncludes);$(SdkIncl)</IncludePath>
     <LibraryPath>$(SamEngineLibraries);$(SdkLibs)</LibraryPath>
-    <TargetName>EntitiesMPD</TargetName>
+    <TargetName>Entities_CustomD</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_TSE107|Win32'">
     <ClCompile>
@@ -501,6 +501,7 @@
     <ClInclude Include="Common\Particles.h" />
     <ClInclude Include="Common\PathFinding.h" />
     <ClInclude Include="Common\WeaponPositions.h" />
+    <ClInclude Include="EntitiesAPI.h" />
     <ClInclude Include="StdH.h" />
   </ItemGroup>
   <ItemGroup>

@@ -50,5 +50,6 @@ Entities/**/*.cpp
 Entities/**/*.h
 !Entities/Common/*
 !Entities/(LibMain).cpp
+!Entities/EntitiesAPI.h
 !Entities/StdH.h
 !Entities/*.txt

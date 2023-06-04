@@ -17,18 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Game.h"
 #include "SEColors.h"
 
-/* rcg10042001 protect against Visual C-isms. */
-#ifdef _MSC_VER
-#define DECL_DLL _declspec(dllimport)
-#endif
-
-#ifdef PLATFORM_UNIX
-#define DECL_DLL 
-#endif
-
-#include <Entities/Global.h>
-#include <Entities/Common/Common.h>
-#include <Entities/Common/GameInterface.h>
+// [Cecil] Include common header for Entities
+#include <Entities/EntitiesAPI.h>
 #include <Entities/Players/Player.h>
-
-#undef DECL_DLL

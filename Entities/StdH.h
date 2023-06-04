@@ -1,4 +1,4 @@
-/* Copyright (c) 2002-2012 Croteam Ltd. 
+/* Copyright (c) 2023 Dreamy Cecil
 This program is free software; you can redistribute it and/or modify
 it under the terms of version 2 of the GNU General Public License as published by
 the Free Software Foundation
@@ -14,21 +14,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include <Engine/Engine.h>
-#include <Game/SessionProperties.h>
-#include <Game/PlayerSettings.h>
 
-/* rcg10042001 protect against Visual C-isms. */
-#ifdef _MSC_VER
-#define DECL_DLL _declspec(dllexport)
-#endif
-
-#ifdef PLATFORM_UNIX
-#define DECL_DLL 
-#endif
-
-#include "Global.h"
-#include "Common/Flags.h"
-#include "Common/Common.h"
-#include "Common/Particles.h"
-#include "Common/EmanatingParticles.h"
-#include "Common/GameInterface.h"
+// [Cecil] Include common header for the library itself
+#define ENTITIES_EXPORTS
+#include "EntitiesAPI.h"
