@@ -16,6 +16,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdAfx.h"
 
 #include "CompMessage.h"
+
+// [Cecil]
+#include <CoreLib/Interfaces/DataFunctions.h>
+
 extern CTString _strStatsDetails;
 
 CCompMessage::CCompMessage(void)
@@ -72,97 +76,85 @@ void CCompMessage::Load_t(void)
   // read text until end of file
   strm.ExpectKeyword_t("TEXT\r\n");
   cm_strText.ReadUntilEOF_t(strm);
-  cm_ctFormattedWidth = 0;
   cm_ctFormattedLines = 0;
   cm_strFormattedText = "";
   cm_bLoaded = TRUE;
 }
 
-// format message for given line width
-void CCompMessage::Format(INDEX ctCharsPerLine)
-{
-  // if already formatted in needed size
-  if (cm_ctFormattedWidth == ctCharsPerLine) {
-    // do nothing
-    return;
-  }
-  // remember width
-  cm_ctFormattedWidth = ctCharsPerLine;
-
-  // get text
-  const char *strText = cm_strText;
-  if (strncmp(strText, "$STAT", 5)==0) {
-    strText = _strStatsDetails;
-    cm_strFormattedText = strText;
-    cm_ctFormattedLines = 1;
-    for (INDEX i=0; i<cm_strFormattedText.Length(); i++) {
-      if (cm_strFormattedText[i]=='\n') {
-        cm_ctFormattedLines++;
-      }
-    }
+// [Cecil] Format message based on text width
+void CCompMessage::Format(CDrawPort *pdp, PIX pixMaxWidth) {
+  if (cm_ctFormattedLines > 0) {
     return;
   }
 
-  // allocate overestimated buffer
-  SLONG slMaxBuffer = strlen(strText)*2;
-  char *pchBuffer = (char *)AllocMemory(slMaxBuffer);
-
-  // start at the beginning of text and buffer
-  const char *pchSrc = strText;
-  char *pchDst = pchBuffer;
+  cm_strFormattedText = "";
   cm_ctFormattedLines = 1;
-  INDEX ctChars = 0;
-  // while not end of text
-  while(*pchSrc!=0) {
-    // copy one char
-    char chLast = *pchDst++ = *pchSrc++;
-    // if it was line break
-    if (chLast=='\n') {
-      // new line
-      ctChars=0;
-      cm_ctFormattedLines++;
-      continue;
-    }
-    ctChars++;
-    // if out of row
-    if (ctChars>ctCharsPerLine) {
-      // start backtracking
-      const char *pchSrcBck = pchSrc-1;
-            char *pchDstBck = pchDst-1;
-      // while not start of row and not space
-      while (pchSrcBck>pchSrc-ctChars && *pchSrcBck!=' ') {
-        // go one char back
-        pchSrcBck--;
-        pchDstBck--;
-      }
-      // if start of row hit (cannot word-wrap)
-      if (pchSrcBck<pchSrc-ctChars) {
-        // just go to next line
-        pchSrc--;
-        pchDst--;
-        *pchDst++='\n';
-        ctChars=0;
+
+  // Get stats
+  if (strncmp(cm_strText, "$STAT", 5) == 0) {
+    cm_strFormattedText = _strStatsDetails;
+
+    // Count line breaks
+    INDEX ct = cm_strFormattedText.Length();
+
+    for (INDEX i = 0; i < ct; i++) {
+      if (cm_strFormattedText[i] == '\n') {
         cm_ctFormattedLines++;
-        continue;
       }
-      // if can word-wrap, insert break before the last word
-      pchSrc = pchSrcBck+1;
-      pchDst = pchDstBck;
-      *pchDst++='\n';
-      ctChars=0;
+    }
+    return;
+  }
+
+  // Find last character that fits
+  CTString str = cm_strText;
+  INDEX i = IData::TextFitsInWidth(pdp, pixMaxWidth, str);
+  INDEX ct = cm_strText.Length();
+
+  // If it's not at the end
+  while (i < ct) {
+    // Go back until a certain word delimiter
+    INDEX iDelimiter = i;
+
+    while (--iDelimiter >= 0) {
+      char ch = str[iDelimiter];
+
+      // If found a suitable delimiter
+      switch (ch) {
+        case ' ': case '\n': case '\t': case '\r':
+          // Get the character after it and terminate the loop
+          i = iDelimiter + 1;
+          iDelimiter = 0;
+          break;
+      }
+    }
+
+    // Get part that fits and save the rest
+    CTString strPart;
+    str.Split(i, strPart, str);
+
+    // Add this part and go to a new line
+    cm_strFormattedText += strPart + "\n";
+
+    // Find next last character of that fits
+    i = IData::TextFitsInWidth(pdp, pixMaxWidth, str);
+    ct = str.Length();
+  }
+
+  // Add the rest of the string
+  cm_strFormattedText += str;
+
+  // Count line breaks
+  ct = cm_strFormattedText.Length();
+
+  for (i = 0; i < ct; i++) {
+    if (cm_strFormattedText[i] == '\n') {
       cm_ctFormattedLines++;
     }
   }
+};
 
-  // add end marker
-  *pchDst=0;
-
-  cm_strFormattedText = pchBuffer;
-  FreeMemory(pchBuffer);
-}
-
-// prepare message for using (load, format, etc.)
-void CCompMessage::PrepareMessage(INDEX ctCharsPerLine)
+// [Cecil] Prepare message for using by just loading it
+void CCompMessage::PrepareMessage(void)
 {
   // if not loaded
   if (!cm_bLoaded) {
@@ -178,9 +170,6 @@ void CCompMessage::PrepareMessage(INDEX ctCharsPerLine)
       return;
     }
   }
-
-  // format it for new width
-  Format(ctCharsPerLine);
 }
 
 // free memory used by message, but keep message filename
@@ -194,7 +183,6 @@ void CCompMessage::UnprepareMessage(void)
   cm_fnmPicture.Clear();
   cm_itImage = IT_NONE;
   cm_strFormattedText.Clear();
-  cm_ctFormattedWidth = 0;
   cm_ctFormattedLines = 0;
 }
 // mark message as read

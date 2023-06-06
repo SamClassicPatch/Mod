@@ -38,22 +38,22 @@ public:
 
   BOOL cm_bRead;
 
-  INDEX cm_ctFormattedWidth;    // chars per row in formatted text
   INDEX cm_ctFormattedLines;    // number of lines in formatted text
   CTString cm_strFormattedText; // text formatted for given line width
 
   // load the message from file
   void Load_t(void);  // throw char *
-  // format message for given line width
-  void Format(INDEX ctCharsPerLine);
+
+  // [Cecil] Format message based on text width
+  void Format(CDrawPort *pdp, PIX pixMaxWidth);
 
 public:
   CCompMessage(void);
   void Clear(void);
   // constructs message from ID
   void SetMessage(CCompMessageID *pcmi);
-  // prepare message for using (load, format, etc.)
-  void PrepareMessage(INDEX ctCharsPerLine);
+  // [Cecil] Prepare message for using by just loading it
+  void PrepareMessage(void);
   // free memory used by message, but keep message filename
   void UnprepareMessage(void);
   // mark message as read
