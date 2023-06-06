@@ -2847,20 +2847,23 @@ void CGame::LCDRenderClouds1(void)
   if (!_bPopup) {
 
     PIXaabbox2D box;
-        
+
+    // [Cecil] Draw elements using proper aspect ratio
+    const FLOAT fScaleX = _pdp_SE->GetWidth() / 640.0f;
+    const FLOAT fScaleY = _pdp_SE->GetHeight() / 480.0f;
+
     // right character - Sam
     INDEX iSize = 170;
     INDEX iYU = 120;
     INDEX iYM = iYU + iSize;
     INDEX iYB = iYM + iSize;
-    INDEX iXL = 420;
-    INDEX iXR = iXL + iSize*_pdp_SE->dp_fWideAdjustment;
-    
-    box = PIXaabbox2D( PIX2D( iXL*_pdp_SE->GetWidth()/640, iYU*_pdp_SE->GetHeight()/480) ,
-                       PIX2D( iXR*_pdp_SE->GetWidth()/640, iYM*_pdp_SE->GetHeight()/480));
+    INDEX iXL = 420 * fScaleX / fScaleY;
+    INDEX iXR = iXL + iSize;
+
+    box = PIXaabbox2D(PIX2D(iXL * fScaleY, iYU * fScaleY), PIX2D(iXR * fScaleY, iYM * fScaleY));
     _pdp_SE->PutTexture(&_toSamU, box, SE_COL_BLUE_NEUTRAL|255);
-    box = PIXaabbox2D( PIX2D( iXL*_pdp_SE->GetWidth()/640, iYM*_pdp_SE->GetHeight()/480) ,
-                       PIX2D( iXR*_pdp_SE->GetWidth()/640, iYB*_pdp_SE->GetHeight()/480));
+
+    box = PIXaabbox2D(PIX2D(iXL * fScaleY, iYM * fScaleY), PIX2D(iXR * fScaleY, iYB * fScaleY));
     _pdp_SE->PutTexture(&_toSamD, box, SE_COL_BLUE_NEUTRAL|255);
 
     iSize = 120;
@@ -2869,24 +2872,24 @@ void CGame::LCDRenderClouds1(void)
     iYB = iYM + iSize;
     iXL = -20;
     iXR = iXL + iSize;
-    box = PIXaabbox2D( PIX2D( iXL*_pdp_SE->GetWidth()/640, iYU*_pdp_SE->GetWidth()/640) ,
-                       PIX2D( iXR*_pdp_SE->GetWidth()/640, iYM*_pdp_SE->GetWidth()/640));
+
+    box = PIXaabbox2D(PIX2D(iXL * fScaleY, iYU * fScaleY), PIX2D(iXR * fScaleY, iYM * fScaleY));
     _pdp_SE->PutTexture(&_toLeftU, box, SE_COL_BLUE_NEUTRAL|200);
-    box = PIXaabbox2D( PIX2D( iXL*_pdp_SE->GetWidth()/640, iYM*_pdp_SE->GetWidth()/640) ,
-                       PIX2D( iXR*_pdp_SE->GetWidth()/640, iYB*_pdp_SE->GetWidth()/640));
+
+    box = PIXaabbox2D(PIX2D(iXL * fScaleY, iYM * fScaleY), PIX2D(iXR * fScaleY, iYB * fScaleY));
     _pdp_SE->PutTexture(&_toLeftD, box, SE_COL_BLUE_NEUTRAL|200);
+
     iYU = iYB;
     iYM = iYU + iSize;
     iYB = iYM + iSize;
     iXL = -20;
     iXR = iXL + iSize;
-    box = PIXaabbox2D( PIX2D( iXL*_pdp_SE->GetWidth()/640, iYU*_pdp_SE->GetWidth()/640) ,
-                       PIX2D( iXR*_pdp_SE->GetWidth()/640, iYM*_pdp_SE->GetWidth()/640));
+
+    box = PIXaabbox2D(PIX2D(iXL * fScaleY, iYU * fScaleY), PIX2D(iXR * fScaleY, iYM * fScaleY));
     _pdp_SE->PutTexture(&_toLeftU, box, SE_COL_BLUE_NEUTRAL|200);
-    box = PIXaabbox2D( PIX2D( iXL*_pdp_SE->GetWidth()/640, iYM*_pdp_SE->GetWidth()/640) ,
-                       PIX2D( iXR*_pdp_SE->GetWidth()/640, iYB*_pdp_SE->GetWidth()/640));
+
+    box = PIXaabbox2D(PIX2D(iXL * fScaleY, iYM * fScaleY), PIX2D(iXR * fScaleY, iYB * fScaleY));
     _pdp_SE->PutTexture(&_toLeftD, box, SE_COL_BLUE_NEUTRAL|200);
-  
   }
 
   MEXaabbox2D boxBcgClouds1;
