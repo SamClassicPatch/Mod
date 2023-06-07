@@ -721,8 +721,8 @@ void PrintMessageText(CDrawPort *pdp)
     }
   }
   // [Cecil] Better text width calculation
-  PIX pixWidth0 = IData::GetTextWidth(pdp, strSubject0);
-  PIX pixWidth1 = IData::GetTextWidth(pdp, strSubject1);
+  PIX pixWidth0 = IRender::GetTextWidth(pdp, strSubject0);
+  PIX pixWidth1 = IRender::GetTextWidth(pdp, strSubject1);
   pdp->PutText(strSubject0, _pixMarginI, _pixMarginJ-1, _colMedium);
   pdp->PutText(strSubject1, _pixMarginI+pixWidth0, _pixMarginJ-1, LerpColor( _colLight, _colMedium, 0.5f));
   pdp->PutText(strSubject2, _pixMarginI+pixWidth0+pixWidth1, _pixMarginJ-1, _colLight);
