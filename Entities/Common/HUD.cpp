@@ -81,6 +81,7 @@ static CPlayerWeapons *_penWeapons;
 static CDrawPort *_pDP;
 static PIX   _pixDPWidth, _pixDPHeight;
 static FLOAT _fResolutionScaling;
+static FLOAT _fWideAdjustment; // [Cecil] Aspect ratio multiplier (4:3 = 1.0)
 static FLOAT _fCustomScaling;
 static ULONG _ulAlphaHUD;
 static COLOR _colHUD;
@@ -424,7 +425,7 @@ static void HUD_DrawBorder( FLOAT fCenterX, FLOAT fCenterY, FLOAT fSizeX, FLOAT 
 {
   // determine location
   const FLOAT fCenterI  = fCenterX*_pixDPWidth  / 640.0f;
-  const FLOAT fCenterJ  = fCenterY*_pixDPHeight / (480.0f * _pDP->dp_fWideAdjustment);
+  const FLOAT fCenterJ  = fCenterY*_pixDPHeight / (480.0f * _fWideAdjustment);
   const FLOAT fSizeI    = _fResolutionScaling*fSizeX;
   const FLOAT fSizeJ    = _fResolutionScaling*fSizeY;
   const FLOAT fTileSize = 8*_fResolutionScaling*_fCustomScaling;
@@ -471,7 +472,7 @@ static void HUD_DrawIcon( FLOAT fCenterX, FLOAT fCenterY, CTextureObject &toIcon
   }
   // determine location
   const FLOAT fCenterI = fCenterX*_pixDPWidth  / 640.0f;
-  const FLOAT fCenterJ = fCenterY*_pixDPHeight / (480.0f * _pDP->dp_fWideAdjustment);
+  const FLOAT fCenterJ = fCenterY*_pixDPHeight / (480.0f * _fWideAdjustment);
   // determine dimensions
   CTextureData *ptd = (CTextureData*)toIcon.GetData();
   const FLOAT fHalfSizeI = _fResolutionScaling*_fCustomScaling * ptd->GetPixWidth()  *0.5f;
@@ -493,7 +494,7 @@ static void HUD_DrawText( FLOAT fCenterX, FLOAT fCenterY, const CTString &strTex
   if( col==NONE) col = GetCurrentColor( fNormValue);
   // determine location
   PIX pixCenterI = (PIX)(fCenterX*_pixDPWidth  / 640.0f);
-  PIX pixCenterJ = (PIX)(fCenterY*_pixDPHeight / (480.0f * _pDP->dp_fWideAdjustment));
+  PIX pixCenterJ = (PIX)(fCenterY*_pixDPHeight / (480.0f * _fWideAdjustment));
   // done
   _pDP->SetTextScaling( _fResolutionScaling*_fCustomScaling);
   _pDP->PutTextCXY( strText, pixCenterI, pixCenterJ, col|_ulAlphaHUD);
@@ -509,7 +510,7 @@ static void HUD_DrawBar( FLOAT fCenterX, FLOAT fCenterY, PIX pixSizeX, PIX pixSi
   if( col==NONE) col = GetCurrentColor( fNormValue);
   // determine location and size
   PIX pixCenterI = (PIX)(fCenterX*_pixDPWidth  / 640.0f);
-  PIX pixCenterJ = (PIX)(fCenterY*_pixDPHeight / (480.0f * _pDP->dp_fWideAdjustment));
+  PIX pixCenterJ = (PIX)(fCenterY*_pixDPHeight / (480.0f * _fWideAdjustment));
   PIX pixSizeI   = (PIX)(_fResolutionScaling*pixSizeX);
   PIX pixSizeJ   = (PIX)(_fResolutionScaling*pixSizeY);
   // fill bar background area
@@ -785,12 +786,17 @@ extern void DrawHUD( const CPlayer *penPlayerCurrent, CDrawPort *pdpCurrent, BOO
   _pDP        = pdpCurrent;
   _pixDPWidth   = _pDP->GetWidth();
   _pixDPHeight  = _pDP->GetHeight();
-  _fCustomScaling     = hud_fScaling;
   _fResolutionScaling = (FLOAT)_pixDPWidth /640.0f;
   _colHUD     = 0x4C80BB00;
   _colHUDText = SE_COL_ORANGE_LIGHT;
   _ulAlphaHUD = NormFloatToByte(hud_fOpacity);
   _tmNow = _pTimer->CurrentTick();
+
+  // [Cecil] Calculate wide adjustment dynamically (to replace static CDrawPort::dp_fWideAdjustment)
+  _fWideAdjustment = ((FLOAT)_pixDPHeight / (FLOAT)_pixDPWidth) * (4.0f / 3.0f);
+
+  // [Cecil] Adjust scaling based on aspect ratio
+  _fCustomScaling = hud_fScaling * _fWideAdjustment;
 
   // determine hud colorization;
   COLOR colMax = SE_COL_BLUEGREEN_LT;
@@ -825,7 +831,7 @@ extern void DrawHUD( const CPlayer *penPlayerCurrent, CDrawPort *pdpCurrent, BOO
 
   const PIX pixTopBound    = 6;
   const PIX pixLeftBound   = 6;
-  const PIX pixBottomBound = (480 * _pDP->dp_fWideAdjustment) -pixTopBound;
+  const PIX pixBottomBound = (480 * _fWideAdjustment) -pixTopBound;
   const PIX pixRightBound  = 640-pixLeftBound;
   FLOAT fOneUnit  = (32+0) * _fCustomScaling;  // unit size
   FLOAT fAdvUnit  = (32+4) * _fCustomScaling;  // unit advancer
@@ -855,7 +861,7 @@ extern void DrawHUD( const CPlayer *penPlayerCurrent, CDrawPort *pdpCurrent, BOO
     fNormValue = fValue/TOP_ARMOR;
     strValue.PrintF( "%d", (SLONG)ceil(fValue));
     PrepareColorTransitions( colMax, colTop, colMid, C_lGRAY, 0.5f, 0.25f, FALSE);
-    fRow = pixBottomBound- (fNextUnit+fHalfUnit);//*_pDP->dp_fWideAdjustment;
+    fRow = pixBottomBound- (fNextUnit+fHalfUnit);//*_fWideAdjustment;
     fCol = pixLeftBound+    fHalfUnit;
     colDefault = AddShaker( 3, fValue, penLast->m_iLastArmor, penLast->m_tmArmorChanged, fMoverX, fMoverY);
     HUD_DrawBorder( fCol+fMoverX, fRow+fMoverY, fOneUnit, fOneUnit, colBorder);
@@ -1013,9 +1019,10 @@ extern void DrawHUD( const CPlayer *penPlayerCurrent, CDrawPort *pdpCurrent, BOO
     fCol -= fAdvUnitS;
   }
 
+  // [Cecil] Readjust scaling based on aspect ratio
+  _fCustomScaling = hud_fScaling * _fWideAdjustment;
 
   // if weapon change is in progress
-  _fCustomScaling = hud_fScaling;
   hud_tmWeaponsOnScreen = Clamp( hud_tmWeaponsOnScreen, 0.0f, 10.0f);   
   if( (_tmNow - _penWeapons->m_tmWeaponChangeRequired) < hud_tmWeaponsOnScreen) {
     // determine number of weapons that player has
