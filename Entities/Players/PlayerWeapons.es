@@ -1248,7 +1248,7 @@ functions:
           if( enSwitch.m_bUseable) {
             // show switch message
             if( enSwitch.m_strMessage!="") { m_strLastTarget = enSwitch.m_strMessage; }
-            else { m_strLastTarget = TRANS("Use"); }
+            else { m_strLastTarget = LOCALIZE("Use"); }
             m_tmLastTarget = tmNow+0.5f;
           }
         }
@@ -1261,7 +1261,7 @@ functions:
           CPlayer &pl = (CPlayer&)*m_penPlayer;
           if( !pl.HasMessage(fnmMessage)) {
             // show analyse message
-            m_strLastTarget = TRANS("Analyze");
+            m_strLastTarget = LOCALIZE("Analyze");
             m_tmLastTarget  = tmNow+0.5f;
           }
         }
@@ -1955,7 +1955,7 @@ functions:
         vToTarget.Normalize(); vTargetHeading.Normalize();
         if (vToTarget%vTargetHeading>0.64279) //CosFast(50.0f)
         {
-          PrintCenterMessage(this, m_penPlayer, TRANS("Backstab!"), 4.0f, MSS_NONE);
+          PrintCenterMessage(this, m_penPlayer, LOCALIZE("Backstab!"), 4.0f, MSS_NONE);
           fDamage *= 4.0f;
         }
       }
@@ -2760,57 +2760,57 @@ functions:
     CTFileName fnmMsg;
     switch (wit) {
       case WIT_COLT:            
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Shofield .45 w/ TMAR"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Shofield .45 w/ TMAR"), 0);
         fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\colt.txt"); 
         break;
       case WIT_SINGLESHOTGUN:   
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("12 Gauge Pump Action Shotgun"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("12 Gauge Pump Action Shotgun"), 0);
         fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\singleshotgun.txt"); 
         break;
       case WIT_DOUBLESHOTGUN:   
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Double Barrel Coach Gun"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Double Barrel Coach Gun"), 0);
         fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\doubleshotgun.txt"); 
         break;
       case WIT_TOMMYGUN:        
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("M1-A2 Tommygun"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("M1-A2 Tommygun"), 0);
         fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\tommygun.txt"); 
         break;
       case WIT_SNIPER:        
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("RAPTOR 16mm Sniper"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("RAPTOR 16mm Sniper"), 0);
         fnmMsg = CTFILENAME("DataMP\\Messages\\Weapons\\sniper.txt"); 
         break;
       case WIT_MINIGUN:         
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("XM214-A Minigun"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("XM214-A Minigun"), 0);
         fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\minigun.txt"); 
         break;
       case WIT_ROCKETLAUNCHER:  
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("XPML21 Rocket Launcher"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("XPML21 Rocket Launcher"), 0);
         fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\rocketlauncher.txt"); 
         break;
       case WIT_GRENADELAUNCHER: 
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("MKIII Grenade Launcher"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("MKIII Grenade Launcher"), 0);
         fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\grenadelauncher.txt"); 
         break;
 //      case WIT_PIPEBOMB:        
 //        fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\pipebomb.txt"); 
 //        break;
       case WIT_FLAMER:          
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("XOP Flamethrower"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("XOP Flamethrower"), 0);
         fnmMsg = CTFILENAME("DataMP\\Messages\\Weapons\\flamer.txt"); 
         break;
       case WIT_CHAINSAW:          
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("'Bonecracker' P-LAH Chainsaw"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("'Bonecracker' P-LAH Chainsaw"), 0);
         fnmMsg = CTFILENAME("DataMP\\Messages\\Weapons\\chainsaw.txt"); 
         break;
       case WIT_LASER:           
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("XL2 Lasergun"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("XL2 Lasergun"), 0);
         fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\laser.txt"); 
         break;
 //      case WIT_GHOSTBUSTER:     
 //        fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\ghostbuster.txt"); 
 //        break;
       case WIT_CANNON:          
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("SBC Cannon"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("SBC Cannon"), 0);
         fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\cannon.txt"); 
         break;
       default:
@@ -2871,61 +2871,61 @@ functions:
       case AIT_SHELLS:
         if (m_iShells>=m_iMaxShells) { m_iShells = m_iMaxShells; return FALSE; }
         m_iShells += Eai.iQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Shells"), Eai.iQuantity);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Shells"), Eai.iQuantity);
         AddManaToPlayer(Eai.iQuantity*AV_SHELLS*MANA_AMMO);
         break;
       // bullets
       case AIT_BULLETS:
         if (m_iBullets>=m_iMaxBullets) { m_iBullets = m_iMaxBullets; return FALSE; }
         m_iBullets += Eai.iQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Bullets"), Eai.iQuantity);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Bullets"), Eai.iQuantity);
         AddManaToPlayer(Eai.iQuantity*AV_BULLETS *MANA_AMMO);
         break;
       // rockets
       case AIT_ROCKETS:
         if (m_iRockets>=m_iMaxRockets) { m_iRockets = m_iMaxRockets; return FALSE; }
         m_iRockets += Eai.iQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Rockets"), Eai.iQuantity);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Rockets"), Eai.iQuantity);
         AddManaToPlayer(Eai.iQuantity*AV_ROCKETS *MANA_AMMO);
         break;
       // grenades
       case AIT_GRENADES:
         if (m_iGrenades>=m_iMaxGrenades) { m_iGrenades = m_iMaxGrenades; return FALSE; }
         m_iGrenades += Eai.iQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Grenades"), Eai.iQuantity);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Grenades"), Eai.iQuantity);
         AddManaToPlayer(Eai.iQuantity*AV_GRENADES *MANA_AMMO);
         break;
       // electicity
       case AIT_ELECTRICITY:
         if (m_iElectricity>=m_iMaxElectricity) { m_iElectricity = m_iMaxElectricity; return FALSE; }
         m_iElectricity += Eai.iQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Cells"), Eai.iQuantity);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Cells"), Eai.iQuantity);
         AddManaToPlayer(Eai.iQuantity*AV_ELECTRICITY *MANA_AMMO);
         break;
 /*      // cannon balls
       case AIT_NUKEBALL:
         if (m_iNukeBalls>=m_iMaxNukeBalls) { m_iNukeBalls = m_iMaxNukeBalls; return FALSE; }
         m_iNukeBalls+= Eai.iQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Nuke ball"), Eai.iQuantity);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Nuke ball"), Eai.iQuantity);
         AddManaToPlayer(Eai.iQuantity*AV_NUKEBALLS *MANA_AMMO);
         break;*/
       case AIT_IRONBALLS:
         if (m_iIronBalls>=m_iMaxIronBalls) { m_iIronBalls = m_iMaxIronBalls; return FALSE; }
         m_iIronBalls+= Eai.iQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Cannonballs"), Eai.iQuantity);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Cannonballs"), Eai.iQuantity);
         AddManaToPlayer(Eai.iQuantity*AV_IRONBALLS *MANA_AMMO);
         break;
       case AIT_NAPALM:
         if (m_iNapalm>=m_iMaxNapalm) { m_iNapalm = m_iMaxNapalm; return FALSE; }
         m_iNapalm+= Eai.iQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Napalm"), Eai.iQuantity);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Napalm"), Eai.iQuantity);
         AddManaToPlayer(Eai.iQuantity*AV_NAPALM*MANA_AMMO);
         break;
       case AIT_BACKPACK:
         m_iShells  += 20*GetSP()->sp_fAmmoQuantity;
         m_iBullets += 200*GetSP()->sp_fAmmoQuantity;
         m_iRockets += 5*GetSP()->sp_fAmmoQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Ammo pack"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Ammo pack"), 0);
         AddManaToPlayer(100000000.0f *MANA_AMMO); // adjust mana value!!!!
         break;
       case AIT_SERIOUSPACK:
@@ -2939,12 +2939,12 @@ functions:
       case AIT_SNIPERBULLETS:
         if (m_iSniperBullets>=m_iMaxSniperBullets) { m_iSniperBullets = m_iMaxSniperBullets; return FALSE; }
         m_iSniperBullets+= Eai.iQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Sniper bullets"), Eai.iQuantity);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Sniper bullets"), Eai.iQuantity);
         AddManaToPlayer(Eai.iQuantity*AV_SNIPERBULLETS*MANA_AMMO);
         break;
       
         
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("All Ammo"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("All Ammo"), 0);
         AddManaToPlayer(100000000.0f *MANA_AMMO); // adjust mana value!!!!
         break;
       // error
@@ -2993,14 +2993,14 @@ functions:
       // preapare message string and count different types of ammo
       INDEX iAmmoTypes = 0;
       CTString strMessage;
-      if( eapi.iShells != 0)        { strMessage.PrintF("%s %d %s,", strMessage, eapi.iShells, TRANS("Shells")); iAmmoTypes++; }
-      if( eapi.iBullets != 0)       { strMessage.PrintF("%s %d %s,", strMessage, eapi.iBullets, TRANS("Bullets")); iAmmoTypes++; }
-      if( eapi.iRockets != 0)       { strMessage.PrintF("%s %d %s,", strMessage, eapi.iRockets, TRANS("Rockets")); iAmmoTypes++; }
-      if( eapi.iGrenades != 0)      { strMessage.PrintF("%s %d %s,", strMessage, eapi.iGrenades, TRANS("Grenades")); iAmmoTypes++; }
-      if( eapi.iNapalm != 0)        { strMessage.PrintF("%s %d %s,", strMessage, eapi.iNapalm, TRANS("Napalm")); iAmmoTypes++; }
-      if( eapi.iElectricity != 0)   { strMessage.PrintF("%s %d %s,", strMessage, eapi.iElectricity, TRANS("Cells")); iAmmoTypes++; }
-      if( eapi.iIronBalls != 0)     { strMessage.PrintF("%s %d %s,", strMessage, eapi.iIronBalls, TRANS("Cannonballs")); iAmmoTypes++; }
-      if( eapi.iSniperBullets != 0) { strMessage.PrintF("%s %d %s,", strMessage, eapi.iSniperBullets, TRANS("Sniper bullets")); iAmmoTypes++; }
+      if( eapi.iShells != 0)        { strMessage.PrintF("%s %d %s,", strMessage, eapi.iShells, LOCALIZE("Shells")); iAmmoTypes++; }
+      if( eapi.iBullets != 0)       { strMessage.PrintF("%s %d %s,", strMessage, eapi.iBullets, LOCALIZE("Bullets")); iAmmoTypes++; }
+      if( eapi.iRockets != 0)       { strMessage.PrintF("%s %d %s,", strMessage, eapi.iRockets, LOCALIZE("Rockets")); iAmmoTypes++; }
+      if( eapi.iGrenades != 0)      { strMessage.PrintF("%s %d %s,", strMessage, eapi.iGrenades, LOCALIZE("Grenades")); iAmmoTypes++; }
+      if( eapi.iNapalm != 0)        { strMessage.PrintF("%s %d %s,", strMessage, eapi.iNapalm, LOCALIZE("Napalm")); iAmmoTypes++; }
+      if( eapi.iElectricity != 0)   { strMessage.PrintF("%s %d %s,", strMessage, eapi.iElectricity, LOCALIZE("Cells")); iAmmoTypes++; }
+      if( eapi.iIronBalls != 0)     { strMessage.PrintF("%s %d %s,", strMessage, eapi.iIronBalls, LOCALIZE("Cannonballs")); iAmmoTypes++; }
+      if( eapi.iSniperBullets != 0) { strMessage.PrintF("%s %d %s,", strMessage, eapi.iSniperBullets, LOCALIZE("Sniper bullets")); iAmmoTypes++; }
 
       INDEX iLen = strlen(strMessage);
       if( iLen>0 && strMessage[iLen-1]==',')
@@ -3008,7 +3008,7 @@ functions:
         strMessage.DeleteChar(iLen-1);
       };
       if( iAmmoTypes>4 ) {
-        strMessage.PrintF(TRANS("Ammo pack"));
+        strMessage.PrintF(LOCALIZE("Ammo pack"));
       };
 
       ((CPlayer&)*m_penPlayer).ItemPicked(strMessage, 0);

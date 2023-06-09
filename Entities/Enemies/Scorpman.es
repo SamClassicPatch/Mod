@@ -104,9 +104,9 @@ functions:
   {
     CTString str;
     if (eDeath.eLastDamage.dmtType==DMT_CLOSERANGE) {
-      str.PrintF(TRANS("%s was stabbed by an Arachnoid"), strPlayerName);
+      str.PrintF(LOCALIZE("%s was stabbed by an Arachnoid"), strPlayerName);
     } else {
-      str.PrintF(TRANS("An Arachnoid poured lead into %s"), strPlayerName);
+      str.PrintF(LOCALIZE("An Arachnoid poured lead into %s"), strPlayerName);
     }
     return str;
   }
@@ -651,7 +651,7 @@ procedures:
     try {
       m_aoLightAnimation.SetData_t(CTFILENAME("Animations\\BasicEffects.ani"));
     } catch (char *strError) {
-      WarningMessage(TRANS("Cannot load Animations\\BasicEffects.ani: %s"), strError);
+      WarningMessage(LOCALIZE("Cannot load Animations\\BasicEffects.ani: %s"), strError);
     }
     MinigunOff();
 

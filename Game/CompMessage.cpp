@@ -71,7 +71,7 @@ void CCompMessage::Load_t(void)
     cm_itImage = IT_MODEL;
     cm_strModel.ReadFromText_t(strm, "");
   } else {
-    throw TRANS("Unknown image type!");
+    throw LOCALIZE("Unknown image type!");
   }
   // read text until end of file
   strm.ExpectKeyword_t("TEXT\r\n");

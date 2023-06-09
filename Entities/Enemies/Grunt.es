@@ -88,7 +88,7 @@ functions:
   virtual CTString GetPlayerKillDescription(const CTString &strPlayerName, const EDeath &eDeath)
   {
     CTString str;
-    str.PrintF(TRANS("A Grunt sent %s into the halls of Valhalla"), strPlayerName);
+    str.PrintF(LOCALIZE("A Grunt sent %s into the halls of Valhalla"), strPlayerName);
     return str;
   }
 

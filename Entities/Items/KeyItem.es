@@ -51,23 +51,23 @@ event EKey {
 const char *GetKeyName(enum KeyItemType kit)
 {
   switch(kit) {
-  case KIT_BOOKOFWISDOM     :  return TRANS("Book of wisdom"); break;
-  case KIT_CROSSWOODEN      :  return TRANS("Wooden cross"); break;
-  case KIT_CROSSGOLD        :  return TRANS("Gold cross"); break;
-  case KIT_CROSSMETAL       :  return TRANS("Silver cross"); break;
-  case KIT_JAGUARGOLDDUMMY  :  return TRANS("Gold jaguar"); break;
-  case KIT_HAWKWINGS01DUMMY :  return TRANS("Hawk wings - part 1"); break;
-  case KIT_HAWKWINGS02DUMMY :  return TRANS("Hawk wings - part 2"); break;
-  case KIT_HOLYGRAIL        :  return TRANS("Holy grail"); break;
-  case KIT_TABLESDUMMY      :  return TRANS("Tablet of wisdom"); break;
-  case KIT_WINGEDLION       :  return TRANS("Winged lion"); break;
-  case KIT_ELEPHANTGOLD     :  return TRANS("Gold elephant"); break;    
-  case KIT_STATUEHEAD01     :  return TRANS("Seriously scary ceremonial mask"); break;
-  case KIT_STATUEHEAD02     :  return TRANS("Hilariously happy ceremonial mask"); break;
-  case KIT_STATUEHEAD03     :  return TRANS("Ix Chel mask"); break;   
-  case KIT_KINGSTATUE       :  return TRANS("Statue of King Tilmun"); break;   
-  case KIT_CRYSTALSKULL     :  return TRANS("Crystal Skull"); break;   
-  default: return TRANS("unknown item"); break;
+  case KIT_BOOKOFWISDOM     :  return LOCALIZE("Book of wisdom"); break;
+  case KIT_CROSSWOODEN      :  return LOCALIZE("Wooden cross"); break;
+  case KIT_CROSSGOLD        :  return LOCALIZE("Gold cross"); break;
+  case KIT_CROSSMETAL       :  return LOCALIZE("Silver cross"); break;
+  case KIT_JAGUARGOLDDUMMY  :  return LOCALIZE("Gold jaguar"); break;
+  case KIT_HAWKWINGS01DUMMY :  return LOCALIZE("Hawk wings - part 1"); break;
+  case KIT_HAWKWINGS02DUMMY :  return LOCALIZE("Hawk wings - part 2"); break;
+  case KIT_HOLYGRAIL        :  return LOCALIZE("Holy grail"); break;
+  case KIT_TABLESDUMMY      :  return LOCALIZE("Tablet of wisdom"); break;
+  case KIT_WINGEDLION       :  return LOCALIZE("Winged lion"); break;
+  case KIT_ELEPHANTGOLD     :  return LOCALIZE("Gold elephant"); break;    
+  case KIT_STATUEHEAD01     :  return LOCALIZE("Seriously scary ceremonial mask"); break;
+  case KIT_STATUEHEAD02     :  return LOCALIZE("Hilariously happy ceremonial mask"); break;
+  case KIT_STATUEHEAD03     :  return LOCALIZE("Ix Chel mask"); break;   
+  case KIT_KINGSTATUE       :  return LOCALIZE("Statue of King Tilmun"); break;   
+  case KIT_CRYSTALSKULL     :  return LOCALIZE("Crystal Skull"); break;   
+  default: return LOCALIZE("unknown item"); break;
   };
 }
 

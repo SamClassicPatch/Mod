@@ -182,11 +182,11 @@ static void DumpDemoProfile(void)
     strm.FPrintF_t( strFragment);
     strm.FPrintF_t( strAnalyzed);
     // done!
-    CPrintF( TRANS("Demo profile data dumped to '%s'.\n"), strFileName);
+    CPrintF( LOCALIZE("Demo profile data dumped to '%s'.\n"), strFileName);
   } 
   catch (char *strError) {
     // something went wrong :(
-    CPrintF( TRANS("Cannot dump demo profile data: %s\n"), strError);
+    CPrintF( LOCALIZE("Cannot dump demo profile data: %s\n"), strError);
   }
 }
 
@@ -548,18 +548,18 @@ CTString CGame::DemoReportFragmentsProfile( INDEX iRate)
 
   // if report is not required
   if( dem_iProfileRate==0) {
-    strRes.PrintF( TRANS("\nFragments report disabled.\n"));
+    strRes.PrintF( LOCALIZE("\nFragments report disabled.\n"));
     return strRes;
   }
 
   // if not enough frames
   if( ctFrames<20) {
-    strRes.PrintF( TRANS("\nNot enough recorded frames to make fragments report.\n"));
+    strRes.PrintF( LOCALIZE("\nNot enough recorded frames to make fragments report.\n"));
     return strRes;
   }
 
   // enough frames - calc almost everything
-  strRes.PrintF( TRANS("\nDemo performance results (fragment time = %d seconds):\n"), dem_iProfileRate);
+  strRes.PrintF( LOCALIZE("\nDemo performance results (fragment time = %d seconds):\n"), dem_iProfileRate);
   strTmp.PrintF(         "------------------------------------------------------\n\n");
   strRes += strTmp;
   DOUBLE dTimeSum, dTimeSumNoPeaks;
@@ -572,7 +572,7 @@ CTString CGame::DemoReportFragmentsProfile( INDEX iRate)
                    tmSigma, tmHighLimit, tmLowLimit, tmHighPeak, tmLowPeak,
                    fAvgWTris, fAvgMTris, fAvgPTris, fAvgTTris,
                    fAvgWTrisNoPeaks, fAvgMTrisNoPeaks, fAvgPTrisNoPeaks, fAvgTTrisNoPeaks);
-  strTmp.PrintF( TRANS("   #   average FPS     average FPS (W/O peaks)\n"));
+  strTmp.PrintF( LOCALIZE("   #   average FPS     average FPS (W/O peaks)\n"));
   strRes += strTmp;
   // loop thru frames and create output of time fragmens
   dTimeSum = 0;
@@ -625,7 +625,7 @@ CTString CGame::DemoReportAnalyzedProfile(void)
   INDEX ctFrames = _atmFrameTimes.Count();
   // nothing kept?
   if( ctFrames<20) {
-    strRes.PrintF( TRANS("\nNot enough recorded frames to analyze.\n"));
+    strRes.PrintF( LOCALIZE("\nNot enough recorded frames to analyze.\n"));
     return strRes;
   }
 
@@ -687,27 +687,27 @@ CTString CGame::DemoReportAnalyzedProfile(void)
 
   // printout
   CTString strTmp;
-  strTmp.PrintF( TRANS("\n%.1f KB used for demo profile:\n"), 1+ ctFrames*5*sizeof(FLOAT)/1024.0f);
+  strTmp.PrintF( LOCALIZE("\n%.1f KB used for demo profile:\n"), 1+ ctFrames*5*sizeof(FLOAT)/1024.0f);
   strRes += strTmp;
-  strTmp.PrintF( TRANS("    Originally recorded: %d frames in %.1f seconds => %5.1f FPS average.\n"),
+  strTmp.PrintF( LOCALIZE("    Originally recorded: %d frames in %.1f seconds => %5.1f FPS average.\n"),
                  ctFrames, dTimeSum, 1.0f/tmAverage);
   strRes += strTmp;
-  strTmp.PrintF( TRANS("Without excessive peaks: %d frames in %.1f seconds => %5.1f FPS average.\n"),
+  strTmp.PrintF( LOCALIZE("Without excessive peaks: %d frames in %.1f seconds => %5.1f FPS average.\n"),
                  ctFramesNoPeaks, dTimeSumNoPeaks, 1.0f/tmAverageNoPeaks);
   strRes += strTmp;
-  strTmp.PrintF( TRANS("       High peak: %5.1f FPS\n"), 1.0f/tmHighPeak);
+  strTmp.PrintF( LOCALIZE("       High peak: %5.1f FPS\n"), 1.0f/tmHighPeak);
   strRes += strTmp;
-  strTmp.PrintF( TRANS("        Low peak: %5.1f FPS\n"), 1.0f/tmLowPeak);
+  strTmp.PrintF( LOCALIZE("        Low peak: %5.1f FPS\n"), 1.0f/tmLowPeak);
   strRes += strTmp;
   // enough values recorder for high sustain?
   if( ctHighFrames > (ctFrames/1024+5)) {
-    strTmp.PrintF( TRANS("  High sustained: %5.1f FPS (%d frames in %.1f seconds)\n"),
+    strTmp.PrintF( LOCALIZE("  High sustained: %5.1f FPS (%d frames in %.1f seconds)\n"),
                    tmHighSustained, ctHighFrames, dHighSum);
     strRes += strTmp;
   }
   // enough values recorder for low sustain?
   if( ctLowFrames > (ctFrames/1024+5)) {
-    strTmp.PrintF( TRANS("   Low sustained: %5.1f FPS (%d frames in %.1f seconds)\n"),
+    strTmp.PrintF( LOCALIZE("   Low sustained: %5.1f FPS (%d frames in %.1f seconds)\n"),
                    tmLowSustained,  ctLowFrames,  dLowSum);
     strRes += strTmp;
   }
@@ -716,13 +716,13 @@ CTString CGame::DemoReportAnalyzedProfile(void)
   if( dem_bProfile==217) {
     const FLOAT fAvgRTris = fAvgTTris - (fAvgWTris+fAvgMTris+fAvgPTris);
     const FLOAT fAvgRTrisNoPeaks = fAvgTTrisNoPeaks - (fAvgWTrisNoPeaks+fAvgMTrisNoPeaks+fAvgPTrisNoPeaks);
-    strTmp.PrintF( TRANS("Triangles per frame (with and without excessive peaks):\n")); strRes += "\n"+strTmp;
-    strTmp.PrintF( TRANS("      World: %7.1f / %.1f\n"), fAvgWTris, fAvgWTrisNoPeaks);  strRes += strTmp;
-    strTmp.PrintF( TRANS("      Model: %7.1f / %.1f\n"), fAvgMTris, fAvgMTrisNoPeaks);  strRes += strTmp;
-    strTmp.PrintF( TRANS("   Particle: %7.1f / %.1f\n"), fAvgPTris, fAvgPTrisNoPeaks);  strRes += strTmp;
-    strTmp.PrintF( TRANS("  rest (2D): %7.1f / %.1f\n"), fAvgRTris, fAvgRTrisNoPeaks);  strRes += strTmp;
+    strTmp.PrintF( LOCALIZE("Triangles per frame (with and without excessive peaks):\n")); strRes += "\n"+strTmp;
+    strTmp.PrintF( LOCALIZE("      World: %7.1f / %.1f\n"), fAvgWTris, fAvgWTrisNoPeaks);  strRes += strTmp;
+    strTmp.PrintF( LOCALIZE("      Model: %7.1f / %.1f\n"), fAvgMTris, fAvgMTrisNoPeaks);  strRes += strTmp;
+    strTmp.PrintF( LOCALIZE("   Particle: %7.1f / %.1f\n"), fAvgPTris, fAvgPTrisNoPeaks);  strRes += strTmp;
+    strTmp.PrintF( LOCALIZE("  rest (2D): %7.1f / %.1f\n"), fAvgRTris, fAvgRTrisNoPeaks);  strRes += strTmp;
     strRes +=            "           --------------------\n";
-    strTmp.PrintF( TRANS("      TOTAL: %7.1f / %.1f\n"), fAvgTTris, fAvgTTrisNoPeaks);  strRes += strTmp;
+    strTmp.PrintF( LOCALIZE("      TOTAL: %7.1f / %.1f\n"), fAvgTTris, fAvgTTrisNoPeaks);  strRes += strTmp;
   }
 
   // all done
@@ -836,8 +836,8 @@ void CGame::GameHandleTimer(void)
 void CGame::InitInternal( void)
 {
   gam_strCustomLevel = ""; // filename of custom level chosen
-  gam_strSessionName = TRANS("Unnamed session"); // name of multiplayer network session
-  gam_strJoinAddress = TRANS("serveraddress");   // join address
+  gam_strSessionName = LOCALIZE("Unnamed session"); // name of multiplayer network session
+  gam_strJoinAddress = LOCALIZE("serveraddress");   // join address
 
   gm_MenuSplitScreenCfg    = SSC_PLAY1;
   gm_StartSplitScreenCfg   = SSC_PLAY1;
@@ -855,15 +855,15 @@ void CGame::InitInternal( void)
   memset(gm_aiStartLocalPlayers, 0, sizeof(gm_aiStartLocalPlayers));
 
   // first assign translated to make dependcy catcher extract the translations
-  gm_astrAxisNames[AXIS_MOVE_UD] = TRANS("move u/d");      
-  gm_astrAxisNames[AXIS_MOVE_LR] = TRANS("move l/r");      
-  gm_astrAxisNames[AXIS_MOVE_FB] = TRANS("move f/b");      
-  gm_astrAxisNames[AXIS_TURN_UD] = TRANS("look u/d");      
-  gm_astrAxisNames[AXIS_TURN_LR] = TRANS("turn l/r");      
-  gm_astrAxisNames[AXIS_TURN_BK] = TRANS("banking");       
-  gm_astrAxisNames[AXIS_LOOK_UD] = TRANS("view u/d");      
-  gm_astrAxisNames[AXIS_LOOK_LR] = TRANS("view l/r");      
-  gm_astrAxisNames[AXIS_LOOK_BK] = TRANS("view banking");  
+  gm_astrAxisNames[AXIS_MOVE_UD] = LOCALIZE("move u/d");      
+  gm_astrAxisNames[AXIS_MOVE_LR] = LOCALIZE("move l/r");      
+  gm_astrAxisNames[AXIS_MOVE_FB] = LOCALIZE("move f/b");      
+  gm_astrAxisNames[AXIS_TURN_UD] = LOCALIZE("look u/d");      
+  gm_astrAxisNames[AXIS_TURN_LR] = LOCALIZE("turn l/r");      
+  gm_astrAxisNames[AXIS_TURN_BK] = LOCALIZE("banking");       
+  gm_astrAxisNames[AXIS_LOOK_UD] = LOCALIZE("view u/d");      
+  gm_astrAxisNames[AXIS_LOOK_LR] = LOCALIZE("view l/r");      
+  gm_astrAxisNames[AXIS_LOOK_BK] = LOCALIZE("view banking");  
   // but we must not really use the translation for loading
   gm_astrAxisNames[AXIS_MOVE_UD] = "move u/d";     // 
   gm_astrAxisNames[AXIS_MOVE_LR] = "move l/r";     // 
@@ -1013,14 +1013,14 @@ void CGame::InitInternal( void)
   if (ctl_slPlayerControlsSize<=0
     ||ctl_slPlayerControlsSize>sizeof(((CLocalPlayer*)NULL)->lp_ubPlayerControlsState)
     ||ctl_pvPlayerControls==NULL) {
-    FatalError(TRANS("Current player controls are invalid."));
+    FatalError(LOCALIZE("Current player controls are invalid."));
   }
 
   // load common controls
   try {
     _ctrlCommonControls.Load_t(fnmCommonControls);
   } catch (char *strError) {
-    FatalError(TRANS("Cannot load common controls: %s\n"), strError);
+    FatalError(LOCALIZE("Cannot load common controls: %s\n"), strError);
   }
 
   // init LCD textures/fonts
@@ -1039,7 +1039,7 @@ void CGame::InitInternal( void)
   try {
     Load_t();
   } catch (char *strError) {
-    CPrintF(TRANS("Cannot load game settings:\n%s\n  Using defaults\n"), strError);
+    CPrintF(LOCALIZE("Cannot load game settings:\n%s\n  Using defaults\n"), strError);
   }
 
   CON_DiscardLastLineTimes();
@@ -1076,7 +1076,7 @@ void CGame::EndInternal(void)
   try {
     strConsole.SaveKeepCRLF_t(fnmConsoleHistory);
   } catch (char *strError) {
-    WarningMessage(TRANS("Cannot save console history:\n%s"), strError);
+    WarningMessage(LOCALIZE("Cannot save console history:\n%s"), strError);
   }
   SavePlayersAndControls();
 
@@ -1133,7 +1133,7 @@ BOOL CGame::NewGame(const CTString &strSessionName, const CTFileName &fnWorld,
     // stop network provider
     _pNetwork->StopProvider();
     // and display error
-    CPrintF(TRANS("Cannot start game:\n%s\n"), strError);
+    CPrintF(LOCALIZE("Cannot start game:\n%s\n"), strError);
     return FALSE;
   }
 
@@ -1179,7 +1179,7 @@ BOOL CGame::JoinGame(CNetworkSession &session)
     // stop network provider
     _pNetwork->StopProvider();
     // and display error
-    CPrintF(TRANS("Cannot join game:\n%s\n"), strError);
+    CPrintF(LOCALIZE("Cannot join game:\n%s\n"), strError);
     return FALSE;
   }
 
@@ -1211,12 +1211,12 @@ BOOL CGame::LoadGame(const CTFileName &fnGame)
   // start the new session
   try {
     _pNetwork->Load_t( fnGame);
-    CPrintF(TRANS("Loaded game: %s\n"), fnGame);
+    CPrintF(LOCALIZE("Loaded game: %s\n"), fnGame);
   } catch (char *strError) {
     // stop network provider
     _pNetwork->StopProvider();
     // and display error
-    CPrintF(TRANS("Cannot load game: %s\n"), strError);
+    CPrintF(LOCALIZE("Cannot load game: %s\n"), strError);
     return FALSE;
   }
 
@@ -1261,12 +1261,12 @@ BOOL CGame::StartDemoPlay(const CTFileName &fnDemo)
   // start the new session
   try {
     _pNetwork->StartDemoPlay_t( fnDemo);
-    CPrintF(TRANS("Started playing demo: %s\n"), fnDemo);
+    CPrintF(LOCALIZE("Started playing demo: %s\n"), fnDemo);
   } catch (char *strError) {
     // stop network provider
     _pNetwork->StopProvider();
     // and display error
-    CPrintF(TRANS("Cannot play demo: %s\n"), strError);
+    CPrintF(LOCALIZE("Cannot play demo: %s\n"), strError);
     gm_bFirstLoading = FALSE;
     return FALSE;
   }
@@ -1305,13 +1305,13 @@ BOOL CGame::StartDemoRec(const CTFileName &fnDemo)
   // save demo recording
   try {
     _pNetwork->StartDemoRec_t( fnDemo);
-    CPrintF(TRANS("Started recording demo: %s\n"), fnDemo);
+    CPrintF(LOCALIZE("Started recording demo: %s\n"), fnDemo);
     // save a thumbnail
     SaveThumbnail(fnDemo.NoExt()+"Tbn.tex");
     return TRUE;
   } catch (char *strError) {
     // and display error
-    CPrintF(TRANS("Cannot start recording: %s\n"), strError);
+    CPrintF(LOCALIZE("Cannot start recording: %s\n"), strError);
     return FALSE;
   }
 }
@@ -1323,7 +1323,7 @@ void CGame::StopDemoRec(void)
   if (!gm_bGameOn) return;
 
   _pNetwork->StopDemoRec();
-  CPrintF(TRANS("Finished recording.\n"));
+  CPrintF(LOCALIZE("Finished recording.\n"));
 }
 
 BOOL CGame::SaveGame(const CTFileName &fnGame)
@@ -1333,7 +1333,7 @@ BOOL CGame::SaveGame(const CTFileName &fnGame)
   INDEX ctLivePlayers = GetLivePlayersCount();
   if (ctPlayers>0 && ctLivePlayers<=0) {
     // display error
-    CPrintF(TRANS("Won't save game when dead!\n"));
+    CPrintF(LOCALIZE("Won't save game when dead!\n"));
     // do not save
     return FALSE;
   }
@@ -1341,12 +1341,12 @@ BOOL CGame::SaveGame(const CTFileName &fnGame)
   // save new session
   try {
     _pNetwork->Save_t( fnGame);
-    CPrintF(TRANS("Saved game: %s\n"), fnGame);
+    CPrintF(LOCALIZE("Saved game: %s\n"), fnGame);
     SaveThumbnail(fnGame.NoExt()+"Tbn.tex");
     return TRUE;
   } catch (char *strError) {
     // and display error
-    CPrintF(TRANS("Cannot save game: %s\n"), strError);
+    CPrintF(LOCALIZE("Cannot save game: %s\n"), strError);
     return FALSE;
   }
 }
@@ -1420,7 +1420,7 @@ BOOL CGame::StartProviderFromName(void)
   catch (char *strError)
   {
     // if unable, report error
-    CPrintF( TRANS("Can't start provider:\n%s\n"), strError);
+    CPrintF( LOCALIZE("Can't start provider:\n%s\n"), strError);
     bSuccess = FALSE;
   }
   return bSuccess;
@@ -1525,7 +1525,7 @@ void CGame::Load_t( void)
   // check version number
   if( !( CChunkID(GAME_SHELL_VER) == strmFile.GetID_t()) )
   {
-    throw( TRANS("Invalid version of game shell."));
+    throw( LOCALIZE("Invalid version of game shell."));
   }
   // load all of the class members
   strmFile>>gm_strNetworkProvider;
@@ -1720,7 +1720,7 @@ BOOL CGame::AddPlayers(void)
       }
     }
   } catch (char *strError) {
-    CPrintF(TRANS("Cannot add player:\n%s\n"), strError);
+    CPrintF(LOCALIZE("Cannot add player:\n%s\n"), strError);
     return FALSE;
   }
 
@@ -2252,20 +2252,20 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
       // print pause indicators
       CTString strIndicator;
       if (_pNetwork->IsDisconnected()) {
-        strIndicator.PrintF(TRANS("Disconnected: %s\nPress F9 to reconnect"), (const char *)_pNetwork->WhyDisconnected());
+        strIndicator.PrintF(LOCALIZE("Disconnected: %s\nPress F9 to reconnect"), (const char *)_pNetwork->WhyDisconnected());
       } else if (_pNetwork->IsWaitingForPlayers()) {
-        strIndicator = TRANS("Waiting for all players to connect");
+        strIndicator = LOCALIZE("Waiting for all players to connect");
       } else if (_pNetwork->IsWaitingForServer()) {
-        strIndicator = TRANS("Waiting for server to continue");
+        strIndicator = LOCALIZE("Waiting for server to continue");
       } else if (!_pNetwork->IsConnectionStable()) {
-        strIndicator = TRANS("Trying to stabilize connection...");
+        strIndicator = LOCALIZE("Trying to stabilize connection...");
       } else if (_pNetwork->IsGameFinished()) {
-        strIndicator = TRANS("Game finished");
+        strIndicator = LOCALIZE("Game finished");
       } else if (_pNetwork->IsPaused() || _pNetwork->GetLocalPause()) {
-        strIndicator = TRANS("Paused");
+        strIndicator = LOCALIZE("Paused");
       } else if (_tvMenuQuickSave.tv_llValue!=0I64 && 
         (_pTimer->GetHighPrecisionTimer()-_tvMenuQuickSave).GetSeconds()<3) {
-        strIndicator = TRANS("Use F6 for QuickSave during game!");
+        strIndicator = LOCALIZE("Use F6 for QuickSave during game!");
       } else if (_pNetwork->ga_sesSessionState.ses_strMOTD!="") {
         CTString strMotd = _pNetwork->ga_sesSessionState.ses_strMOTD;
         static CTString strLastMotd = "";
@@ -2293,7 +2293,7 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
         dpMsg.SetFont( _pfdDisplayFont);
         dpMsg.SetTextScaling( 1.0f);
         dpMsg.SetTextAspect( 1.0f);
-        dpMsg.PutText( TRANS("Recording"), 
+        dpMsg.PutText( LOCALIZE("Recording"), 
         dpMsg.GetWidth()*0.1f, 
         dpMsg.GetHeight()*0.1f, C_CYAN|192);
       }
@@ -2395,12 +2395,12 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
     try {
       // save screen shot as TGA
       iiImageInfo.SaveTGA_t( fnmScreenShot);
-      if( dem_iAnimFrame<0) CPrintF( TRANS("screen shot: %s\n"), (CTString&)fnmScreenShot);
+      if( dem_iAnimFrame<0) CPrintF( LOCALIZE("screen shot: %s\n"), (CTString&)fnmScreenShot);
     }
     // if failed
     catch (char *strError) {
       // report error
-      CPrintF( TRANS("Cannot save screenshot:\n%s\n"), strError);
+      CPrintF( LOCALIZE("Cannot save screenshot:\n%s\n"), strError);
     }
   }
 }
@@ -2417,7 +2417,7 @@ void CGame::RecordHighScore(void)
   INDEX ipl= Clamp(int(gam_iRecordHighScore), 0, NET_MAXGAMEPLAYERS);
   CPlayer *penpl = (CPlayer *)&*CEntity::GetPlayerEntity(ipl);
   if (penpl==NULL) {
-    //CPrintF( TRANS("Warning: cannot record score for player %d!\n"), ipl);
+    //CPrintF( LOCALIZE("Warning: cannot record score for player %d!\n"), ipl);
     return;
   }
 
@@ -2698,7 +2698,7 @@ void CGame::GameMainLoop(void)
       _strProfile+=strPhysicsReport;
       _pfPhysicsProfile.Reset();
 
-      CPrintF( TRANS("Profiling done.\n"));
+      CPrintF( LOCALIZE("Profiling done.\n"));
     }
   }
 

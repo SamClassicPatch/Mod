@@ -876,7 +876,7 @@ void CWorldBase_OnInitClass(void)
   }
   catch(char *strError)
   {
-    FatalError(TRANS("Cannot load shadow texture: \n%s"), strError);
+    FatalError(LOCALIZE("Cannot load shadow texture: \n%s"), strError);
   }
 }
 

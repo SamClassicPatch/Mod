@@ -281,16 +281,16 @@ CTString GetGameTypeName(INDEX iMode)
     return "";
     break;
   case CSessionProperties::GM_COOPERATIVE:
-    return TRANS("Cooperative");
+    return LOCALIZE("Cooperative");
     break;
   case CSessionProperties::GM_FLYOVER:
-    return TRANS("Flyover");
+    return LOCALIZE("Flyover");
     break;
   case CSessionProperties::GM_SCOREMATCH:
-    return TRANS("Scorematch");
+    return LOCALIZE("Scorematch");
     break;
   case CSessionProperties::GM_FRAGMATCH:
-    return TRANS("Fragmatch");
+    return LOCALIZE("Fragmatch");
     break;
   }
 }
@@ -309,25 +309,25 @@ CTString GetGameSpyRulesInfo(void)
 
   CTString strDifficulty;
   if (sp.sp_bMental) {
-    strDifficulty = TRANS("Mental");
+    strDifficulty = LOCALIZE("Mental");
   } else {
     switch(sp.sp_gdGameDifficulty) {
     case CSessionProperties::GD_TOURIST:
-      strDifficulty = TRANS("Tourist");
+      strDifficulty = LOCALIZE("Tourist");
       break;
     case CSessionProperties::GD_EASY:
-      strDifficulty = TRANS("Easy");
+      strDifficulty = LOCALIZE("Easy");
       break;
     default:
       ASSERT(FALSE);
     case CSessionProperties::GD_NORMAL:
-      strDifficulty = TRANS("Normal");
+      strDifficulty = LOCALIZE("Normal");
       break;
     case CSessionProperties::GD_HARD:
-      strDifficulty = TRANS("Hard");
+      strDifficulty = LOCALIZE("Hard");
       break;
     case CSessionProperties::GD_EXTREME:
-      strDifficulty = TRANS("Serious");
+      strDifficulty = LOCALIZE("Serious");
       break;
     }
   }

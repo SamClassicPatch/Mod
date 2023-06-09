@@ -171,7 +171,7 @@ void CGame::ConsoleRender(CDrawPort *pdp)
   dpConsole.SetTextMode(-1);
   CTString strPrompt;
   if (_pGame->gm_csConsoleState == CS_TALK) {
-    strPrompt = TRANS("say: ");
+    strPrompt = LOCALIZE("say: ");
   } else {
     strPrompt = "=> ";
   }

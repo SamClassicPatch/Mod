@@ -81,7 +81,7 @@ functions:
         m_moAnimData.SetData_t(fnmDefault);
       // if failed
       } catch(char *strErrorDefault) {
-        FatalError(TRANS("Cannot load default model '%s':\n%s"),
+        FatalError(LOCALIZE("Cannot load default model '%s':\n%s"),
           (CTString&)fnmDefault, strErrorDefault);
       }
     }

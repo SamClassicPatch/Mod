@@ -62,7 +62,7 @@ static void LoadingHook_t(CProgressHookInfo *pphi)
   }
   if (_bUserBreakEnabled && (GetAsyncKeyState(VK_ESCAPE)&ulCheckFlags)) {
     // break loading
-    throw TRANS("User break!");
+    throw LOCALIZE("User break!");
   }
 
 #if USECUSTOMTEXT
@@ -177,7 +177,7 @@ static void LoadingHook_t(CProgressHookInfo *pphi)
   dpHook.PutText(strDesc, pixCharSizeI/2, pixSizeJ-pixBarSizeJ+pixCharSizeJ/2, colText);
   dpHook.PutTextR(strPerc, pixSizeI-pixCharSizeI/2, pixSizeJ-pixBarSizeJ+pixCharSizeJ/2, colText);
   if (_bUserBreakEnabled && !_pGame->gm_bFirstLoading) {
-    dpHook.PutTextC( TRANS( "PRESS ESC TO ABORT"), pixSizeI/2, pixSizeJ-pixBarSizeJ-2-pixCharSizeJ, colEsc);
+    dpHook.PutTextC( LOCALIZE( "PRESS ESC TO ABORT"), pixSizeI/2, pixSizeJ-pixBarSizeJ-2-pixCharSizeJ, colEsc);
   }
 
 /*  
@@ -237,9 +237,9 @@ static void LoadingHook_t(CProgressHookInfo *pphi)
     dpHook.SetTextScaling( fScaling);
     dpHook.SetTextAspect( 1.0f);
     //dpHook.Fill( 0, 0, slSizeI, pixCenterJ, C_vdGREEN|255, C_vdGREEN|255, C_vdGREEN|0, C_vdGREEN|0);
-    dpHook.PutTextC( TRANS( "SERIOUS SAM - TEST VERSION"), pixCenterI, 5*fScaling, C_WHITE|255);
-    dpHook.PutTextC( TRANS( "THIS IS NOT A DEMO VERSION, THIS IS A COMPATIBILITY TEST!"), pixCenterI, 25*fScaling, C_WHITE|255);
-    dpHook.PutTextC( TRANS( "Serious Sam (c) 2000 Croteam LLC, All Rights Reserved.\n"), pixCenterI, 45*fScaling, C_WHITE|255);
+    dpHook.PutTextC( LOCALIZE( "SERIOUS SAM - TEST VERSION"), pixCenterI, 5*fScaling, C_WHITE|255);
+    dpHook.PutTextC( LOCALIZE( "THIS IS NOT A DEMO VERSION, THIS IS A COMPATIBILITY TEST!"), pixCenterI, 25*fScaling, C_WHITE|255);
+    dpHook.PutTextC( LOCALIZE( "Serious Sam (c) 2000 Croteam LLC, All Rights Reserved.\n"), pixCenterI, 45*fScaling, C_WHITE|255);
     dpHook.PutText( _strCustomText, 1*fScaling, 85*fScaling, C_GREEN|255);
     dpHook.Unlock();
 #endif
@@ -250,7 +250,7 @@ static void LoadingHook_t(CProgressHookInfo *pphi)
     dpHook.SetTextScaling( fScaling);
     dpHook.SetTextAspect( 1.0f);
     //dpHook.Fill( 0, 0, slSizeI, pixCenterJ, C_vdGREEN|255, C_vdGREEN|255, C_vdGREEN|0, C_vdGREEN|0);
-    dpHook.PutTextC( TRANS( "PRESS ESC TO ABORT"), pixCenterI, pixCenterJ+pixBoxSizeJ+5*fScaling, C_WHITE|255);
+    dpHook.PutTextC( LOCALIZE( "PRESS ESC TO ABORT"), pixCenterI, pixCenterJ+pixBoxSizeJ+5*fScaling, C_WHITE|255);
   }
   */
 

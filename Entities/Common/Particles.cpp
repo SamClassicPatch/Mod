@@ -301,7 +301,7 @@ void InitParticles(void)
   }
   catch(char *strError)
   {
-    FatalError(TRANS("Unable to obtain texture: %s"), strError);
+    FatalError(LOCALIZE("Unable to obtain texture: %s"), strError);
   }
   InitParticleTables();
 }

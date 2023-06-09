@@ -512,7 +512,7 @@ functions:
 
   virtual CTString GetPlayerKillDescription(const CTString &strPlayerName, const EDeath &eDeath) {
     CTString str;
-    str.PrintF(TRANS("Exotech larva reduced %s to pulp."), strPlayerName);
+    str.PrintF(LOCALIZE("Exotech larva reduced %s to pulp."), strPlayerName);
     return str;
   }
 

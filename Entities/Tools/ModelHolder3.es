@@ -529,7 +529,7 @@ functions:
       SetSkaModel_t(m_fnModel);
       // if failed
     } catch(char *strError) {
-      WarningMessage(TRANS("Cannot load ska model '%s':\n%s"), (CTString&)m_fnModel, strError);
+      WarningMessage(LOCALIZE("Cannot load ska model '%s':\n%s"), (CTString&)m_fnModel, strError);
       bLoadOK = FALSE;
       // set colision info for default model
       //SetSkaColisionInfo();
@@ -591,7 +591,7 @@ functions:
 /*    try {
       m_aoLightAnimation.SetData_t(m_fnmLightAnimation);
     } catch (char *strError) {
-      WarningMessage(TRANS("Cannot load '%s': %s"), (CTString&)m_fnmLightAnimation, strError);
+      WarningMessage(LOCALIZE("Cannot load '%s': %s"), (CTString&)m_fnmLightAnimation, strError);
       m_fnmLightAnimation = "";
     }
     if (m_aoLightAnimation.GetData()!=NULL) {

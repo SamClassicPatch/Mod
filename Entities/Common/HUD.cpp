@@ -1214,7 +1214,7 @@ extern void DrawHUD( const CPlayer *penPlayerCurrent, CDrawPort *pdpCurrent, BOO
       CTString strLimitsInfo="";  
       if (GetSP()->sp_iTimeLimit>0) {
         FLOAT fTimeLeft = ClampDn(GetSP()->sp_iTimeLimit*60.0f - _pNetwork->GetGameTime(), 0.0f);
-        strLimitsInfo.PrintF("%s^cFFFFFF%s: %s\n", strLimitsInfo, TRANS("TIME LEFT"), TimeToString(fTimeLeft));
+        strLimitsInfo.PrintF("%s^cFFFFFF%s: %s\n", strLimitsInfo, LOCALIZE("TIME LEFT"), TimeToString(fTimeLeft));
       }
       extern INDEX SetAllPlayersStats( INDEX iSortKey);
       // fill players table
@@ -1229,11 +1229,11 @@ extern void DrawHUD( const CPlayer *penPlayerCurrent, CDrawPort *pdpCurrent, BOO
       }}
       if (GetSP()->sp_iFragLimit>0) {
         INDEX iFragsLeft = ClampDn(GetSP()->sp_iFragLimit-iMaxFrags, INDEX(0));
-        strLimitsInfo.PrintF("%s^cFFFFFF%s: %d\n", strLimitsInfo, TRANS("FRAGS LEFT"), iFragsLeft);
+        strLimitsInfo.PrintF("%s^cFFFFFF%s: %d\n", strLimitsInfo, LOCALIZE("FRAGS LEFT"), iFragsLeft);
       }
       if (GetSP()->sp_iScoreLimit>0) {
         INDEX iScoreLeft = ClampDn(GetSP()->sp_iScoreLimit-iMaxScore, INDEX(0));
-        strLimitsInfo.PrintF("%s^cFFFFFF%s: %d\n", strLimitsInfo, TRANS("SCORE LEFT"), iScoreLeft);
+        strLimitsInfo.PrintF("%s^cFFFFFF%s: %d\n", strLimitsInfo, LOCALIZE("SCORE LEFT"), iScoreLeft);
       }
       _pfdDisplayFont->SetFixedWidth();
       _pDP->SetFont( _pfdDisplayFont);

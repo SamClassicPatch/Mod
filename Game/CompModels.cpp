@@ -922,7 +922,7 @@ extern void SetupCompModel_t(const CTString &strName)
     _fFloorY = -1.0f;
 
   } else {
-    ThrowF_t(TRANS("Unknown model '%s'"), strName);
+    ThrowF_t(LOCALIZE("Unknown model '%s'"), strName);
   }
 }
 

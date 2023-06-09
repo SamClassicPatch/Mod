@@ -632,7 +632,7 @@ void PrintTitle(CDrawPort *pdp)
 {
   SetFont2(pdp);
   CTString strTitle;
-  strTitle.PrintF(TRANS("NETRICSA v2.01 - personal version for: %s"), 
+  strTitle.PrintF(LOCALIZE("NETRICSA v2.01 - personal version for: %s"), 
     _ppenPlayer->GetPlayerName());
   pdp->PutText( strTitle, _pixMarginI*3, _pixMarginJ-2*_fScaling2+1, _colMedium);
 }
@@ -641,7 +641,7 @@ void PrintTitle(CDrawPort *pdp)
 void PrintExit(CDrawPort *pdp)
 {
   SetFont2(pdp);
-  pdp->PutTextR( TRANS("Exit"), _boxExit.Size()(1)-_pixMarginI*3, _pixMarginJ-2*_fScaling2+1, 
+  pdp->PutTextR( LOCALIZE("Exit"), _boxExit.Size()(1)-_pixMarginI*3, _pixMarginJ-2*_fScaling2+1, 
     MouseOverColor(_boxExit, _colMedium, _colDark, _colLight));
 }
 
@@ -655,7 +655,7 @@ void PrintMessageList(CDrawPort *pdp)
   INDEX iFirst = _iFirstMessageOnScreen;
   INDEX iLast = Min(INDEX(_iFirstMessageOnScreen+_ctMessagesOnScreen), _acmMessages.Count())-1;
   if (iFirst>iLast) {
-    pdp->PutText( TRANS("no messages"), pixTextX, pixYLine, _colDark);
+    pdp->PutText( LOCALIZE("no messages"), pixTextX, pixYLine, _colDark);
   }
   for(INDEX i=iFirst; i<=iLast; i++) {
     COLOR col = _colMedium;
@@ -890,11 +890,11 @@ static BOOL FindGroupWithUnread(void)
 static void ComputerOn(void)
 {
   // init button names
-  _astrButtonTexts[CMT_INFORMATION ] = TRANS("tactical data");
-  _astrButtonTexts[CMT_BACKGROUND  ] = TRANS("strategic data");
-  _astrButtonTexts[CMT_WEAPONS     ] = TRANS("weapons");
-  _astrButtonTexts[CMT_ENEMIES     ] = TRANS("enemies");
-  _astrButtonTexts[CMT_STATISTICS  ] = TRANS("statistics");
+  _astrButtonTexts[CMT_INFORMATION ] = LOCALIZE("tactical data");
+  _astrButtonTexts[CMT_BACKGROUND  ] = LOCALIZE("strategic data");
+  _astrButtonTexts[CMT_WEAPONS     ] = LOCALIZE("weapons");
+  _astrButtonTexts[CMT_ENEMIES     ] = LOCALIZE("enemies");
+  _astrButtonTexts[CMT_STATISTICS  ] = LOCALIZE("statistics");
 
   _iFirstMessageOnScreen = -1;
   _iWantedFirstMessageOnScreen = 0;
