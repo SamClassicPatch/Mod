@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 %{
 
 #include "StdH.h"
-#include "Game/SEColors.h"
 
 #include <Engine/Build.h>
 #include <Engine/Network/Network.h>
@@ -2456,7 +2455,19 @@ functions:
       pdp->SetTextAspect( 1.0f);
       CTString strMsg;
       strMsg.PrintF(LOCALIZE("%s connected"), GetPlayerName());
-      pdp->PutTextCXY( strMsg, pixDPWidth*0.5f, pixDPHeight*0.5f, SE_COL_BLUE_NEUTRAL_LT|CT_OPAQUE);
+
+      // [Cecil] Pick color based on the Advanced HUD theme
+      static CSymbolPtr pHudTheme("ahud_iTheme");
+      COLOR colMessage = 0x6097CC00; // Default SE_COL_BLUE_NEUTRAL_LT
+
+      if (pHudTheme.Exists()) {
+        switch (pHudTheme.GetIndex()) {
+          case 0: colMessage = C_GREEN; break; // TFE
+          case 3: colMessage = 0xCC936100; break; // SSR
+        }
+      }
+
+      pdp->PutTextCXY( strMsg, pixDPWidth*0.5f, pixDPHeight*0.5f, colMessage|CT_OPAQUE);
     }
   }
 
@@ -2541,7 +2552,19 @@ functions:
       pdp->SetTextScaling( fScale);
       pdp->SetTextAspect( 1.0f);
       UBYTE ubA = int(sin(_pTimer->CurrentTick()*10.0f)*127+128);
-      pdp->PutTextCXY( LOCALIZE("Analyzing..."), pixDPWidth*0.5f, pixDPHeight*0.2f, SE_COL_BLUE_NEUTRAL_LT|ubA);
+
+      // [Cecil] Pick color based on the Advanced HUD theme
+      static CSymbolPtr pHudTheme("ahud_iTheme");
+      COLOR colMessage = 0x6097CC00; // Default SE_COL_BLUE_NEUTRAL_LT
+
+      if (pHudTheme.Exists()) {
+        switch (pHudTheme.GetIndex()) {
+          case 0: colMessage = C_GREEN; break; // TFE
+          case 3: colMessage = 0xCC936100; break; // SSR
+        }
+      }
+
+      pdp->PutTextCXY( LOCALIZE("Analyzing..."), pixDPWidth*0.5f, pixDPHeight*0.2f, colMessage|ubA);
     }
   }
 

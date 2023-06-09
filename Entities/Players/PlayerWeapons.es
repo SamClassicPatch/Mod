@@ -16,7 +16,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 402
 %{
 #include "StdH.h"
-#include "Game/SEColors.h"
   
 #include <Engine/Build.h>
 
@@ -1391,7 +1390,19 @@ functions:
       pdp->SetTextAspect( 1.0f);
       // do faded printout
       ULONG ulA = (FLOAT)ulAlpha * Clamp( 2*tmDelta, 0.0f, 1.0f);
-      pdp->PutTextC( m_strLastTarget, slDPWidth*0.5f, slDPHeight*0.75f, SE_COL_BLUE_NEUTRAL|ulA);
+
+      // [Cecil] Pick color based on the Advanced HUD theme
+      static CSymbolPtr pHudTheme("ahud_iTheme");
+      COLOR colMessage = 0x5c7a9900; // Default SE_COL_BLUE_NEUTRAL
+
+      if (pHudTheme.Exists()) {
+        switch (pHudTheme.GetIndex()) {
+          case 0: colMessage = C_GREEN; break; // TFE
+          case 3: colMessage = 0xCC936100; break; // SSR
+        }
+      }
+
+      pdp->PutTextC( m_strLastTarget, slDPWidth*0.5f, slDPHeight*0.75f, colMessage|ulA);
     }
 
     // printout crosshair world coordinates if needed

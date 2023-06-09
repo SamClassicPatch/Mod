@@ -15,7 +15,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
  
 #include "StdH.h"
-#include "Game/SEColors.h"
 
 #include <Engine/Graphics/DrawPort.h>
 
@@ -32,6 +31,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define TOP_ARMOR  100
 #define TOP_HEALTH 100
 
+// [Cecil] Dedicated TSE colors for the HUD instead of Game ones
+#define HUD_COL_ORANGE_LIGHT   0xffd70000
+#define HUD_COL_ORANGE_NEUTRAL 0xee9c0000
+#define HUD_COL_ORANGE_DARK    0x9b4b0000
+#define HUD_COL_BLUE_LIGHT     0x64b4ff00
+#define HUD_COL_BLUEGREEN_LT   0x6cff6c00
 
 // cheats
 extern INDEX cht_bEnable;
@@ -595,7 +600,7 @@ static void HUD_DrawSniperMask( void )
   _pDP->Fill( 0, 0, fBlackStrip+1, fSizeJ, C_BLACK|CT_OPAQUE);
   _pDP->Fill( fSizeI-fBlackStrip-1, 0, fBlackStrip+1, fSizeJ, C_BLACK|CT_OPAQUE);
 
-  colMask = LerpColor(SE_COL_BLUE_LIGHT, C_WHITE, 0.25f);
+  colMask = LerpColor(HUD_COL_BLUE_LIGHT, C_WHITE, 0.25f);
 
   FLOAT _fYResolutionScaling = (FLOAT)_pixDPHeight/480.0f;
 
@@ -788,7 +793,7 @@ extern void DrawHUD( const CPlayer *penPlayerCurrent, CDrawPort *pdpCurrent, BOO
   _pixDPHeight  = _pDP->GetHeight();
   _fResolutionScaling = (FLOAT)_pixDPWidth /640.0f;
   _colHUD     = 0x4C80BB00;
-  _colHUDText = SE_COL_ORANGE_LIGHT;
+  _colHUDText = HUD_COL_ORANGE_LIGHT;
   _ulAlphaHUD = NormFloatToByte(hud_fOpacity);
   _tmNow = _pTimer->CurrentTick();
 
@@ -799,18 +804,18 @@ extern void DrawHUD( const CPlayer *penPlayerCurrent, CDrawPort *pdpCurrent, BOO
   _fCustomScaling = hud_fScaling * _fWideAdjustment;
 
   // determine hud colorization;
-  COLOR colMax = SE_COL_BLUEGREEN_LT;
-  COLOR colTop = SE_COL_ORANGE_LIGHT;
+  COLOR colMax = HUD_COL_BLUEGREEN_LT;
+  COLOR colTop = HUD_COL_ORANGE_LIGHT;
   COLOR colMid = LerpColor(colTop, C_RED, 0.5f);
 
   // adjust borders color in case of spying mode
   COLOR colBorder = _colHUD; 
   
   if( bSnooping) {
-    colBorder = SE_COL_ORANGE_NEUTRAL;
+    colBorder = HUD_COL_ORANGE_NEUTRAL;
     if( ((ULONG)(_tmNow*5))&1) {
       //colBorder = (colBorder>>1) & 0x7F7F7F00; // darken flash and scale
-      colBorder = SE_COL_ORANGE_DARK;
+      colBorder = HUD_COL_ORANGE_DARK;
       _fCustomScaling *= 0.933f;
     }
   }
