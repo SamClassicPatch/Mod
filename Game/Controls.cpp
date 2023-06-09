@@ -160,7 +160,8 @@ CTString ReadTextLine(CTStream &strm, const CTString &strKeyword, BOOL bTranslat
   }
   strLine.TrimSpacesLeft();
   if (bTranslate) {
-    strLine.RemovePrefix("TTRS");
+    // [Cecil] "TTRS" in the DLL as is gets picked up by the Depend utility
+    strLine.RemovePrefix(CTString("TT") + "RS");
   }
   strLine.TrimSpacesLeft();
   strLine.TrimSpacesRight();
@@ -316,7 +317,8 @@ void CControls::Save_t( CTFileName fnFile)
   // write button actions
   FOREACHINLIST( CButtonAction, ba_lnNode, ctrl_lhButtonActions, itba)
   {
-    strLine.PrintF("Button\n Name: TTRS %s\n Key1: %s\n Key2: %s",
+    // [Cecil] "TTRS" in the DLL as is gets picked up by the Depend utility
+    strLine.PrintF(CTString("Button\n Name: TT") + "RS %s\n Key1: %s\n Key2: %s",
       itba->ba_strName,
       _pInput->GetButtonName( itba->ba_iFirstKey),
       _pInput->GetButtonName( itba->ba_iSecondKey) );
