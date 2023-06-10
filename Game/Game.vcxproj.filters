@@ -61,9 +61,6 @@
     <ClInclude Include="Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LCDDrawing.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>

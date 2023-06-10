@@ -14,7 +14,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "StdAfx.h"
-#include "LCDDrawing.h"
 
 // console variables
 static const FLOAT tmConsoleFade   = 0.5f;  // how many seconds it takes console to fade in/out
@@ -154,9 +153,7 @@ void CGame::ConsoleRender(CDrawPort *pdp)
   PIX pixLineSpacing = _pfdConsoleFont->fd_pixCharHeight + _pfdConsoleFont->fd_pixLineSpacing;
 
   LCDRenderCloudsForComp();
-#if SE1_GAME == SS_TFE
   LCDRenderGrid();
-#endif
   LCDRenderClouds2();
   dpConsole.DrawLine( 0, pixSizeJ-1, pixSizeI, pixSizeJ-1, LCDFadedColor(SE_COL_BLUE_NEUTRAL|255));
   const COLOR colFill = (colDark & ~CT_AMASK) | 0x2F;

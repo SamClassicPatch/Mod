@@ -14,7 +14,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "StdAfx.h"
-#include "LCDDrawing.h"
+
 #include "CompMessage.h"
 
 // [Cecil]
@@ -139,7 +139,7 @@ static COLOR MouseOverColor(const PIXaabbox2D &box, COLOR colNone,
                             COLOR colOff, COLOR colOn)
 {
   if (box>=_vpixMouse) {
-    return LCDBlinkingColor(colOff, colOn);
+    return _pGame->LCDBlinkingColor(colOff, colOn);
   } else {
     return colNone;
   }
@@ -583,10 +583,10 @@ void PrintButton(CDrawPort *pdp, INDEX iButton)
   if (!dpButton.Lock()) {
     return;
   } 
-  LCDSetDrawport(&dpButton);
+  _pGame->LCDSetDrawport(&dpButton);
   _pGame->LCDRenderCompGrid();
-  LCDRenderClouds2();
-  LCDScreenBoxOpenLeft(_colBoxes);
+  _pGame->LCDRenderClouds2();
+  _pGame->LCDScreenBoxOpenLeft(_colBoxes);
 
   SetFont2(&dpButton);
 
@@ -666,20 +666,20 @@ void PrintMessageList(CDrawPort *pdp)
       col = _colLight;
     }
     if (GetMsgListBox(i-_iFirstMessageOnScreen)>=_vpixMouse) {
-      col = LCDBlinkingColor(_colLight, _colMedium);
+      col = _pGame->LCDBlinkingColor(_colLight, _colMedium);
     }
     pdp->PutText( _acmMessages[i].cm_strSubject, pixTextX, pixYLine, col);
     pixYLine+=_pixCharSizeJ;
   }
 
   PIXaabbox2D boxSliderSpace = GetMsgSliderSpace();
-  LCDDrawBox(0,0,boxSliderSpace, _colBoxes);
+  _pGame->LCDDrawBox(0,0,boxSliderSpace, _colBoxes);
   PIXaabbox2D boxSlider = GetMsgSliderBox();
   COLOR col = _colBoxes;
   PIXaabbox2D boxSliderTrans = boxSlider;
   boxSliderTrans+=_boxMsgList.Min();
   if (boxSliderTrans>=_vpixMouse) {
-    col = LCDBlinkingColor(_colLight, _colDark);
+    col = _pGame->LCDBlinkingColor(_colLight, _colDark);
   }
   pdp->Fill( boxSlider.Min()(1)+2,  boxSlider.Min()(2)+2,
              boxSlider.Size()(1)-4, boxSlider.Size()(2)-4, col);
@@ -758,13 +758,13 @@ void PrintMessageText(CDrawPort *pdp)
   }
 
   PIXaabbox2D boxSliderSpace = GetTextSliderSpace();
-  LCDDrawBox(0,0,boxSliderSpace, _colBoxes);
+  _pGame->LCDDrawBox(0,0,boxSliderSpace, _colBoxes);
   PIXaabbox2D boxSlider = GetTextSliderBox();
   COLOR col = _colBoxes;
   PIXaabbox2D boxSliderTrans = boxSlider;
   boxSliderTrans+=_boxMsgText.Min();
   if (boxSliderTrans>=_vpixMouse) {
-    col = LCDBlinkingColor(_colLight, _colDark);
+    col = _pGame->LCDBlinkingColor(_colLight, _colDark);
   }
   pdp->Fill( boxSlider.Min()(1)+2,  boxSlider.Min()(2)+2,
              boxSlider.Size()(1)-4, boxSlider.Size()(2)-4, col);
@@ -822,7 +822,7 @@ void RenderMessageStats(CDrawPort *pdp)
       // clear bcg
       pdp->Fill( 1, 1, pixSizeI-2, pixSizeJ-2, C_BLACK|CT_OPAQUE);
       // render the map if not fading
-      COLOR colFade = LCDFadedColor(C_WHITE|255);
+      COLOR colFade = _pGame->LCDFadedColor(C_WHITE|255);
       if( (colFade&255) == 255) {
         RenderMap( pdp, ulLevelMask, NULL);
       }
@@ -843,8 +843,8 @@ void RenderMessageImage(CDrawPort *pdp)
   // if no message
   if (_acmMessages.Count()==0 || fComputerFadeValue<0.99f) {
     // render empty
-    LCDRenderClouds2();
-    LCDScreenBox(_colBoxes);
+    _pGame->LCDRenderClouds2();
+    _pGame->LCDScreenBox(_colBoxes);
     return;
   }
   CCompMessage &cm = _acmMessages[_iActiveMessage];
@@ -852,8 +852,8 @@ void RenderMessageImage(CDrawPort *pdp)
   if (cm.cm_itImage == CCompMessage::IT_STATISTICS) {
     _pGame->LCDRenderCompGrid();
   }
-  LCDRenderClouds2();
-  LCDScreenBox(_colBoxes);
+  _pGame->LCDRenderClouds2();
+  _pGame->LCDScreenBox(_colBoxes);
 
   // if no image 
   if (cm.cm_itImage == CCompMessage::IT_NONE) {

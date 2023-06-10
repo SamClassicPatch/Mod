@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // If you intend on porting some mod to make it compatible with both games, make sure to account for the changes here!
 
 #include "StdAfx.h"
-#include "LCDDrawing.h"
 
 // [Cecil] Amount of worlds on the map
 #if SE1_GAME == SS_TSE

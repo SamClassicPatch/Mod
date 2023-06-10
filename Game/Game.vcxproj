@@ -273,7 +273,6 @@
     <ClInclude Include="CompMessage.h" />
     <ClInclude Include="Computer.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="LCDDrawing.h" />
     <ClInclude Include="PlayerSettings.h" />
     <ClInclude Include="SEColors.h" />
     <ClInclude Include="SessionProperties.h" />
