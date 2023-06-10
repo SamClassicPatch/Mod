@@ -94,7 +94,7 @@ void CGame::LCDSetDrawport(CDrawPort *pdp) {
   // [Cecil] Current resolution scale
   _fScaleX = _pixSizeI / 640.0f;
   _fScaleY = _pixSizeJ / 480.0f;
-    
+
   if (pdp->dp_SizeIOverRasterSizeI == 1.0f) {
     _bPopup = FALSE;
   } else {
@@ -103,20 +103,7 @@ void CGame::LCDSetDrawport(CDrawPort *pdp) {
 };
 
 void CGame::LCDDrawBox(PIX pixUL, PIX pixDR, PIXaabbox2D &box, COLOR col) {
-  col = SE_COL_BLUE_NEUTRAL|255;
-
-  // Top
-  _pdp->DrawLine(box.Min()(1) - pixUL, box.Min()(2) - pixUL, 
-                 box.Max()(1) + pixDR, box.Min()(2) - pixUL, col);
-  // Bottom
-  _pdp->DrawLine(box.Min()(1) - pixUL, box.Max()(2) + pixDR, 
-                 box.Max()(1) + pixDR, box.Max()(2) + pixDR, col);
-  // Left
-  _pdp->DrawLine(box.Min()(1) - pixUL, box.Min()(2) - pixUL, 
-                 box.Min()(1) - pixUL, box.Max()(2) + pixDR, col);
-  // Right
-  _pdp->DrawLine(box.Max()(1) + pixDR, box.Min()(2) - pixUL, 
-                 box.Max()(1) + pixDR, box.Max()(2) + pixDR + 1, col);
+  TFEDrawBox(pixUL, pixDR, box, SE_COL_BLUE_NEUTRAL|255);
 };
 
 void CGame::LCDScreenBox(COLOR col) {
@@ -124,17 +111,7 @@ void CGame::LCDScreenBox(COLOR col) {
 };
 
 void CGame::LCDScreenBoxOpenLeft(COLOR col) {
-  col = SE_COL_BLUE_NEUTRAL|255;
-
-  // Top
-  _pdp->DrawLine(_boxScreen.Min()(1) - 1, _boxScreen.Min()(2), 
-                 _boxScreen.Max()(1) - 1, _boxScreen.Min()(2), col);
-  // Bottom
-  _pdp->DrawLine(_boxScreen.Min()(1) - 1, _boxScreen.Max()(2) - 1, 
-                 _boxScreen.Max()(1) - 1, _boxScreen.Max()(2) - 1, col);
-  // Right
-  _pdp->DrawLine(_boxScreen.Max()(1) - 1, _boxScreen.Min()(2), 
-                 _boxScreen.Max()(1) - 1, _boxScreen.Max()(2), col);
+  TFEScreenBoxOpenLeft(SE_COL_BLUE_NEUTRAL|255);
 };
 
 void CGame::LCDScreenBoxOpenRight(COLOR col) {
@@ -149,17 +126,6 @@ void CGame::LCDScreenBoxOpenRight(COLOR col) {
   // Left
   _pdp->DrawLine(_boxScreen.Min()(1), _boxScreen.Min()(2), 
                  _boxScreen.Min()(1), _boxScreen.Max()(2), col);
-};
-
-// [Cecil] Render TFE clouds
-static void RenderClouds(void) {
-  MEXaabbox2D boxBcgClouds1;
-
-  TiledTexture(_boxScreen, 1.3f * _fScaleX, MEX2D(sin(_tmNow * 0.75) * 50.0, sin(_tmNow * 0.9) * 40.0), boxBcgClouds1);
-  _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, SE_COL_BLUE_DARK | (_ulA >> 1));
-
-  TiledTexture(_boxScreen, 0.8f * _fScaleX, MEX2D(sin(_tmNow * 0.95) * 50.0, sin(_tmNow * 0.8) * 40.0), boxBcgClouds1);
-  _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, SE_COL_BLUE_DARK | (_ulA >> 1));
 };
 
 void CGame::LCDRenderClouds1(void) {
@@ -219,7 +185,7 @@ void CGame::LCDRenderClouds1(void) {
   _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, C_BLACK | (_ulA >> 2));
 
 #else
-  RenderClouds();
+  TFERenderClouds1();
 #endif
 };
 
@@ -235,7 +201,7 @@ void CGame::LCDRenderCloudsForComp(void)
   _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, SE_COL_BLUE_NEUTRAL | (_ulA >> 2));
 
 #else
-  RenderClouds();
+  TFERenderClouds1();
 #endif
 };
 
@@ -352,4 +318,52 @@ COLOR CGame::LCDFadedColor(COLOR col) {
 
 COLOR CGame::LCDBlinkingColor(COLOR col0, COLOR col1) {
   return LerpColor(col0, col1, sin(_tmNow * 10.0f) * 0.5f + 0.5f);
+};
+
+// [Cecil] Old LCD functions from TFE that are still used on their own in computer
+void CGame::TFEDrawBox(PIX pixUL, PIX pixDR, PIXaabbox2D &box, COLOR col) {
+  // Top
+  _pdp->DrawLine(box.Min()(1) - pixUL, box.Min()(2) - pixUL,
+                 box.Max()(1) + pixDR, box.Min()(2) - pixUL, col);
+  // Bottom
+  _pdp->DrawLine(box.Min()(1) - pixUL, box.Max()(2) + pixDR,
+                 box.Max()(1) + pixDR, box.Max()(2) + pixDR, col);
+  // Left
+  _pdp->DrawLine(box.Min()(1) - pixUL, box.Min()(2) - pixUL,
+                 box.Min()(1) - pixUL, box.Max()(2) + pixDR, col);
+  // Right
+  _pdp->DrawLine(box.Max()(1) + pixDR, box.Min()(2) - pixUL,
+                 box.Max()(1) + pixDR, box.Max()(2) + pixDR + 1, col);
+};
+
+void CGame::TFEScreenBox(COLOR col) {
+  TFEDrawBox(0, -1, _boxScreen, col);
+};
+
+void CGame::TFEScreenBoxOpenLeft(COLOR col) {
+  // Top
+  _pdp->DrawLine(_boxScreen.Min()(1) - 1, _boxScreen.Min()(2),
+                 _boxScreen.Max()(1) - 1, _boxScreen.Min()(2), col);
+  // Bottom
+  _pdp->DrawLine(_boxScreen.Min()(1) - 1, _boxScreen.Max()(2) - 1,
+                 _boxScreen.Max()(1) - 1, _boxScreen.Max()(2) - 1, col);
+  // Right
+  _pdp->DrawLine(_boxScreen.Max()(1) - 1, _boxScreen.Min()(2),
+                 _boxScreen.Max()(1) - 1, _boxScreen.Max()(2), col);
+};
+
+void CGame::TFERenderClouds1(void) {
+  MEXaabbox2D boxBcgClouds1;
+
+  TiledTexture(_boxScreen, 1.3f * _fScaleX, MEX2D(sin(_tmNow * 0.75) * 50.0, sin(_tmNow * 0.9) * 40.0), boxBcgClouds1);
+  _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, SE_COL_BLUE_DARK | (_ulA >> 1));
+
+  TiledTexture(_boxScreen, 0.8f * _fScaleX, MEX2D(sin(_tmNow * 0.95) * 50.0, sin(_tmNow * 0.8) * 40.0), boxBcgClouds1);
+  _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, SE_COL_BLUE_DARK | (_ulA >> 1));
+};
+
+void CGame::TFERenderClouds2(void) {
+  MEXaabbox2D boxBcgClouds2;
+  TiledTexture(_boxScreen, 0.5f * _fScaleX, MEX2D(2, 10), boxBcgClouds2);
+  _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds2, C_BLACK | (_ulA >> 1));
 };

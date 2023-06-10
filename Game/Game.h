@@ -305,6 +305,13 @@ public:
   virtual COLOR LCDFadedColor(COLOR col);
   virtual COLOR LCDBlinkingColor(COLOR col0, COLOR col1);
 
+  // [Cecil] Old LCD functions from TFE that are still used on their own in computer
+  void TFEDrawBox(PIX pixUL, PIX pixDR, PIXaabbox2D &box, COLOR col);
+  void TFEScreenBox(COLOR col);
+  void TFEScreenBoxOpenLeft(COLOR col);
+  void TFERenderClouds1(void);
+  void TFERenderClouds2(void);
+
   // menu interface functions
   virtual void MenuPreRenderMenu(const char *strMenuName);
   virtual void MenuPostRenderMenu(const char *strMenuName);

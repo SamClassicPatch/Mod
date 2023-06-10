@@ -585,8 +585,8 @@ void PrintButton(CDrawPort *pdp, INDEX iButton)
   } 
   _pGame->LCDSetDrawport(&dpButton);
   _pGame->LCDRenderCompGrid();
-  _pGame->LCDRenderClouds2();
-  _pGame->LCDScreenBoxOpenLeft(_colBoxes);
+  _pGame->TFERenderClouds2();
+  _pGame->TFEScreenBoxOpenLeft(_colBoxes);
 
   SetFont2(&dpButton);
 
@@ -673,7 +673,7 @@ void PrintMessageList(CDrawPort *pdp)
   }
 
   PIXaabbox2D boxSliderSpace = GetMsgSliderSpace();
-  _pGame->LCDDrawBox(0,0,boxSliderSpace, _colBoxes);
+  _pGame->TFEDrawBox(0,0,boxSliderSpace, _colBoxes);
   PIXaabbox2D boxSlider = GetMsgSliderBox();
   COLOR col = _colBoxes;
   PIXaabbox2D boxSliderTrans = boxSlider;
@@ -758,7 +758,7 @@ void PrintMessageText(CDrawPort *pdp)
   }
 
   PIXaabbox2D boxSliderSpace = GetTextSliderSpace();
-  _pGame->LCDDrawBox(0,0,boxSliderSpace, _colBoxes);
+  _pGame->TFEDrawBox(0,0,boxSliderSpace, _colBoxes);
   PIXaabbox2D boxSlider = GetTextSliderBox();
   COLOR col = _colBoxes;
   PIXaabbox2D boxSliderTrans = boxSlider;
@@ -843,8 +843,8 @@ void RenderMessageImage(CDrawPort *pdp)
   // if no message
   if (_acmMessages.Count()==0 || fComputerFadeValue<0.99f) {
     // render empty
-    _pGame->LCDRenderClouds2();
-    _pGame->LCDScreenBox(_colBoxes);
+    _pGame->TFERenderClouds2();
+    _pGame->TFEScreenBox(_colBoxes);
     return;
   }
   CCompMessage &cm = _acmMessages[_iActiveMessage];
@@ -852,8 +852,8 @@ void RenderMessageImage(CDrawPort *pdp)
   if (cm.cm_itImage == CCompMessage::IT_STATISTICS) {
     _pGame->LCDRenderCompGrid();
   }
-  _pGame->LCDRenderClouds2();
-  _pGame->LCDScreenBox(_colBoxes);
+  _pGame->TFERenderClouds2();
+  _pGame->TFEScreenBox(_colBoxes);
 
   // if no image 
   if (cm.cm_itImage == CCompMessage::IT_NONE) {
