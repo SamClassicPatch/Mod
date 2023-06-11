@@ -16,10 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdAfx.h"
 
 // Background elements
-static CTextureObject _toPointer;
 static CTextureObject _toBcgClouds;
-static CTextureObject _toBcgGrid;
-static CTextureObject _toBackdrop;
 static CTextureObject _toSamU;
 static CTextureObject _toSamD;
 static CTextureObject _toLeftU;
@@ -51,9 +48,6 @@ void TiledTexture(PIXaabbox2D &boxScreen, FLOAT fStretch, MEX2D &vScreen, MEXaab
 void CGame::LCDInit(void) {
   try {
     _toBcgClouds.SetData_t(CTFILENAME("Textures\\General\\Background6.tex"));
-    _toBcgGrid.SetData_t(CTFILENAME("TexturesMP\\General\\Grid.tex"));
-    _toPointer.SetData_t(CTFILENAME("TexturesMP\\General\\Pointer.tex"));
-    _toBackdrop.SetData_t(CTFILENAME("TexturesMP\\General\\MenuBack.tex"));
     _toSamU.SetData_t(CTFILENAME("TexturesMP\\General\\SamU.tex"));
     _toSamD.SetData_t(CTFILENAME("TexturesMP\\General\\SamD.tex"));
     _toLeftU.SetData_t(CTFILENAME("TexturesMP\\General\\LeftU.tex"));
@@ -61,17 +55,17 @@ void CGame::LCDInit(void) {
 
     // Force constant textures
     ((CTextureData *)_toBcgClouds.GetData())->Force(TEX_CONSTANT);
-    ((CTextureData *)_toPointer  .GetData())->Force(TEX_CONSTANT);
-    ((CTextureData *)_toBcgGrid  .GetData())->Force(TEX_CONSTANT);
-    ((CTextureData *)_toBackdrop .GetData())->Force(TEX_CONSTANT);
-    ((CTextureData *)_toSamU     .GetData())->Force(TEX_CONSTANT);
-    ((CTextureData *)_toSamD     .GetData())->Force(TEX_CONSTANT);
-    ((CTextureData *)_toLeftU    .GetData())->Force(TEX_CONSTANT);
-    ((CTextureData *)_toLeftD    .GetData())->Force(TEX_CONSTANT);
+    ((CTextureData *)_toSamU.GetData())->Force(TEX_CONSTANT);
+    ((CTextureData *)_toSamD.GetData())->Force(TEX_CONSTANT);
+    ((CTextureData *)_toLeftU.GetData())->Force(TEX_CONSTANT);
+    ((CTextureData *)_toLeftD.GetData())->Force(TEX_CONSTANT);
 
   } catch (char *strError) {
     FatalError("%s", strError);
   }
+
+  // [Cecil] Load default textures for the theme
+  _gmtTheme.ReloadTextures("*", "*", "*");
 };
 
 void CGame::LCDEnd(void)
@@ -129,110 +123,125 @@ void CGame::LCDScreenBoxOpenRight(COLOR col) {
 };
 
 void CGame::LCDRenderClouds1(void) {
-#if SE1_GAME == SS_TSE
-  _pdp->PutTexture(&_toBackdrop, _boxScreen, C_WHITE|255);
+  // [Cecil] Render backdrop if it exists
+  if (_gmtTheme.toBackdrop.GetData() != NULL) {
+    _pdp->PutTexture(&_gmtTheme.toBackdrop, _boxScreen, C_WHITE|255);
+  }
 
   if (!_bPopup) {
     // [Cecil] Draw elements using proper aspect ratio
     PIXaabbox2D box;
+    INDEX iSize, iYU, iYM, iYB, iXL, iXR;
 
     // Right character - Sam
-    INDEX iSize = 170;
-    INDEX iYU = 120;
-    INDEX iYM = iYU + iSize;
-    INDEX iYB = iYM + iSize;
-    INDEX iXL = 420 * _fScaleX / _fScaleY;
-    INDEX iXR = iXL + iSize;
+    if (_gmtTheme.bSam) {
+      iSize = 170;
+      iYU = 120;
+      iYM = iYU + iSize;
+      iYB = iYM + iSize;
+      iXL = 420 * _fScaleX / _fScaleY;
+      iXR = iXL + iSize;
 
-    box = PIXaabbox2D(PIX2D(iXL * _fScaleY, iYU * _fScaleY), PIX2D(iXR * _fScaleY, iYM * _fScaleY));
-    _pdp->PutTexture(&_toSamU, box, SE_COL_BLUE_NEUTRAL|255);
+      box = PIXaabbox2D(PIX2D(iXL * _fScaleY, iYU * _fScaleY), PIX2D(iXR * _fScaleY, iYM * _fScaleY));
+      _pdp->PutTexture(&_toSamU, box, SE_COL_BLUE_NEUTRAL|255);
 
-    box = PIXaabbox2D(PIX2D(iXL * _fScaleY, iYM * _fScaleY), PIX2D(iXR * _fScaleY, iYB * _fScaleY));
-    _pdp->PutTexture(&_toSamD, box, SE_COL_BLUE_NEUTRAL|255);
+      box = PIXaabbox2D(PIX2D(iXL * _fScaleY, iYM * _fScaleY), PIX2D(iXR * _fScaleY, iYB * _fScaleY));
+      _pdp->PutTexture(&_toSamD, box, SE_COL_BLUE_NEUTRAL|255);
+    }
 
-    iSize = 120;
-    iYU = 0;
-    iYM = iYU + iSize;
-    iYB = iYM + iSize;
-    iXL = -20;
-    iXR = iXL + iSize;
+    // Left column
+    if (_gmtTheme.bColumn) {
+      iSize = 120;
+      iYU = 0;
+      iYM = iYU + iSize;
+      iYB = iYM + iSize;
+      iXL = -20;
+      iXR = iXL + iSize;
 
-    box = PIXaabbox2D(PIX2D(iXL * _fScaleY, iYU * _fScaleY), PIX2D(iXR * _fScaleY, iYM * _fScaleY));
-    _pdp->PutTexture(&_toLeftU, box, SE_COL_BLUE_NEUTRAL|200);
+      box = PIXaabbox2D(PIX2D(iXL * _fScaleY, iYU * _fScaleY), PIX2D(iXR * _fScaleY, iYM * _fScaleY));
+      _pdp->PutTexture(&_toLeftU, box, SE_COL_BLUE_NEUTRAL|200);
 
-    box = PIXaabbox2D(PIX2D(iXL * _fScaleY, iYM * _fScaleY), PIX2D(iXR * _fScaleY, iYB * _fScaleY));
-    _pdp->PutTexture(&_toLeftD, box, SE_COL_BLUE_NEUTRAL|200);
+      box = PIXaabbox2D(PIX2D(iXL * _fScaleY, iYM * _fScaleY), PIX2D(iXR * _fScaleY, iYB * _fScaleY));
+      _pdp->PutTexture(&_toLeftD, box, SE_COL_BLUE_NEUTRAL|200);
 
-    iYU = iYB;
-    iYM = iYU + iSize;
-    iYB = iYM + iSize;
-    iXL = -20;
-    iXR = iXL + iSize;
+      iYU = iYB;
+      iYM = iYU + iSize;
+      iYB = iYM + iSize;
+      iXL = -20;
+      iXR = iXL + iSize;
 
-    box = PIXaabbox2D(PIX2D(iXL * _fScaleY, iYU * _fScaleY), PIX2D(iXR * _fScaleY, iYM * _fScaleY));
-    _pdp->PutTexture(&_toLeftU, box, SE_COL_BLUE_NEUTRAL|200);
+      box = PIXaabbox2D(PIX2D(iXL * _fScaleY, iYU * _fScaleY), PIX2D(iXR * _fScaleY, iYM * _fScaleY));
+      _pdp->PutTexture(&_toLeftU, box, SE_COL_BLUE_NEUTRAL|200);
 
-    box = PIXaabbox2D(PIX2D(iXL * _fScaleY, iYM * _fScaleY), PIX2D(iXR * _fScaleY, iYB * _fScaleY));
-    _pdp->PutTexture(&_toLeftD, box, SE_COL_BLUE_NEUTRAL|200);
+      box = PIXaabbox2D(PIX2D(iXL * _fScaleY, iYM * _fScaleY), PIX2D(iXR * _fScaleY, iYB * _fScaleY));
+      _pdp->PutTexture(&_toLeftD, box, SE_COL_BLUE_NEUTRAL|200);
+    }
   }
 
-  MEXaabbox2D boxBcgClouds1;
+  if (_gmtTheme.bTFEClouds1) {
+    TFERenderClouds1();
 
-  TiledTexture(_boxScreen, 1.2f * _fScaleX, MEX2D(sin(_tmNow * 0.5) * 35.0, sin(_tmNow * 0.7 + 1.0) * 21.0), boxBcgClouds1);
-  _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, C_BLACK | (_ulA >> 2));
+  } else {
+    MEXaabbox2D boxBcgClouds1;
 
-  TiledTexture(_boxScreen, 0.7f * _fScaleX, MEX2D(sin(_tmNow * 0.6 + 1.0) * 32.0, sin(_tmNow * 0.8f) * 25.0), boxBcgClouds1);
-  _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, C_BLACK | (_ulA >> 2));
+    TiledTexture(_boxScreen, 1.2f * _fScaleX, MEX2D(sin(_tmNow * 0.5) * 35.0, sin(_tmNow * 0.7 + 1.0) * 21.0), boxBcgClouds1);
+    _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, C_BLACK | (_ulA >> 2));
 
-#else
-  TFERenderClouds1();
-#endif
+    TiledTexture(_boxScreen, 0.7f * _fScaleX, MEX2D(sin(_tmNow * 0.6 + 1.0) * 32.0, sin(_tmNow * 0.8f) * 25.0), boxBcgClouds1);
+    _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, C_BLACK | (_ulA >> 2));
+  }
 };
 
 void CGame::LCDRenderCloudsForComp(void)
 {
-#if SE1_GAME == SS_TSE
-  MEXaabbox2D boxBcgClouds1;
+  if (_gmtTheme.bTFEClouds1) {
+    TFERenderClouds1();
 
-  TiledTexture(_boxScreen, 1.856f * _fScaleX, MEX2D(sin(_tmNow * 0.5) * 35.0, sin(_tmNow * 0.7) * 21.0), boxBcgClouds1);
-  _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, CECIL_COL_COMPCLOUDS | (_ulA >> 2));
+  } else {
+    MEXaabbox2D boxBcgClouds1;
 
-  TiledTexture(_boxScreen, 1.323f * _fScaleX, MEX2D(sin(_tmNow * 0.6) * 31.0, sin(_tmNow * 0.8) * 25.0), boxBcgClouds1);
-  _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, CECIL_COL_COMPCLOUDS | (_ulA >> 2));
+    TiledTexture(_boxScreen, 1.856f * _fScaleX, MEX2D(sin(_tmNow * 0.5) * 35.0, sin(_tmNow * 0.7) * 21.0), boxBcgClouds1);
+    _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, CECIL_COL_COMPCLOUDS | (_ulA >> 2));
 
-#else
-  TFERenderClouds1();
-#endif
+    TiledTexture(_boxScreen, 1.323f * _fScaleX, MEX2D(sin(_tmNow * 0.6) * 31.0, sin(_tmNow * 0.8) * 25.0), boxBcgClouds1);
+    _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, CECIL_COL_COMPCLOUDS | (_ulA >> 2));
+  }
 };
 
 void CGame::LCDRenderClouds2(void) {
-#if SE1_GAME == SS_TFE
-  TFERenderClouds2();
-#endif
+  if (_gmtTheme.bTFEClouds2) {
+    TFERenderClouds2();
+  }
 };
 
 // [Cecil] Render TFE grid
-static void RenderGrid(void) {
+static void RenderTFEGrid(void) {
   MEXaabbox2D boxBcgGrid;
   TiledTexture(_boxScreen, 1.0f, MEX2D(0, 0), boxBcgGrid);
-  _pdp->PutTexture(&_toBcgGrid, _boxScreen, boxBcgGrid, SE_COL_BLUE_DARK | _ulA);
+  _pdp->PutTexture(&_gmtTheme.toGrid, _boxScreen, boxBcgGrid, SE_COL_BLUE_DARK | _ulA);
 };
 
 void CGame::LCDRenderGrid(void) {
-#if SE1_GAME == SS_TFE
-  RenderGrid();
-#endif
+  // [Cecil] No grid texture
+  if (_gmtTheme.toGrid.GetData() == NULL) return;
+
+  if (_gmtTheme.bTFEGrid) {
+    RenderTFEGrid();
+  }
 };
 
 void CGame::LCDRenderCompGrid(void) {
-#if SE1_GAME == SS_TSE
-  MEXaabbox2D boxBcgGrid;
-  TiledTexture(_boxScreen, 0.5f * _pixSizeI / (_pdp->dp_SizeIOverRasterSizeI * 640.0f), MEX2D(0, 0), boxBcgGrid);
-  _pdp->PutTexture(&_toBcgGrid, _boxScreen, boxBcgGrid, SE_COL_BLUE_NEUTRAL | (_ulA >> 1));
+  // [Cecil] No grid texture
+  if (_gmtTheme.toGrid.GetData() == NULL) return;
 
-#else
-  RenderGrid();
-#endif
+  if (_gmtTheme.bTFEGrid) {
+    RenderTFEGrid();
+
+  } else {
+    MEXaabbox2D boxBcgGrid;
+    TiledTexture(_boxScreen, 0.5f * _pixSizeI / (_pdp->dp_SizeIOverRasterSizeI * 640.0f), MEX2D(0, 0), boxBcgGrid);
+    _pdp->PutTexture(&_gmtTheme.toGrid, _boxScreen, boxBcgGrid, SE_COL_BLUE_NEUTRAL | (_ulA >> 1));
+  }
 };
 
 void CGame::LCDDrawPointer(PIX pixI, PIX pixJ) {
@@ -249,12 +258,12 @@ void CGame::LCDDrawPointer(PIX pixI, PIX pixJ) {
     return;
   }
 
-  PIX pixSizeI = _toPointer.GetWidth();
-  PIX pixSizeJ = _toPointer.GetHeight();
+  PIX pixSizeI = _gmtTheme.toPointer.GetWidth();
+  PIX pixSizeJ = _gmtTheme.toPointer.GetHeight();
   pixI -= 1;
   pixJ -= 1;
 
-  _pdp->PutTexture(&_toPointer, PIXaabbox2D(PIX2D(pixI, pixJ), PIX2D(pixI + pixSizeI, pixJ + pixSizeJ)), LCDFadedColor(C_WHITE|255));
+  _pdp->PutTexture(&_gmtTheme.toPointer, PIXaabbox2D(PIX2D(pixI, pixJ), PIX2D(pixI + pixSizeI, pixJ + pixSizeJ)), LCDFadedColor(C_WHITE|255));
 };
 
 COLOR CGame::LCDGetColor(COLOR colDefault, const char *strName)

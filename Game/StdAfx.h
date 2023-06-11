@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // [Cecil] Include new features
 #include "Cecil/GameColors.h"
+#include "Cecil/GameThemes.h"
 
 // [Cecil] Include common header for Entities
 #include <Entities/EntitiesAPI.h>

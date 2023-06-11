@@ -42,24 +42,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  */
 
 // Vanilla colors of the current theme
-#define SE_COL_ORANGE_LIGHT   0xFFD70000
-#define SE_COL_ORANGE_NEUTRAL 0xEE9C0000
-#define SE_COL_ORANGE_DARK    0x9B4B0000
-#define SE_COL_ORANGE_DARK_LT 0xBC6A0000
-#define SE_COL_BLUE_DARK_HV   0x151C2300
-#define SE_COL_BLUE_DARK      0x2A384600
-#define SE_COL_BLUE_DARK_LT   0x43596F00
-#define SE_COL_BLUE_NEUTRAL   0x5C7A9900
-#define SE_COL_BLUE_LIGHT     0x64B4FF00
-#define SE_COL_BLUEGREEN_LT   0x6CFF6C00
+#define SE_COL_ORANGE_LIGHT   _gmtTheme.colOrangeLight
+#define SE_COL_ORANGE_NEUTRAL _gmtTheme.colOrangeNeutral
+#define SE_COL_ORANGE_DARK    _gmtTheme.colOrangeDark
+#define SE_COL_ORANGE_DARK_LT _gmtTheme.colOrangeDarkLT
+#define SE_COL_BLUE_DARK_HV   _gmtTheme.colBlueDarkHV
+#define SE_COL_BLUE_DARK      _gmtTheme.colBlueDark
+#define SE_COL_BLUE_DARK_LT   _gmtTheme.colBlueDarkLT
+#define SE_COL_BLUE_NEUTRAL   _gmtTheme.colBlueNeutral
+#define SE_COL_BLUE_LIGHT     _gmtTheme.colBlueLight
+#define SE_COL_BLUEGREEN_LT   _gmtTheme.colBlueGreenLT
 
 // New colors of the current theme
-#define CECIL_COL_LIGHT      SE_COL_ORANGE_LIGHT
-#define CECIL_COL_NEUTRAL    SE_COL_ORANGE_NEUTRAL
-#define CECIL_COL_BORDER     SE_COL_BLUE_NEUTRAL
-#define CECIL_COL_CONBORDER  SE_COL_BLUE_NEUTRAL
-#define CECIL_COL_CONTEXT    SE_COL_BLUE_LIGHT
-#define CECIL_COL_COMPTEXT   SE_COL_BLUE_LIGHT
-#define CECIL_COL_COMPCLOUDS SE_COL_BLUE_NEUTRAL
+#define CECIL_COL_LIGHT      _gmtTheme.colLight      // SE_COL_ORANGE_LIGHT in TSE
+#define CECIL_COL_NEUTRAL    _gmtTheme.colNeutral    // SE_COL_ORANGE_NEUTRAL in TSE
+#define CECIL_COL_BORDER     _gmtTheme.colBorder     // SE_COL_BLUE_NEUTRAL in TSE
+#define CECIL_COL_CONBORDER  _gmtTheme.colConBorder  // SE_COL_BLUE_NEUTRAL in TSE
+#define CECIL_COL_CONTEXT    _gmtTheme.colConText    // SE_COL_BLUE_LIGHT in TSE
+#define CECIL_COL_COMPTEXT   _gmtTheme.colCompText   // SE_COL_BLUE_LIGHT in TSE
+#define CECIL_COL_COMPCLOUDS _gmtTheme.colCompClouds // SE_COL_BLUE_NEUTRAL in TSE
 
 #endif

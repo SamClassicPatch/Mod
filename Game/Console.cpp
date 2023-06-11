@@ -152,9 +152,17 @@ void CGame::ConsoleRender(CDrawPort *pdp)
   if( iBackwardLine>1) Swap( colLight, colDark);
   PIX pixLineSpacing = _pfdConsoleFont->fd_pixCharHeight + _pfdConsoleFont->fd_pixLineSpacing;
 
-  LCDRenderCloudsForComp();
+  // [Cecil] Enable clouds in console
+  if (_gmtTheme.bConClouds) {
+    LCDRenderCloudsForComp();
+  }
+
   LCDRenderGrid();
-  LCDRenderClouds2();
+
+  // [Cecil] Enable clouds in console
+  if (_gmtTheme.bConClouds) {
+    LCDRenderClouds2();
+  }
 
   // [Cecil] New separate color
   dpConsole.DrawLine( 0, pixSizeJ-1, pixSizeI, pixSizeJ-1, LCDFadedColor(CECIL_COL_CONBORDER|255));

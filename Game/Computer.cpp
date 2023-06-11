@@ -1303,8 +1303,16 @@ void CGame::ComputerRender(CDrawPort *pdp)
   // [Cecil] New separate colors
   _colLight  = LCDFadedColor(C_WHITE|255);
   _colMedium = LCDFadedColor(CECIL_COL_COMPTEXT|255);
-  _colDark   = LCDFadedColor(LerpColor(SE_COL_BLUE_DARK, CECIL_COL_BORDER, 0.5f)|255);
-  _colBoxes  = LCDFadedColor(LerpColor(SE_COL_BLUE_DARK, CECIL_COL_BORDER, 0.5f)|255);
+
+  // [Cecil] Use raw computer border color
+  if (_gmtTheme.bCompRawColor) {
+    _colDark  = LCDFadedColor(CECIL_COL_BORDER|255);
+    _colBoxes = LCDFadedColor(CECIL_COL_BORDER|255);
+
+  } else {
+    _colDark  = LCDFadedColor(LerpColor(SE_COL_BLUE_DARK, CECIL_COL_BORDER, 0.5f)|255);
+    _colBoxes = LCDFadedColor(LerpColor(SE_COL_BLUE_DARK, CECIL_COL_BORDER, 0.5f)|255);
+  }
 
   // background
   LCDRenderCloudsForComp();

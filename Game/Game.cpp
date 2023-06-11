@@ -1000,6 +1000,9 @@ void CGame::InitInternal( void)
   _pShell->DeclareSymbol("user void StopSound(INDEX);", &StopScriptSound);
   _pShell->DeclareSymbol("user INDEX IsSoundPlaying(INDEX);", &IsScriptSoundPlaying);
 
+  // [Cecil] Selected game theme config
+  _pShell->DeclareSymbol("persistent CTString gam_strClassicsPatchTheme;", &CGameTheme::strTheme);
+
   CAM_Init();
 
   // load persistent symbols
@@ -2722,9 +2725,11 @@ void CGame::GameMainLoop(void)
 }
 
 // menu interface functions
-void CGame::MenuPreRenderMenu(const char *strMenuName)
-{
-}
+void CGame::MenuPreRenderMenu(const char *strMenuName) {
+  // [Cecil] Update game themes
+  _gmtTheme.Update();
+};
+
 void CGame::MenuPostRenderMenu(const char *strMenuName)
 {
-}
+};
