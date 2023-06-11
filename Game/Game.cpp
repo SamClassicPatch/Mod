@@ -1044,8 +1044,8 @@ void CGame::InitInternal( void)
 
   CON_DiscardLastLineTimes();
 
-  // provide URL to the engine
-  _strModURL = "http://www.croteam.com/mods/SeriousSam";
+  // [Cecil] Link to the latest patch release
+  _strModURL = "https://github.com/SamClassicPatch/SuperProject/releases/latest";
 }
 
 // internal cleanup
