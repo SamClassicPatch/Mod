@@ -18,7 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <CoreLib/Core.h>
 
 #include "Game.h"
-#include "SEColors.h"
+
+// [Cecil] Include new features
+#include "Cecil/GameColors.h"
 
 // [Cecil] Include common header for Entities
 #include <Entities/EntitiesAPI.h>

@@ -270,11 +270,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Cecil\GameColors.h" />
     <ClInclude Include="CompMessage.h" />
     <ClInclude Include="Computer.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="PlayerSettings.h" />
-    <ClInclude Include="SEColors.h" />
     <ClInclude Include="SessionProperties.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>

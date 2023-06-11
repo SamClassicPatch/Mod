@@ -103,7 +103,7 @@ void CGame::LCDSetDrawport(CDrawPort *pdp) {
 };
 
 void CGame::LCDDrawBox(PIX pixUL, PIX pixDR, PIXaabbox2D &box, COLOR col) {
-  TFEDrawBox(pixUL, pixDR, box, SE_COL_BLUE_NEUTRAL|255);
+  TFEDrawBox(pixUL, pixDR, box, CECIL_COL_BORDER|255);
 };
 
 void CGame::LCDScreenBox(COLOR col) {
@@ -111,11 +111,11 @@ void CGame::LCDScreenBox(COLOR col) {
 };
 
 void CGame::LCDScreenBoxOpenLeft(COLOR col) {
-  TFEScreenBoxOpenLeft(SE_COL_BLUE_NEUTRAL|255);
+  TFEScreenBoxOpenLeft(CECIL_COL_BORDER|255);
 };
 
 void CGame::LCDScreenBoxOpenRight(COLOR col) {
-  col = SE_COL_BLUE_NEUTRAL|255;
+  col = CECIL_COL_BORDER|255;
 
   // Top
   _pdp->DrawLine(_boxScreen.Min()(1) - 1, _boxScreen.Min()(2), 
@@ -195,10 +195,10 @@ void CGame::LCDRenderCloudsForComp(void)
   MEXaabbox2D boxBcgClouds1;
 
   TiledTexture(_boxScreen, 1.856f * _fScaleX, MEX2D(sin(_tmNow * 0.5) * 35.0, sin(_tmNow * 0.7) * 21.0), boxBcgClouds1);
-  _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, SE_COL_BLUE_NEUTRAL | (_ulA >> 2));
+  _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, CECIL_COL_COMPCLOUDS | (_ulA >> 2));
 
   TiledTexture(_boxScreen, 1.323f * _fScaleX, MEX2D(sin(_tmNow * 0.6) * 31.0, sin(_tmNow * 0.8) * 25.0), boxBcgClouds1);
-  _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, SE_COL_BLUE_NEUTRAL | (_ulA >> 2));
+  _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, CECIL_COL_COMPCLOUDS | (_ulA >> 2));
 
 #else
   TFERenderClouds1();
@@ -207,9 +207,7 @@ void CGame::LCDRenderCloudsForComp(void)
 
 void CGame::LCDRenderClouds2(void) {
 #if SE1_GAME == SS_TFE
-  MEXaabbox2D boxBcgClouds2;
-  TiledTexture(_boxScreen, 0.5f * _fScaleX, MEX2D(2, 10), boxBcgClouds2);
-  _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds2, C_BLACK | (_ulA >> 1));
+  TFERenderClouds2();
 #endif
 };
 
@@ -268,11 +266,11 @@ COLOR CGame::LCDGetColor(COLOR colDefault, const char *strName)
   } else if (!strcmp(strName, "popup box")) {
     colDefault = SE_COL_BLUE_NEUTRAL|255;
   } else if (!strcmp(strName, "tool tip")) {
-    colDefault = SE_COL_ORANGE_LIGHT|255;
+    colDefault = CECIL_COL_LIGHT|255; // [Cecil] New separate color
   } else if (!strcmp(strName, "unselected")) {
     colDefault = SE_COL_ORANGE_NEUTRAL|255;
   } else if (!strcmp(strName, "selected")) {
-    colDefault = SE_COL_ORANGE_LIGHT|255;
+    colDefault = CECIL_COL_LIGHT|255; // [Cecil] New separate color
   } else if (!strcmp(strName, "disabled selected")) {
     colDefault = SE_COL_ORANGE_DARK_LT|255;
   } else if (!strcmp(strName, "disabled unselected")) {
@@ -284,13 +282,13 @@ COLOR CGame::LCDGetColor(COLOR colDefault, const char *strName)
   } else if (!strcmp(strName, "editing")) {
     colDefault = SE_COL_ORANGE_NEUTRAL|255;
   } else if (!strcmp(strName, "hilited")) {
-    colDefault = SE_COL_ORANGE_LIGHT|255;
+    colDefault = CECIL_COL_LIGHT|255; // [Cecil] New separate color
   } else if (!strcmp(strName, "hilited rectangle")) {
-    colDefault = SE_COL_ORANGE_NEUTRAL|255;
+    colDefault = CECIL_COL_NEUTRAL|255; // [Cecil] New separate color
   } else if (!strcmp(strName, "edit fill")) {
-    colDefault = SE_COL_BLUE_DARK_LT;
+    colDefault = SE_COL_BLUE_DARK_LT|75;
   } else if (!strcmp(strName, "editing cursor")) {
-    colDefault = SE_COL_ORANGE_NEUTRAL|255;
+    colDefault = CECIL_COL_NEUTRAL|255; // [Cecil] New separate color
   } else if (!strcmp(strName, "model box")) {
     colDefault = SE_COL_ORANGE_NEUTRAL|255;
   } else if (!strcmp(strName, "hiscore header")) {

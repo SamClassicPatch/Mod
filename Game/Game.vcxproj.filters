@@ -9,6 +9,9 @@
       <UniqueIdentifier>{8f2a13d5-c447-4d3f-925e-fe8dfae9261b}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;fi;fd</Extensions>
     </Filter>
+    <Filter Include="Header Files\Cecil headers">
+      <UniqueIdentifier>{a2c1dd79-3fca-4956-99c2-3a9980c0d5a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CompMessage.cpp">
@@ -64,9 +67,6 @@
     <ClInclude Include="PlayerSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SEColors.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SessionProperties.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -75,6 +75,9 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cecil\GameColors.h">
+      <Filter>Header Files\Cecil headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
