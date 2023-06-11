@@ -1393,12 +1393,12 @@ functions:
 
       // [Cecil] Pick color based on the Advanced HUD theme
       static CSymbolPtr pHudTheme("ahud_iTheme");
-      COLOR colMessage = 0x5c7a9900; // Default SE_COL_BLUE_NEUTRAL
+      COLOR colMessage = 0x5C7A9900; // Default SE_COL_BLUE_NEUTRAL
 
       if (pHudTheme.Exists()) {
         switch (pHudTheme.GetIndex()) {
           case 0: colMessage = C_GREEN; break; // TFE
-          case 3: colMessage = 0xCC936100; break; // SSR
+          case 3: colMessage = 0xAD896900; break; // SSR
         }
       }
 
