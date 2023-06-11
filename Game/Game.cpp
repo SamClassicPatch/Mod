@@ -1003,6 +1003,10 @@ void CGame::InitInternal( void)
   // [Cecil] Selected game theme config
   _pShell->DeclareSymbol("persistent CTString gam_strClassicsPatchTheme;", &CGameTheme::strTheme);
 
+  // [Cecil] Customizable fade time
+  extern FLOAT con_tmConsoleFade;
+  _pShell->DeclareSymbol("persistent user FLOAT con_tmConsoleFade;", &con_tmConsoleFade);
+
   CAM_Init();
 
   // load persistent symbols

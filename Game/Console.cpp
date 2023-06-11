@@ -16,8 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdAfx.h"
 
 // console variables
-static const FLOAT tmConsoleFade   = 0.5f;  // how many seconds it takes console to fade in/out
-static FLOAT fConsoleFadeValue     = 0.0f;  // faded value of console (0..1)
+static FLOAT fConsoleFadeValue = 0.0f; // faded value of console (0..1)
 static CTimerValue tvConsoleLast;
 
 static CTString strConsole;
@@ -35,6 +34,9 @@ static INDEX ctConsoleLinesOnScreen;
 static INDEX con_iFirstLine = 1;
 extern FLOAT con_fHeightFactor;
 extern FLOAT con_tmLastLines;
+
+// [Cecil] Customizable fade time
+FLOAT con_tmConsoleFade = 0.5f;
 
 // find a line with given number in a multi-line string counting from end of string
 BOOL GetLineCountBackward(const char *pchrStringStart, const char *pchrStringEnd, 
@@ -98,7 +100,7 @@ void CGame::ConsoleRender(CDrawPort *pdp)
   CTimerValue tvNow   = _pTimer->GetHighPrecisionTimer();
   CTimerValue tvDelta = tvNow - tvConsoleLast;
   tvConsoleLast       = tvNow;
-  FLOAT fFadeSpeed    = (FLOAT)(tvDelta.GetSeconds() / tmConsoleFade);
+  FLOAT fFadeSpeed    = (FLOAT)(tvDelta.GetSeconds() / con_tmConsoleFade);
 
   // if console is dropping down
   if( _pGame->gm_csConsoleState==CS_TURNINGON) {
