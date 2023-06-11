@@ -137,6 +137,9 @@ static INDEX ctl_iCurrentPlayerLocal = -1;
 static INDEX ctl_iCurrentPlayer = -1;
 static FLOAT gam_fChatSoundVolume = 0.25f;
 
+// [Cecil] Show pointer in borderless windows
+INDEX gam_bShowPointerInBorderless = TRUE;
+
 extern BOOL _bUserBreakEnabled = FALSE;
 
 // make sure that console doesn't show last lines if not playing in network
@@ -1002,6 +1005,9 @@ void CGame::InitInternal( void)
 
   // [Cecil] Selected game theme config
   _pShell->DeclareSymbol("persistent CTString gam_strClassicsPatchTheme;", &CGameTheme::strTheme);
+
+  // [Cecil] Show pointer in borderless windows
+  _pShell->DeclareSymbol("persistent user INDEX gam_bShowPointerInBorderless;", &gam_bShowPointerInBorderless);
 
   // [Cecil] Customizable fade time
   extern FLOAT con_tmConsoleFade;

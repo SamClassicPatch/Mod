@@ -248,7 +248,19 @@ void CGame::LCDDrawPointer(PIX pixI, PIX pixJ) {
   CDisplayMode dmCurrent;
   _pGfx->GetCurrentDisplayMode(dmCurrent);
 
-  if (dmCurrent.IsFullScreen()) {
+  // [Cecil] Draw custom pointer in borderless window mode
+  BOOL bShowPointer = dmCurrent.IsFullScreen();
+  extern INDEX gam_bShowPointerInBorderless;
+
+  if (gam_bShowPointerInBorderless) {
+    static CSymbolPtr iWindowMode("sam_iWindowMode");
+
+    if (iWindowMode.Exists() && iWindowMode.GetIndex() != 0) {
+      bShowPointer = TRUE;
+    }
+  }
+
+  if (bShowPointer) {
     while (ShowCursor(FALSE) >= 0);
 
   } else {
