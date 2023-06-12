@@ -247,6 +247,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Cecil\GameThemes.cpp" />
+    <ClCompile Include="Cecil\Module.cpp" />
     <ClCompile Include="CompMessage.cpp" />
     <ClCompile Include="CompModels.cpp" />
     <ClCompile Include="Computer.cpp" />

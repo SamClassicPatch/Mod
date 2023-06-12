@@ -59,6 +59,9 @@
     <ClCompile Include="Cecil\GameThemes.cpp">
       <Filter>Source Files\Cecil</Filter>
     </ClCompile>
+    <ClCompile Include="Cecil\Module.cpp">
+      <Filter>Source Files\Cecil</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CompMessage.h">
