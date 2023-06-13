@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * CECIL_COL_CONTEXT    - Game: Console text
  * CECIL_COL_COMPTEXT   - Game: Computer text
  * CECIL_COL_COMPCLOUDS - Game: Background clouds of the computer
+ * CECIL_COL_COMPFLOOR  - Game: Computer's floor model
  */
 
 // Vanilla colors of the current theme
@@ -61,5 +62,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CECIL_COL_CONTEXT    _gmtTheme.colConText    // SE_COL_BLUE_LIGHT in TSE
 #define CECIL_COL_COMPTEXT   _gmtTheme.colCompText   // SE_COL_BLUE_LIGHT in TSE
 #define CECIL_COL_COMPCLOUDS _gmtTheme.colCompClouds // SE_COL_BLUE_NEUTRAL in TSE
+#define CECIL_COL_COMPFLOOR  _gmtTheme.colCompFloor  // 0x5A8EC200 in TSE
 
 #endif

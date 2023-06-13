@@ -62,6 +62,7 @@ class CGameTheme {
     COLOR colConText;
     COLOR colCompText;
     COLOR colCompClouds;
+    COLOR colCompFloor;
 
   public:
     // Default constructor
@@ -97,6 +98,7 @@ class CGameTheme {
       colConText    = 0x64B4FF00;
       colCompText   = 0x64B4FF00;
       colCompClouds = 0x5C7A9900;
+      colCompFloor  = 0x5A8EC200;
     };
 
     // Reload textures ("*" for default TSE)

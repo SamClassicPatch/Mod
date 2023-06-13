@@ -159,6 +159,7 @@ void CGameTheme::Load(const CTString &strFile, BOOL bNewTheme) {
   SET_COLOR(ConText);
   SET_COLOR(CompText);
   SET_COLOR(CompClouds);
+  SET_COLOR(CompFloor);
 };
 
 // Load new game themes when needed

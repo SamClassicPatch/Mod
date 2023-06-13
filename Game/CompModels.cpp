@@ -114,12 +114,13 @@ extern void SetupCompModel_t(const CTString &strName)
   _colAmbient = C_vdGRAY;
 #if SE1_GAME == SS_TSE
   _iParticleType = PARTICLES_NONE;
-  _moFloor.SetData_t(CTFILENAME("ModelsMP\\Computer\\Floor.mdl"));
   pmo->mo_colBlendColor = 0xFFFFFFFF;
-#else
-  _moFloor.SetData_t(CTFILENAME("Models\\Computer\\Floor.mdl"));
 #endif
-  _moFloor.mo_toTexture.SetData_t(CTFILENAME("Models\\Computer\\Floor.tex"));
+
+  // [Cecil] White computer floor that can be colorized
+  _moFloor.SetData_t(CTFILENAME("ModelsPatch\\Computer\\FloorWhite.mdl"));
+  _moFloor.mo_toTexture.SetData_t(CTFILENAME("ModelsPatch\\Computer\\FloorWhite.tex"));
+
   if (strName=="Rocketman") {
     pmo->SetData_t(CTFILENAME("Models\\Enemies\\Headman\\Headman.mdl"));
     pmo->PlayAnim(HEADMAN_ANIM_COMPUTERKAMIKAZE, AOF_LOOPING);
@@ -950,6 +951,9 @@ void RenderMessageModel(CDrawPort *pdp, const CTString &strModel)
     // do nothing
     return;
   }
+
+  // [Cecil] Colorize the floor (for some reason '_moFloor.mo_colBlendColor' also colorizes the computer model)
+  _moFloor.GetData()->md_colDiffuse = _gmtTheme.colCompFloor | 255;
 
 #if SE1_VER >= SE1_107
   // for each eye
