@@ -497,7 +497,7 @@ static void UpdateSize(CDrawPort *pdp)
     FLOAT fMul = pixSizeJ / 720.0f;
     _fScaling *= fMul;
     _fScaling2 *= fMul;
-    _fSliderWidthMul *= fMul;
+    _fSliderWidthMul = 1.5f;
   }
 
   // [Cecil] Message font sizes
