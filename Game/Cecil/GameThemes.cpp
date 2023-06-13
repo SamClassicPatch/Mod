@@ -56,16 +56,19 @@ static inline void SetFlag(const CTString &strKey, BOOL &bVariable, BOOL bDefVal
 };
 
 // Reload textures ("*" for default TSE)
-void CGameTheme::ReloadTextures(CTString strBackdrop, CTString strGrid, CTString strPointer) {
+void CGameTheme::ReloadTextures(CTString strBackdrop, CTString strClouds, CTString strGrid, CTString strPointer) {
   // Reset textures and load new ones
   toBackdrop.SetData(NULL);
+  toClouds.SetData(NULL);
   toGrid.SetData(NULL);
   toPointer.SetData(NULL);
 
   if (strBackdrop == "*") strBackdrop = "TexturesMP\\General\\MenuBack.tex";
+  if (strClouds == "*") strClouds = "Textures\\General\\Background6.tex";
   if (strGrid == "*") strGrid = "TexturesMP\\General\\Grid.tex";
 
   SetTexture(toBackdrop, strBackdrop);
+  SetTexture(toClouds, strClouds);
   SetTexture(toGrid, strGrid);
 
   // Make sure the pointer texture is always loaded
@@ -117,6 +120,7 @@ void CGameTheme::Load(const CTString &strFile, BOOL bNewTheme) {
 
   // Textures
   ReloadTextures(_pini->GetValue("Textures", "BackTex", "*"),
+                 _pini->GetValue("Textures", "CloudsTex", "*"),
                  _pini->GetValue("Textures", "GridTex", "*"),
                  _pini->GetValue("Textures", "PointerTex", "*"));
 

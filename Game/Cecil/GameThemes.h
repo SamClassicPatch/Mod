@@ -32,6 +32,7 @@ class CGameTheme {
     BOOL bSam;
 
     CTextureObject toBackdrop;
+    CTextureObject toClouds;
     CTextureObject toGrid;
     CTextureObject toPointer;
 
@@ -99,7 +100,7 @@ class CGameTheme {
     };
 
     // Reload textures ("*" for default TSE)
-    void ReloadTextures(CTString strBackdrop, CTString strGrid, CTString strPointer);
+    void ReloadTextures(CTString strBackdrop, CTString strClouds, CTString strGrid, CTString strPointer);
 
     // Load game theme from a config file
     void Load(const CTString &strFile, BOOL bNewTheme);

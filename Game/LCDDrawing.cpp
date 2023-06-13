@@ -16,7 +16,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdAfx.h"
 
 // Background elements
-static CTextureObject _toBcgClouds;
 static CTextureObject _toSamU;
 static CTextureObject _toSamD;
 static CTextureObject _toLeftU;
@@ -47,14 +46,12 @@ void TiledTexture(PIXaabbox2D &boxScreen, FLOAT fStretch, MEX2D &vScreen, MEXaab
 
 void CGame::LCDInit(void) {
   try {
-    _toBcgClouds.SetData_t(CTFILENAME("Textures\\General\\Background6.tex"));
     _toSamU.SetData_t(CTFILENAME("TexturesMP\\General\\SamU.tex"));
     _toSamD.SetData_t(CTFILENAME("TexturesMP\\General\\SamD.tex"));
     _toLeftU.SetData_t(CTFILENAME("TexturesMP\\General\\LeftU.tex"));
     _toLeftD.SetData_t(CTFILENAME("TexturesMP\\General\\LeftD.tex"));
 
     // Force constant textures
-    ((CTextureData *)_toBcgClouds.GetData())->Force(TEX_CONSTANT);
     ((CTextureData *)_toSamU.GetData())->Force(TEX_CONSTANT);
     ((CTextureData *)_toSamD.GetData())->Force(TEX_CONSTANT);
     ((CTextureData *)_toLeftU.GetData())->Force(TEX_CONSTANT);
@@ -65,7 +62,7 @@ void CGame::LCDInit(void) {
   }
 
   // [Cecil] Load default textures for the theme
-  _gmtTheme.ReloadTextures("*", "*", "*");
+  _gmtTheme.ReloadTextures("*", "*", "*", "*");
 };
 
 void CGame::LCDEnd(void)
@@ -181,14 +178,15 @@ void CGame::LCDRenderClouds1(void) {
   if (_gmtTheme.bTFEClouds1) {
     TFERenderClouds1();
 
-  } else {
+  // [Cecil] Clouds texture exists
+  } else if (_gmtTheme.toClouds.GetData() != NULL) {
     MEXaabbox2D boxBcgClouds1;
 
     TiledTexture(_boxScreen, 1.2f * _fScaleX, MEX2D(sin(_tmNow * 0.5) * 35.0, sin(_tmNow * 0.7 + 1.0) * 21.0), boxBcgClouds1);
-    _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, C_BLACK | (_ulA >> 2));
+    _pdp->PutTexture(&_gmtTheme.toClouds, _boxScreen, boxBcgClouds1, C_BLACK | (_ulA >> 2));
 
     TiledTexture(_boxScreen, 0.7f * _fScaleX, MEX2D(sin(_tmNow * 0.6 + 1.0) * 32.0, sin(_tmNow * 0.8f) * 25.0), boxBcgClouds1);
-    _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, C_BLACK | (_ulA >> 2));
+    _pdp->PutTexture(&_gmtTheme.toClouds, _boxScreen, boxBcgClouds1, C_BLACK | (_ulA >> 2));
   }
 };
 
@@ -196,15 +194,16 @@ void CGame::LCDRenderCloudsForComp(void)
 {
   if (_gmtTheme.bTFEClouds1) {
     TFERenderClouds1();
-
-  } else {
+    
+  // [Cecil] Clouds texture exists
+  } else if (_gmtTheme.toClouds.GetData() != NULL) {
     MEXaabbox2D boxBcgClouds1;
 
     TiledTexture(_boxScreen, 1.856f * _fScaleX, MEX2D(sin(_tmNow * 0.5) * 35.0, sin(_tmNow * 0.7) * 21.0), boxBcgClouds1);
-    _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, CECIL_COL_COMPCLOUDS | (_ulA >> 2));
+    _pdp->PutTexture(&_gmtTheme.toClouds, _boxScreen, boxBcgClouds1, CECIL_COL_COMPCLOUDS | (_ulA >> 2));
 
     TiledTexture(_boxScreen, 1.323f * _fScaleX, MEX2D(sin(_tmNow * 0.6) * 31.0, sin(_tmNow * 0.8) * 25.0), boxBcgClouds1);
-    _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, CECIL_COL_COMPCLOUDS | (_ulA >> 2));
+    _pdp->PutTexture(&_gmtTheme.toClouds, _boxScreen, boxBcgClouds1, CECIL_COL_COMPCLOUDS | (_ulA >> 2));
   }
 };
 
@@ -372,17 +371,23 @@ void CGame::TFEScreenBoxOpenLeft(COLOR col) {
 };
 
 void CGame::TFERenderClouds1(void) {
+  // [Cecil] No clouds texture
+  if (_gmtTheme.toClouds.GetData() == NULL) return;
+
   MEXaabbox2D boxBcgClouds1;
 
   TiledTexture(_boxScreen, 1.3f * _fScaleX, MEX2D(sin(_tmNow * 0.75) * 50.0, sin(_tmNow * 0.9) * 40.0), boxBcgClouds1);
-  _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, SE_COL_BLUE_DARK | (_ulA >> 1));
+  _pdp->PutTexture(&_gmtTheme.toClouds, _boxScreen, boxBcgClouds1, SE_COL_BLUE_DARK | (_ulA >> 1));
 
   TiledTexture(_boxScreen, 0.8f * _fScaleX, MEX2D(sin(_tmNow * 0.95) * 50.0, sin(_tmNow * 0.8) * 40.0), boxBcgClouds1);
-  _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds1, SE_COL_BLUE_DARK | (_ulA >> 1));
+  _pdp->PutTexture(&_gmtTheme.toClouds, _boxScreen, boxBcgClouds1, SE_COL_BLUE_DARK | (_ulA >> 1));
 };
 
 void CGame::TFERenderClouds2(void) {
+  // [Cecil] No clouds texture
+  if (_gmtTheme.toClouds.GetData() == NULL) return;
+
   MEXaabbox2D boxBcgClouds2;
   TiledTexture(_boxScreen, 0.5f * _fScaleX, MEX2D(2, 10), boxBcgClouds2);
-  _pdp->PutTexture(&_toBcgClouds, _boxScreen, boxBcgClouds2, C_BLACK | (_ulA >> 1));
+  _pdp->PutTexture(&_gmtTheme.toClouds, _boxScreen, boxBcgClouds2, C_BLACK | (_ulA >> 1));
 };
