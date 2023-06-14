@@ -2731,13 +2731,18 @@ void CGame::GameMainLoop(void)
   if (gm_bGameOn) {
     // do main loop procesing
     _pNetwork->MainLoop();
+
+    // [Cecil] Update game themes while in a game
+    _gmtTheme.Update();
   }
 }
 
 // menu interface functions
 void CGame::MenuPreRenderMenu(const char *strMenuName) {
-  // [Cecil] Update game themes
-  _gmtTheme.Update();
+  // [Cecil] Update game themes while not in a game
+  if (!gm_bGameOn) {
+    _gmtTheme.Update();
+  }
 };
 
 void CGame::MenuPostRenderMenu(const char *strMenuName)
