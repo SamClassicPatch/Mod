@@ -5106,15 +5106,22 @@ functions:
   {
     INDEX iLevel = -1;
     CTString strLevelName = GetWorld()->wo_fnmFileName.FileName();
-    
-    //strLevelName.ScanF("%02d_", &iLevel);
-    INDEX u, v;
-    u = v = -1;
-    strLevelName.ScanF("%01d_%01d_", &u, &v);
-    iLevel = u*10+v;
-    
-	  RemapLevelNames(iLevel);
-            
+
+    // [Cecil] Check for both TSE and TFE levels
+    INDEX u = -1;
+    INDEX v = -1;
+
+    // Try scanning TSE level names
+    if (strLevelName.ScanF("%01d_%01d_", &u, &v) == 2) {
+      iLevel = u * 10 + v;
+      RemapLevelNames(iLevel);
+
+    // Try scanning TFE level names
+    } else if (strLevelName.ScanF("%02d_", &iLevel) == 1) {
+      // Account for the intro level
+      iLevel++;
+    }
+
     if (iLevel>0) {
       ((CSessionProperties*)GetSP())->sp_ulLevelsMask|=1<<(iLevel-1);
     }

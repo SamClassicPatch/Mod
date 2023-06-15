@@ -274,6 +274,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Cecil\GameColors.h" />
     <ClInclude Include="Cecil\GameThemes.h" />
+    <ClInclude Include="Cecil\Map.h" />
     <ClInclude Include="CompMessage.h" />
     <ClInclude Include="Computer.h" />
     <ClInclude Include="Game.h" />

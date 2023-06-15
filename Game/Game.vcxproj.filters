@@ -91,5 +91,8 @@
     <ClInclude Include="Cecil\GameThemes.h">
       <Filter>Header Files\Cecil headers</Filter>
     </ClInclude>
+    <ClInclude Include="Cecil\Map.h">
+      <Filter>Header Files\Cecil headers</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
