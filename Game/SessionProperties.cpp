@@ -222,9 +222,7 @@ void CGame::SetMultiPlayerSession(CSessionProperties &sp)
   sp.sp_bGibs  = gam_bGibs;
   sp.sp_tmSpawnInvulnerability = gam_tmSpawnInvulnerability;
 
-#if SE1_GAME == SS_TSE
   sp.sp_bUseExtraEnemies = gam_bUseExtraEnemies;
-#endif
 
   // set credits and limits
   if (sp.sp_bCooperative) {

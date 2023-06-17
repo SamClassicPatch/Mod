@@ -115,9 +115,7 @@ extern CTString gam_strGameSpyExtras = "";
 extern INDEX gam_iBlood = 2;     // 0=none, 1=green, 2=red, 3=hippie
 extern INDEX gam_bGibs  = TRUE;   
 
-#if SE1_GAME == SS_TSE
 extern INDEX gam_bUseExtraEnemies = TRUE;
-#endif
 
 static INDEX hud_iEnableStats = 1;
 static FLOAT hud_fEnableFPS   = 1;
@@ -945,9 +943,7 @@ void CGame::InitInternal( void)
   _pShell->DeclareSymbol("persistent user INDEX gam_iBlood;", &gam_iBlood);
   _pShell->DeclareSymbol("persistent user INDEX gam_bGibs;",  &gam_bGibs);
 
-#if SE1_GAME == SS_TSE
   _pShell->DeclareSymbol("persistent user INDEX gam_bUseExtraEnemies;",  &gam_bUseExtraEnemies);
-#endif
 
   _pShell->DeclareSymbol("user INDEX gam_bQuickLoad;", &gam_bQuickLoad);
   _pShell->DeclareSymbol("user INDEX gam_bQuickSave;", &gam_bQuickSave);

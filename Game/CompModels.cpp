@@ -39,8 +39,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Models/Weapons/Laser/LaserItem.h"
 #include "Models/Weapons/Cannon/Cannon.h"
 
-#if SE1_GAME == SS_TSE
-
 #include "ModelsMP/Enemies/Guffy/Guffy.h" 
 #include "ModelsMP/Enemies/Grunt/Grunt.h"
 #include "ModelsMP/Enemies/Demon/Demon.h"
@@ -59,8 +57,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ModelsMP/Weapons/ChainSaw/ChainSawItem.h"
 #include "ModelsMP/Weapons/ChainSaw/BladeForPlayer.h"
 #include "ModelsMP/Weapons/Flamer/FlamerItem.h"
-
-#endif
 
 #define PARTICLES_NONE            (0L)
 #define PARTICLES_AIR_ELEMENTAL   (1L<<1)
@@ -112,10 +108,8 @@ extern void SetupCompModel_t(const CTString &strName)
   _vLightDir = FLOAT3D( -0.2f, -0.2f, -0.2f);
   _colLight = C_GRAY;
   _colAmbient = C_vdGRAY;
-#if SE1_GAME == SS_TSE
   _iParticleType = PARTICLES_NONE;
   pmo->mo_colBlendColor = 0xFFFFFFFF;
-#endif
 
   // [Cecil] White computer floor that can be colorized
   _moFloor.SetData_t(CTFILENAME("ModelsPatch\\Computer\\FloorWhite.mdl"));
@@ -363,7 +357,6 @@ extern void SetupCompModel_t(const CTString &strName)
     pmo->StretchModel(FLOAT3D(12,12,12));
     _bHasFloor = TRUE;
 
-#if SE1_GAME == SS_TSE
   } else if (strName=="Guffy") {
     pmo->SetData_t(CTFILENAME("ModelsMP\\Enemies\\Guffy\\Guffy.mdl"));
     pmo->PlayAnim(GUFFY_ANIM_IDLE, AOF_LOOPING);
@@ -588,7 +581,6 @@ extern void SetupCompModel_t(const CTString &strName)
     pmo->StretchModel(FLOAT3D(11.0f, 11.0f, 11.0f));
     _fFloorY = 0.0f;
     _bHasFloor = TRUE;
-#endif
 
   } else if (strName=="Knife") {
     pmo->SetData_t(CTFILENAME("Models\\Weapons\\Knife\\KnifeItem.mdl"));
@@ -696,7 +688,6 @@ extern void SetupCompModel_t(const CTString &strName)
     _bHasFloor = TRUE;
     _fFloorY = -0.5f;
 
-#if SE1_GAME == SS_TSE
   } else if (strName=="Sniper") {
     pmo->SetData_t(CTFILENAME("ModelsMP\\Weapons\\Sniper\\Sniper.mdl"));
     pmo->mo_toTexture.SetData_t(CTFILENAME("ModelsMP\\Weapons\\Sniper\\Body.tex"));
@@ -779,7 +770,6 @@ extern void SetupCompModel_t(const CTString &strName)
     pmo->StretchModel(FLOAT3D(3.0f, 3.0f, 3.0f));
     _bHasFloor = TRUE;
     _fFloorY = 0.0f;
-#endif
 
   } else if (strName=="Minigun") {
     pmo->SetData_t(CTFILENAME("Models\\Weapons\\Minigun\\MinigunItem.mdl"));
@@ -1022,7 +1012,6 @@ void RenderMessageModel(CDrawPort *pdp, const CTString &strModel)
     _moModel.RenderShadow( rm, plLightPlacement, 200.0f, 200.0f, 1.0f, plFloorPlane);
     _moModel.RenderModel(rm);
 
-  #if SE1_GAME == SS_TSE
     // render particles
     if (_iParticleType!=PARTICLES_NONE) {
       Particle_PrepareSystem(pdp, apr);
@@ -1037,7 +1026,6 @@ void RenderMessageModel(CDrawPort *pdp, const CTString &strModel)
       }
       Particle_EndSystem();
     }
-  #endif
 
     EndModelRenderingView();
   }

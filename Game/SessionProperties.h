@@ -64,10 +64,7 @@ public:
   BOOL sp_bAllowHealth;       // health items do exist
   BOOL sp_bAllowArmor;        // armor items do exist
   BOOL sp_bInfiniteAmmo;      // ammo is not consumed when firing
-
-#if SE1_GAME == SS_TSE
   BOOL sp_bRespawnInPlace;    // players respawn on the place where they were killed, not on markers (coop only)
-#endif
 
   FLOAT sp_fEnemyMovementSpeed; // enemy speed multiplier
   FLOAT sp_fEnemyAttackSpeed;   // enemy speed multiplier
@@ -89,11 +86,7 @@ public:
 
   ULONG sp_ulLevelsMask;    // mask of visited levels so far
 
-#if SE1_GAME == SS_TSE
   BOOL  sp_bUseExtraEnemies;  // spawn extra multiplayer enemies
-#else
-  BOOL sp_bRespawnInPlace;    // players respawn on the place where they were killed, not on markers (coop only)
-#endif
 };
 
 // NOTE: never instantiate CSessionProperties, as its size is not fixed to the size defined in engine

@@ -33,8 +33,6 @@ INDEX _iMapType = -1;
 
 #define REFRESHTIME (0.2f)
 
-#if SE1_GAME == SS_TSE
-
 void RemapLevelNames(INDEX &iLevel)
 {
   switch( iLevel) {
@@ -54,8 +52,6 @@ void RemapLevelNames(INDEX &iLevel)
   default:  iLevel = -1;  break;
   }
 }
-
-#endif
 
 static void LoadingHook_t(CProgressHookInfo *pphi)
 {
