@@ -2449,7 +2449,7 @@ functions:
       // print a message
       PIX pixDPWidth  = pdp->GetWidth();
       PIX pixDPHeight = pdp->GetHeight();
-      FLOAT fScale = (FLOAT)pixDPWidth/640.0f;
+      FLOAT fScale = HEIGHT_SCALING(pdp);
       pdp->SetFont( _pfdDisplayFont);
       pdp->SetTextScaling( fScale);
       pdp->SetTextAspect( 1.0f);
@@ -2520,7 +2520,7 @@ functions:
     // determine and cache main drawport, size and relative scale
     PIX pixDPWidth  = pdp->GetWidth();
     PIX pixDPHeight = pdp->GetHeight();
-    FLOAT fScale = (FLOAT)pixDPWidth/640.0f;
+    FLOAT fScale = HEIGHT_SCALING(pdp);
 
     // print center message
     if (_pTimer->CurrentTick()<m_tmCenterMessageEnd) {
@@ -2641,7 +2641,7 @@ functions:
     if (_pTimer->CurrentTick()<m_tmCenterMessageEnd) {
       PIX pixDPWidth  = pdp->GetWidth();
       PIX pixDPHeight = pdp->GetHeight();
-      FLOAT fScale = (FLOAT)pixDPWidth/640.0f;
+      FLOAT fScale = HEIGHT_SCALING(pdp);
       pdp->SetFont( _pfdDisplayFont);
       pdp->SetTextScaling( fScale);
       pdp->SetTextAspect( 1.0f);
