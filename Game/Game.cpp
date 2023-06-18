@@ -1005,6 +1005,10 @@ void CGame::InitInternal( void)
   // [Cecil] Show pointer in borderless windows
   _pShell->DeclareSymbol("persistent user INDEX gam_bShowPointerInBorderless;", &gam_bShowPointerInBorderless);
 
+  // [Cecil] Use bigger font in computer
+  extern INDEX gam_bBigComputerFont;
+  _pShell->DeclareSymbol("persistent user INDEX gam_bBigComputerFont;", &gam_bBigComputerFont);
+
   // [Cecil] Customizable fade time
   extern FLOAT con_tmConsoleFade;
   _pShell->DeclareSymbol("persistent user FLOAT con_tmConsoleFade;", &con_tmConsoleFade);

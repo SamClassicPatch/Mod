@@ -94,6 +94,9 @@ static COLOR _colMedium;
 static COLOR _colDark;
 static COLOR _colBoxes;
 
+// [Cecil] Use bigger font in computer
+INDEX gam_bBigComputerFont = TRUE;
+
 static void SetFont1(CDrawPort *pdp)
 {
   pdp->SetFont(_pfdConsoleFont);
@@ -110,7 +113,7 @@ static void SetFont2(CDrawPort *pdp)
 
 // [Cecil] Check if should use big message font
 static inline BOOL UseBigFont(void) {
-  return (_pixSizeJ >= 720);
+  return (gam_bBigComputerFont && _pixSizeJ >= 720);
 };
 
 // [Cecil] Set message font
