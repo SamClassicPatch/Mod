@@ -3821,8 +3821,12 @@ functions:
         CPrintF(LOCALIZE("Cannot change appearance for %s: setting '%s' is unavailable\n"), 
           pcNew.GetNameForPrinting(), (const char*)ppsNew->GetModelFilename());
       }
-      // attach weapon to new appearance
-      GetPlayerAnimator()->SyncWeapon();
+
+      // [Cecil] Only if animator exists (if called before full player initialization)
+      if (m_penAnimator != NULL) {
+        // attach weapon to new appearance
+        GetPlayerAnimator()->SyncWeapon();
+      }
     }
 
     BOOL b3RDPersonOld = ppsOrg->ps_ulFlags&PSF_PREFER3RDPERSON;
