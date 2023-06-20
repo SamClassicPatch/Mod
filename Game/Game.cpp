@@ -138,6 +138,11 @@ static FLOAT gam_fChatSoundVolume = 0.25f;
 // [Cecil] Show pointer in borderless windows
 INDEX gam_bShowPointerInBorderless = TRUE;
 
+// [Cecil] Observer view options
+static INDEX gam_bObserverViewOverlay = TRUE;
+static INDEX gam_bObserverViewBackground = TRUE;
+static FLOAT gam_fObserverViewSize = 0.25f;
+
 extern BOOL _bUserBreakEnabled = FALSE;
 
 // make sure that console doesn't show last lines if not playing in network
@@ -1004,6 +1009,11 @@ void CGame::InitInternal( void)
 
   // [Cecil] Show pointer in borderless windows
   _pShell->DeclareSymbol("persistent user INDEX gam_bShowPointerInBorderless;", &gam_bShowPointerInBorderless);
+
+  // [Cecil] Observer view options
+  _pShell->DeclareSymbol("persistent user INDEX gam_bObserverViewOverlay;", &gam_bObserverViewOverlay);
+  _pShell->DeclareSymbol("persistent user INDEX gam_bObserverViewBackground;", &gam_bObserverViewBackground);
+  _pShell->DeclareSymbol("persistent user FLOAT gam_fObserverViewSize;", &gam_fObserverViewSize);
 
   // [Cecil] Use bigger font in computer
   extern INDEX gam_bBigComputerFont;
@@ -1906,180 +1916,168 @@ static void PrintStats( CDrawPort *pdpDrawPort)
   }
 }
 
+// [Cecil] Sub-view to free space for other player views
+CDrawPort _dpMain;
 
-// max possible drawports
-CDrawPort adpDrawPorts[7];
-// and ptrs to them
-CDrawPort *apdpDrawPorts[7];
+// [Cecil] Drawports for all relevant views
+CStaticStackArray<CDrawPort> _adpDrawPorts;
 
-INDEX iFirstObserver = 0;
+// [Cecil] Add new drawport
+static CDrawPort &AddDP(INDEX iDrawPort) {
+  ASSERT(iDrawPort >= 0);
 
-static void MakeSplitDrawports(enum CGame::SplitScreenCfg ssc, INDEX iCount, CDrawPort *pdp)
-{
-  apdpDrawPorts[0] = NULL;
-  apdpDrawPorts[1] = NULL;
-  apdpDrawPorts[2] = NULL;
-  apdpDrawPorts[3] = NULL;
-  apdpDrawPorts[4] = NULL;
-  apdpDrawPorts[5] = NULL;
-  apdpDrawPorts[6] = NULL;
-
-  // if observer
-  if (ssc==CGame::SSC_OBSERVER) {
-    // must have at least one screen
-    iCount = Clamp(iCount, 1L, 4L);
-    // starting at first drawport
-    iFirstObserver = 0;
+  // Make enough drawports
+  if (iDrawPort >= _adpDrawPorts.Count()) {
+    _adpDrawPorts.Push(iDrawPort - _adpDrawPorts.Count() + 1);
   }
 
-  // if one player or observer with one screen
-  if (ssc==CGame::SSC_PLAY1 || ssc==CGame::SSC_OBSERVER && iCount==1) {
-    // the only drawport covers entire screen
-    adpDrawPorts[0] = CDrawPort( pdp, 0.0, 0.0, 1.0, 1.0);
-    apdpDrawPorts[0] = &adpDrawPorts[0];
-  // if two players or observer with two screens
-  } else if (ssc==CGame::SSC_PLAY2 || ssc==CGame::SSC_OBSERVER && iCount==2) {
-    // if the drawport is not dualhead
-    if (!pdp->IsDualHead()) {
-      // need two drawports for filling the empty spaces left and right
-      CDrawPort dpL( pdp, 0.0, 0.0, 0.2, 1.0f);
-      CDrawPort dpR( pdp, 0.8, 0.0, 0.2, 1.0f);
-      dpL.Lock();  dpL.Fill(C_BLACK|CT_OPAQUE);  dpL.Unlock();
-      dpR.Lock();  dpR.Fill(C_BLACK|CT_OPAQUE);  dpR.Unlock();
-      // first of two draw ports covers upper half of the screen
-       adpDrawPorts[0] = CDrawPort( pdp, 0.1666, 0.0, 0.6668, 0.5);
-      apdpDrawPorts[0] = &adpDrawPorts[0];
-      // second draw port covers lower half of the screen
-       adpDrawPorts[1] = CDrawPort( pdp, 0.1666, 0.5, 0.6668, 0.5);
-      apdpDrawPorts[1] = &adpDrawPorts[1];
-    // if the drawport is dualhead
-    } else {
-      // first of two draw ports covers left half of the screen
-       adpDrawPorts[0] = CDrawPort( pdp, 0.0, 0.0, 0.5, 1.0);
-      apdpDrawPorts[0] = &adpDrawPorts[0];
-      // second draw port covers right half of the screen
-       adpDrawPorts[1] = CDrawPort( pdp, 0.5, 0.0, 0.5, 1.0);
-      apdpDrawPorts[1] = &adpDrawPorts[1];
-    }
-  // if three players or observer with three screens
-  } else if (ssc==CGame::SSC_PLAY3 || ssc==CGame::SSC_OBSERVER && iCount==3) {
-    // if the drawport is not dualhead
-    if (!pdp->IsDualHead()) {
-      // need two drawports for filling the empty spaces left and right
-      CDrawPort dpL( pdp, 0.0, 0.0, 0.2, 0.5f);
-      CDrawPort dpR( pdp, 0.8, 0.0, 0.2, 0.5f);
-      dpL.Lock();  dpL.Fill(C_BLACK|CT_OPAQUE);  dpL.Unlock();
-      dpR.Lock();  dpR.Fill(C_BLACK|CT_OPAQUE);  dpR.Unlock();
-      // first of three draw ports covers center upper half of the screen
-       adpDrawPorts[0] = CDrawPort( pdp, 0.1666, 0.0, 0.6667, 0.5);
-      apdpDrawPorts[0] = &adpDrawPorts[0];
-      // second draw port covers lower-left part of the screen
-       adpDrawPorts[1] = CDrawPort( pdp, 0.0, 0.5, 0.5, 0.5);
-      apdpDrawPorts[1] = &adpDrawPorts[1];
-      // third draw port covers lower-right part of the screen
-       adpDrawPorts[2] = CDrawPort( pdp, 0.5, 0.5, 0.5, 0.5);
-      apdpDrawPorts[2] = &adpDrawPorts[2];
-    // if the drawport is dualhead
-    } else {
-      // first player uses entire left part
-       adpDrawPorts[0] = CDrawPort( pdp, 0.0, 0.0, 0.5, 1.0);
-      apdpDrawPorts[0] = &adpDrawPorts[0];
-      // make right DH part
-      CDrawPort dpDHR( pdp, 0.5, 0.0, 0.5, 1.0);
-      // need two drawports for filling the empty spaces left and right on the right DH part
-      CDrawPort dpL( &dpDHR, 0.0, 0.0, 0.2, 1.0f);
-      CDrawPort dpR( &dpDHR, 0.8, 0.0, 0.2, 1.0f);
-      dpL.Lock();  dpL.Fill(C_BLACK|CT_OPAQUE);  dpL.Unlock();
-      dpR.Lock();  dpR.Fill(C_BLACK|CT_OPAQUE);  dpR.Unlock();
-      // second draw port covers upper half of the right screen
-       adpDrawPorts[1] = CDrawPort( &dpDHR, 0.1666, 0.0, 0.6667, 0.5);
-      apdpDrawPorts[1] = &adpDrawPorts[1];
-      // third draw port covers lower half of the right screen
-       adpDrawPorts[2] = CDrawPort( &dpDHR, 0.1666, 0.5, 0.6667, 0.5);
-      apdpDrawPorts[2] = &adpDrawPorts[2];
-    }
-  // if four players or observer with four screens
-  } else if (ssc==CGame::SSC_PLAY4 || ssc==CGame::SSC_OBSERVER && iCount==4) {
-    // if the drawport is not dualhead
-    if (!pdp->IsDualHead()) {
-      // first of four draw ports covers upper-left part of the screen
-       adpDrawPorts[0] = CDrawPort( pdp, 0.0, 0.0, 0.5, 0.5);
-      apdpDrawPorts[0] = &adpDrawPorts[0];
-      // second draw port covers upper-right part of the screen
-       adpDrawPorts[1] = CDrawPort( pdp, 0.5, 0.0, 0.5, 0.5);
-      apdpDrawPorts[1] = &adpDrawPorts[1];
-      // third draw port covers lower-left part of the screen
-       adpDrawPorts[2] = CDrawPort( pdp, 0.0, 0.5, 0.5, 0.5);
-      apdpDrawPorts[2] = &adpDrawPorts[2];
-      // fourth draw port covers lower-right part of the screen
-       adpDrawPorts[3] = CDrawPort( pdp, 0.5, 0.5, 0.5, 0.5);
-      apdpDrawPorts[3] = &adpDrawPorts[3];
-    // if the drawport is dualhead
-    } else {
-      // make the DH parts
-      CDrawPort dpDHL( pdp, 0.0, 0.0, 0.5, 1.0);
-      CDrawPort dpDHR( pdp, 0.5, 0.0, 0.5, 1.0);
-      // on the left part
-      {
-        // need two drawports for filling the empty spaces left and right
-        CDrawPort dpL( &dpDHL, 0.0, 0.0, 0.2, 1.0f);
-        CDrawPort dpR( &dpDHL, 0.8, 0.0, 0.2, 1.0f);
-        dpL.Lock();  dpL.Fill(C_BLACK|CT_OPAQUE);  dpL.Unlock();
-        dpR.Lock();  dpR.Fill(C_BLACK|CT_OPAQUE);  dpR.Unlock();
-        // first of two draw ports covers upper half of the screen
-         adpDrawPorts[0] = CDrawPort( &dpDHL, 0.1666, 0.0, 0.6667, 0.5);
-        apdpDrawPorts[0] = &adpDrawPorts[0];
-        // second draw port covers lower half of the screen
-         adpDrawPorts[1] = CDrawPort( &dpDHL, 0.1666, 0.5, 0.6667, 0.5);
-        apdpDrawPorts[1] = &adpDrawPorts[1];
-      }
-      // on the right part
-      {
-        // need two drawports for filling the empty spaces left and right
-        CDrawPort dpL( &dpDHR, 0.0, 0.0, 0.2, 1.0f);
-        CDrawPort dpR( &dpDHR, 0.8, 0.0, 0.2, 1.0f);
-        dpL.Lock();  dpL.Fill(C_BLACK|CT_OPAQUE);  dpL.Unlock();
-        dpR.Lock();  dpR.Fill(C_BLACK|CT_OPAQUE);  dpR.Unlock();
-        // first of two draw ports covers upper half of the screen
-         adpDrawPorts[2] = CDrawPort( &dpDHR, 0.1666, 0.0, 0.6667, 0.5);
-        apdpDrawPorts[2] = &adpDrawPorts[2];
-        // second draw port covers lower half of the screen
-         adpDrawPorts[3] = CDrawPort( &dpDHR, 0.1666, 0.5, 0.6667, 0.5);
-        apdpDrawPorts[3] = &adpDrawPorts[3];
-      }
-    }
-  }
+  return _adpDrawPorts[iDrawPort];
+};
 
-  // if observer
-  if (ssc==CGame::SSC_OBSERVER) {
-    // observing starts at first drawport
-    iFirstObserver = 0;
-  // if not observer
+// [Cecil] Divide into two drawports
+static void TwoDrawports(CDrawPort *pdpBase, INDEX iFirst, BOOL bVertically) {
+  if (bVertically) {
+    // Upper and lower halves of the screen
+    AddDP(iFirst + 0).InitCloned(pdpBase, 0.1666, 0.0, 0.6668, 0.5);
+    AddDP(iFirst + 1).InitCloned(pdpBase, 0.1666, 0.5, 0.6668, 0.5);
+
   } else {
-    // observing starts after all players
-    iFirstObserver = INDEX(ssc)+1;
+    // Left and right halves of the screen
+    AddDP(iFirst + 0).InitCloned(pdpBase, 0.0, 0.0, 0.5, 1.0);
+    AddDP(iFirst + 1).InitCloned(pdpBase, 0.5, 0.0, 0.5, 1.0);
+  }
+};
+
+// [Cecil] Refactored the entire function to work better and support advanced observer views on the side
+static void MakeSplitDrawports(CGame::SplitScreenCfg ssc, INDEX iCount, BOOL bOtherPlayers, CDrawPort *pdpOriginal) {
+  // Reset drawports
+  _adpDrawPorts.Clear();
+
+  // Clear the entire screen beforehand
+  pdpOriginal->Fill(C_BLACK | 255);
+
+  // Force overlay on dualhead to not mess up the screen division in halves
+  const BOOL bDualHead = pdpOriginal->IsDualHead();
+  const BOOL bObserverOverlay = gam_bObserverViewOverlay || bDualHead;
+
+  BOOL bMainViewSet = FALSE;
+
+  // View window sizes in percentages
+  const DOUBLE dViewSizeW = Clamp(gam_fObserverViewSize, 0.1f, 0.4f);
+  const DOUBLE dViewSizeH = (bObserverOverlay ? ClampUp(dViewSizeW, 0.25) : 0.25);
+
+  // Non-player observer and amount of extra views
+  const BOOL bCfgObserver = (ssc == CGame::SSC_OBSERVER);
+  INDEX ctCfgViews;
+
+  if (bCfgObserver) {
+    // Observer views
+    ctCfgViews = iCount;
+
+  } else {
+    // Local player views (SSC_PLAY1 .. SSC_PLAY4)
+    ctCfgViews = ssc + 1;
+
+    // Up to 3 views overlayed
+    if (bObserverOverlay) {
+      iCount = ClampUp(iCount, 3L);
+
+    // Free space on the side for extra observer views, only if there are others
+    } else if (bOtherPlayers && iCount != 0) {
+      // Draw themed background on the empty space
+      if (gam_bObserverViewBackground) {
+        _pGame->LCDPrepare(1.0f);
+        _pGame->LCDSetDrawport(pdpOriginal);
+        _pGame->LCDRenderCloudsForComp();
+        _pGame->LCDRenderGrid();
+      }
+
+      _dpMain.InitCloned(pdpOriginal, 0.0, 0.0, 1.0 - dViewSizeW, 1.0);
+      bMainViewSet = TRUE;
+    }
   }
 
-  // if not observer and using more than one screen
-  if (ssc!=CGame::SSC_OBSERVER && iCount>=1) {
-    // create extra small screens
-    #define FREE (1/16.0)
-    #define FULL (4/16.0)
-    if (iCount==1) {
-       adpDrawPorts[iFirstObserver+0] = CDrawPort( pdp, 1.0-FREE-FULL, FREE, FULL, FULL);
-      apdpDrawPorts[iFirstObserver+0] = &adpDrawPorts[iFirstObserver+0];
-    } else if (iCount==2) {
-       adpDrawPorts[iFirstObserver+0] = CDrawPort( pdp, 1.0-FREE-FULL, FREE+0*(FULL+FREE), FULL, FULL);
-      apdpDrawPorts[iFirstObserver+0] = &adpDrawPorts[iFirstObserver+0];
-       adpDrawPorts[iFirstObserver+1] = CDrawPort( pdp, 1.0-FREE-FULL, FREE+1*(FULL+FREE), FULL, FULL);
-      apdpDrawPorts[iFirstObserver+1] = &adpDrawPorts[iFirstObserver+1];
-    } else if (iCount==3) {
-       adpDrawPorts[iFirstObserver+0] = CDrawPort( pdp, 1.0-FREE-FULL, FREE+0*(FULL+FREE), FULL, FULL);
-      apdpDrawPorts[iFirstObserver+0] = &adpDrawPorts[iFirstObserver+0];
-       adpDrawPorts[iFirstObserver+1] = CDrawPort( pdp, 1.0-FREE-FULL, FREE+1*(FULL+FREE), FULL, FULL);
-      apdpDrawPorts[iFirstObserver+1] = &adpDrawPorts[iFirstObserver+1];
-       adpDrawPorts[iFirstObserver+2] = CDrawPort( pdp, 1.0-FREE-FULL, FREE+2*(FULL+FREE), FULL, FULL);
-      apdpDrawPorts[iFirstObserver+2] = &adpDrawPorts[iFirstObserver+2];
+  // Set full main view
+  if (!bMainViewSet) {
+    _dpMain.InitCloned(pdpOriginal, 0.0, 0.0, 1.0, 1.0);
+  }
+
+  // Divide the main view into multiple views
+  switch (ctCfgViews)
+  {
+    case 1: {
+      // Cover entire screen
+      AddDP(0) = _dpMain;
+    } break;
+
+    case 2: {
+      // Divide into two
+      TwoDrawports(&_dpMain, 0, !bDualHead);
+    } break;
+
+    case 3: {
+      if (bDualHead) {
+        // Fill the left part with the first view
+        AddDP(0).InitCloned(&_dpMain, 0.0, 0.0, 0.5, 1.0);
+
+        // Split the right part
+        CDrawPort dpR(&_dpMain, 0.5, 0.0, 0.5, 1.0);
+        TwoDrawports(&dpR, 1, TRUE);
+
+      } else {
+        // Fill the top part with the first view
+        AddDP(0).InitCloned(&_dpMain, 0.1666, 0.0, 0.6668, 0.5);
+
+        // Split the lower part
+        CDrawPort dpR(&_dpMain, 0.0, 0.5, 1.0, 0.5);
+        TwoDrawports(&dpR, 1, FALSE);
+      }
+    } break;
+
+    case 4: {
+      if (bDualHead) {
+        // Split to two parts horizontally
+        CDrawPort dpL(&_dpMain, 0.0, 0.0, 0.5, 1.0);
+        CDrawPort dpR(&_dpMain, 0.5, 0.0, 0.5, 1.0);
+
+        // Split both sides
+        TwoDrawports(&dpL, 0, TRUE);
+        TwoDrawports(&dpR, 2, TRUE);
+
+      } else {
+        // Split to two parts vertically
+        CDrawPort dpUp(&_dpMain, 0.0, 0.0, 1.0, 0.5);
+        CDrawPort dpDn(&_dpMain, 0.0, 0.5, 1.0, 0.5);
+
+        // Split both sides
+        TwoDrawports(&dpUp, 0, FALSE);
+        TwoDrawports(&dpDn, 2, FALSE);
+      }
+    } break;
+  }
+
+  // Draw views of other fellow players on screen
+  if (!bCfgObserver) {
+    // Percentage of the screen size for the gap between the views
+    DOUBLE dGapSize = 0.0;
+
+    DOUBLE dStartW = 1.0 - dViewSizeW;
+    DOUBLE dStartH = 0.0;
+
+    if (bObserverOverlay) {
+      // 0.25 * 0.25 = 0.0625 by default
+      dGapSize = ClampUp(dViewSizeW, 0.25) * 0.25;
+
+      // Go up by half from center (center view) and full with a gap (top view)
+      dStartW -= dGapSize;
+      dStartH = 0.5 - dGapSize - dViewSizeH * 1.5;
+    }
+
+    // Observer views after local players
+    for (INDEX i = 0; i < iCount; i++)
+    {
+      const DOUBLE dPosY = dStartH + i * (dViewSizeH + dGapSize);
+      AddDP(ctCfgViews + i).InitCloned(pdpOriginal, dStartW, dPosY, dViewSizeW, dViewSizeH);
     }
   }
 }
@@ -2132,129 +2130,116 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
   if( gm_bGameOn && (_pGame->gm_csComputerState==CS_OFF || pdpDrawPort->IsDualHead()) 
     && gm_CurrentSplitScreenCfg!=SSC_DEDICATED )
   {
-
     INDEX ctObservers = Clamp(gam_iObserverConfig, 0L, 4L);
     INDEX iObserverOffset = ClampDn(gam_iObserverOffset, 0L);
-    if (gm_CurrentSplitScreenCfg==SSC_OBSERVER) {
+
+    if (gm_CurrentSplitScreenCfg == SSC_OBSERVER) {
       ctObservers = ClampDn(ctObservers, 1L);
+
+    } else if (!gam_bEnableAdvancedObserving || !GetSP()->sp_bCooperative) {
+      ctObservers = 0;
     }
-    if (gm_CurrentSplitScreenCfg!=SSC_OBSERVER) {
-      if (!gam_bEnableAdvancedObserving || !GetSP()->sp_bCooperative) {
-        ctObservers = 0;
-      }
-    }
-    MakeSplitDrawports(gm_CurrentSplitScreenCfg, ctObservers, pdpDrawPort);
 
-    // get number of local players
-    INDEX ctLocals = 0;
-    {for (INDEX i=0; i<4; i++) {
-      if (gm_lpLocalPlayers[i].lp_pplsPlayerSource!=NULL) {
-        ctLocals++;
-      }
-    }}
+    // [Cecil] Container of viewer entities
+    CEntities cenViewers;
 
-    CEntity *apenViewers[7];
-    apenViewers[0] = NULL;
-    apenViewers[1] = NULL;
-    apenViewers[2] = NULL;
-    apenViewers[3] = NULL;
-    apenViewers[4] = NULL;
-    apenViewers[5] = NULL;
-    apenViewers[6] = NULL;
-    INDEX ctViewers = 0;
-
-    // check if input is enabled
+    // Check if input is enabled
     BOOL bDoPrescan = _pInput->IsInputEnabled() &&
       !_pNetwork->IsPaused() && !_pNetwork->GetLocalPause() &&
       _pShell->GetINDEX("inp_bAllowPrescan");
-    // prescan input
+
+    // Prescan input
     if (bDoPrescan) {
       _pInput->GetInput(TRUE);
     }
-    // timer must not occur during prescanning
-    { CTSingleLock csTimer(&_pTimer->tm_csHooks, TRUE);
-    // for each local player
-    for( INDEX i=0; i<4; i++) {
-      // if local player
-      CPlayerSource *ppls = gm_lpLocalPlayers[i].lp_pplsPlayerSource;
-      if( ppls!=NULL) {
-        // get local player entity
-        apenViewers[ctViewers++] = _pNetwork->GetLocalPlayerEntity(ppls);
-        // precreate action for it for this tick
-        if (bDoPrescan) {
-          // copy its local controls to current controls
-          memcpy(
-            ctl_pvPlayerControls,
-            gm_lpLocalPlayers[i].lp_ubPlayerControlsState,
-            ctl_slPlayerControlsSize);
 
-          // do prescanning
+    // Timer must not occur during prescanning
+    {
+      CTSingleLock csTimer(&_pTimer->tm_csHooks, TRUE);
+
+      // Go through local players
+      for (INDEX iLocal = 0; iLocal < 4; iLocal++) {
+        CPlayerSource *ppls = gm_lpLocalPlayers[iLocal].lp_pplsPlayerSource;
+
+        if (ppls == NULL) continue;
+
+        // Add local player entity
+        cenViewers.Add(_pNetwork->GetLocalPlayerEntity(ppls));
+
+        // Precreate action for it for this tick
+        if (bDoPrescan) {
+          // Copy its local controls to current controls
+          memcpy(ctl_pvPlayerControls, gm_lpLocalPlayers[iLocal].lp_ubPlayerControlsState, ctl_slPlayerControlsSize);
+
+          // Do prescanning
           CPlayerAction paPreAction;
-          INDEX iCurrentPlayer = gm_lpLocalPlayers[i].lp_iPlayer;
-          CControls &ctrls = gm_actrlControls[ iCurrentPlayer];
+          INDEX iCurrentPlayer = gm_lpLocalPlayers[iLocal].lp_iPlayer;
+
+          CControls &ctrls = gm_actrlControls[iCurrentPlayer];
           ctrls.CreateAction(gm_apcPlayers[iCurrentPlayer], paPreAction, TRUE);
 
-          // copy the local controls back
-          memcpy(
-            gm_lpLocalPlayers[i].lp_ubPlayerControlsState,
-            ctl_pvPlayerControls,
-            ctl_slPlayerControlsSize);
+          // Copy the local controls back
+          memcpy(gm_lpLocalPlayers[iLocal].lp_ubPlayerControlsState, ctl_pvPlayerControls, ctl_slPlayerControlsSize);
         }
       }
-    }}
-
-    // fill in all players that are not local
-    INDEX ctNonlocals = 0;
-    CEntity *apenNonlocals[16];
-    memset(apenNonlocals, 0, sizeof(apenNonlocals));
-    {for (INDEX i=0; i<16; i++) {
-      CEntity *pen = CEntity::GetPlayerEntity(i);
-      if (pen!=NULL && !_pNetwork->IsPlayerLocal(pen)) {
-        apenNonlocals[ctNonlocals++] = pen;
-      }
-    }}
-
-    // if there are any non-local players
-    if (ctNonlocals>0) {
-      // for each observer
-      {for (INDEX i=0; i<ctObservers; i++) {
-        // get the given player with given offset that is not local
-        INDEX iPlayer = (i+iObserverOffset)%ctNonlocals;
-        apenViewers[ctViewers++] = apenNonlocals[iPlayer];
-      }}
     }
 
-    // for each view
-    BOOL bHadViewers = FALSE;
-    {for (INDEX i=0; i<ctViewers; i++) {
-      CDrawPort *pdp = apdpDrawPorts[i];
-      if (pdp!=NULL && pdp->Lock()) {
+    // [Cecil] Gather all non-local players in a container
+    CEntities cenNonlocals;
 
-        // if there is a viewer
-        if (apenViewers[i]!=NULL) {
-          bHadViewers = TRUE;
-          // if predicted
-          if (apenViewers[i]->IsPredicted()) {
-            // use predictor instead
-            apenViewers[i] = apenViewers[i]->GetPredictor();
-          }
+    for (INDEX iNonLocal = 0; iNonLocal < CEntity::GetMaxPlayers(); iNonLocal++) {
+      CEntity *pen = CEntity::GetPlayerEntity(iNonLocal);
 
-          if (!CAM_IsOn()) {
-            _bPlayerViewRendered = TRUE;
-            // render it
-            apenViewers[i]->RenderGameView(pdp, (void*)ulFlags);
-          } else {
-            CAM_Render(apenViewers[i], pdp);
-          }
-        } else {
-          pdp->Fill( C_BLACK|CT_OPAQUE);
-        }
-        pdp->Unlock();
+      if (pen != NULL && !_pNetwork->IsPlayerLocal(pen)) {
+        cenNonlocals.Add(pen);
       }
-    }}
-    if (!bHadViewers) {
+    }
+
+    const INDEX ctNonLocals = cenNonlocals.Count();
+
+    if (ctNonLocals > 0) {
+      // Add non-local players for observing
+      for (INDEX i = 0; i < ctObservers; i++)
+      {
+        INDEX iPlayer = (i + iObserverOffset) % ctNonLocals;
+        cenViewers.Add(cenNonlocals.Pointer(iPlayer));
+      }
+    }
+
+    // [Cecil] Only now drawports can be split after determining the amount of non-local players
+    MakeSplitDrawports(gm_CurrentSplitScreenCfg, ctObservers, (ctNonLocals != 0), pdpDrawPort);
+
+    const INDEX ctViewers = Min(cenViewers.Count(), _adpDrawPorts.Count());
+
+    // Render each view
+    for (INDEX iViewer = 0; iViewer < ctViewers; iViewer++) {
+      CDrawPort *pdp = &_adpDrawPorts[iViewer];
+
+      if (!pdp->Lock()) continue;
+
+      CEntity *penViewer = cenViewers.Pointer(iViewer);
+
+      // Use predictor instead
+      if (penViewer->IsPredicted()) {
+        penViewer = penViewer->GetPredictor();
+      }
+
+      if (!CAM_IsOn()) {
+        _bPlayerViewRendered = TRUE;
+
+        // Render it
+        penViewer->RenderGameView(pdp, (void *)ulFlags);
+
+      } else {
+        CAM_Render(penViewer, pdp);
+      }
+
+      pdp->Unlock();
+    }
+
+    if (ctViewers == 0) {
       pdpDrawPort->Lock();
-      pdpDrawPort->Fill( C_BLACK|CT_OPAQUE);
+      pdpDrawPort->Fill(C_BLACK|CT_OPAQUE);
       pdpDrawPort->Unlock();
     }
 
