@@ -19,6 +19,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+// [Cecil] Game-specific properties
+#if SE1_GAME != SS_TFE
+  #define ONLY_TFE_SP(_Prop)
+  #define ONLY_TSE_SP(_Prop) _Prop
+#else
+  #define ONLY_TFE_SP(_Prop) _Prop
+  #define ONLY_TSE_SP(_Prop)
+#endif
+
 /*
  * Class responsible for describing game session
  */
@@ -64,7 +73,7 @@ public:
   BOOL sp_bAllowHealth;       // health items do exist
   BOOL sp_bAllowArmor;        // armor items do exist
   BOOL sp_bInfiniteAmmo;      // ammo is not consumed when firing
-  BOOL sp_bRespawnInPlace;    // players respawn on the place where they were killed, not on markers (coop only)
+  ONLY_TSE_SP(BOOL sp_bRespawnInPlace); // players respawn on the place where they were killed, not on markers (coop only)
 
   FLOAT sp_fEnemyMovementSpeed; // enemy speed multiplier
   FLOAT sp_fEnemyAttackSpeed;   // enemy speed multiplier
@@ -86,7 +95,8 @@ public:
 
   ULONG sp_ulLevelsMask;    // mask of visited levels so far
 
-  BOOL  sp_bUseExtraEnemies;  // spawn extra multiplayer enemies
+  ONLY_TSE_SP(BOOL sp_bUseExtraEnemies); // spawn extra multiplayer enemies
+  ONLY_TFE_SP(BOOL sp_bRespawnInPlace); // players respawn on the place where they were killed, not on markers (coop only)
 };
 
 // NOTE: never instantiate CSessionProperties, as its size is not fixed to the size defined in engine

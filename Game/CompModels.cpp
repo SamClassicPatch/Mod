@@ -357,6 +357,7 @@ extern void SetupCompModel_t(const CTString &strName)
     pmo->StretchModel(FLOAT3D(12,12,12));
     _bHasFloor = TRUE;
 
+#if SE1_GAME != SS_TFE
   } else if (strName=="Guffy") {
     pmo->SetData_t(CTFILENAME("ModelsMP\\Enemies\\Guffy\\Guffy.mdl"));
     pmo->PlayAnim(GUFFY_ANIM_IDLE, AOF_LOOPING);
@@ -581,6 +582,7 @@ extern void SetupCompModel_t(const CTString &strName)
     pmo->StretchModel(FLOAT3D(11.0f, 11.0f, 11.0f));
     _fFloorY = 0.0f;
     _bHasFloor = TRUE;
+#endif
 
   } else if (strName=="Knife") {
     pmo->SetData_t(CTFILENAME("Models\\Weapons\\Knife\\KnifeItem.mdl"));
@@ -688,6 +690,7 @@ extern void SetupCompModel_t(const CTString &strName)
     _bHasFloor = TRUE;
     _fFloorY = -0.5f;
 
+#if SE1_GAME != SS_TFE
   } else if (strName=="Sniper") {
     pmo->SetData_t(CTFILENAME("ModelsMP\\Weapons\\Sniper\\Sniper.mdl"));
     pmo->mo_toTexture.SetData_t(CTFILENAME("ModelsMP\\Weapons\\Sniper\\Body.tex"));
@@ -770,6 +773,7 @@ extern void SetupCompModel_t(const CTString &strName)
     pmo->StretchModel(FLOAT3D(3.0f, 3.0f, 3.0f));
     _bHasFloor = TRUE;
     _fFloorY = 0.0f;
+#endif
 
   } else if (strName=="Minigun") {
     pmo->SetData_t(CTFILENAME("Models\\Weapons\\Minigun\\MinigunItem.mdl"));
@@ -1012,6 +1016,7 @@ void RenderMessageModel(CDrawPort *pdp, const CTString &strModel)
     _moModel.RenderShadow( rm, plLightPlacement, 200.0f, 200.0f, 1.0f, plFloorPlane);
     _moModel.RenderModel(rm);
 
+  #if SE1_GAME != SS_TFE
     // render particles
     if (_iParticleType!=PARTICLES_NONE) {
       Particle_PrepareSystem(pdp, apr);
@@ -1026,6 +1031,7 @@ void RenderMessageModel(CDrawPort *pdp, const CTString &strModel)
       }
       Particle_EndSystem();
     }
+  #endif
 
     EndModelRenderingView();
   }

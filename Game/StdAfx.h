@@ -25,5 +25,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Cecil/GameThemes.h"
 
 // [Cecil] Include common header for Entities
-#include <Entities/EntitiesAPI.h>
-#include <Entities/Players/Player.h>
+#if SE1_GAME != SS_TFE
+  #include <Entities/EntitiesAPI.h>
+  #include <Entities/Players/Player.h>
+
+#else
+  // [Cecil] Vanilla entities for TFE
+  #ifdef NDEBUG
+    #pragma comment(lib, "EntitiesV.lib")
+  #else
+    #pragma comment(lib, "EntitiesVD.lib")
+  #endif
+
+  #define DECL_DLL __declspec(dllimport)
+
+  #include <EntitiesV/Global.h>
+  #include <EntitiesV/Common/Flags.h>
+  #include <EntitiesV/Common/Common.h>
+  #include <EntitiesV/Common/Particles.h>
+  #include <EntitiesV/Common/GameInterface.h>
+  #include <EntitiesV/Player.h>
+#endif
