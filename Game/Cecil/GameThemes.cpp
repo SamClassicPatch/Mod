@@ -33,7 +33,10 @@ static CIniConfig *_pini = NULL;
 static inline void SetTexture(CTextureObject &to, const CTString &strFile, BOOL bShowError) {
   try {
     to.SetData_t(strFile);
-    ((CTextureData *)to.GetData())->Force(TEX_CONSTANT);
+
+    if (to.GetData() != NULL) {
+      ((CTextureData *)to.GetData())->Force(TEX_CONSTANT);
+    }
 
   } catch (char *strError) {
     if (bShowError) {
