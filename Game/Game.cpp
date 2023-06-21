@@ -1951,7 +1951,7 @@ static void TwoDrawports(CDrawPort *pdpBase, INDEX iFirst, BOOL bVertically) {
 // [Cecil] Refactored the entire function to work better and support advanced observer views on the side
 static void MakeSplitDrawports(CGame::SplitScreenCfg ssc, INDEX iCount, BOOL bOtherPlayers, CDrawPort *pdpOriginal) {
   // Reset drawports
-  _adpDrawPorts.Clear();
+  _adpDrawPorts.PopAll();
 
   // Clear the entire screen beforehand
   pdpOriginal->Fill(C_BLACK | 255);
