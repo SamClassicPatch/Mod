@@ -2247,44 +2247,56 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
     CDrawPort dpMsg(pdpDrawPort, TRUE);
     if ((ulFlags&GRV_SHOWEXTRAS) && dpMsg.Lock())
     {
-      // print pause indicators
-      CTString strIndicator;
-      if (_pNetwork->IsDisconnected()) {
-        strIndicator.PrintF(LOCALIZE("Disconnected: %s\nPress F9 to reconnect"), (const char *)_pNetwork->WhyDisconnected());
-      } else if (_pNetwork->IsWaitingForPlayers()) {
-        strIndicator = LOCALIZE("Waiting for all players to connect");
-      } else if (_pNetwork->IsWaitingForServer()) {
-        strIndicator = LOCALIZE("Waiting for server to continue");
-      } else if (!_pNetwork->IsConnectionStable()) {
-        strIndicator = LOCALIZE("Trying to stabilize connection...");
-      } else if (_pNetwork->IsGameFinished()) {
-        strIndicator = LOCALIZE("Game finished");
-      } else if (_pNetwork->IsPaused() || _pNetwork->GetLocalPause()) {
-        strIndicator = LOCALIZE("Paused");
-      } else if (_tvMenuQuickSave.tv_llValue!=0I64 && 
-        (_pTimer->GetHighPrecisionTimer()-_tvMenuQuickSave).GetSeconds()<3) {
-        strIndicator = LOCALIZE("Use F6 for QuickSave during game!");
-      } else if (_pNetwork->ga_sesSessionState.ses_strMOTD!="") {
-        CTString strMotd = _pNetwork->ga_sesSessionState.ses_strMOTD;
-        static CTString strLastMotd = "";
-        static CTimerValue tvLastMotd(0I64);
-        if (strLastMotd!=strMotd) {
-          tvLastMotd = _pTimer->GetHighPrecisionTimer();
-          strLastMotd = strMotd;
+      // [Cecil] Don't print indicators during demo playback
+      if (!_pNetwork->IsPlayingDemo()) {
+        CTString strIndicator;
+
+        if (_pNetwork->IsDisconnected()) {
+          strIndicator.PrintF(LOCALIZE("Disconnected: %s\nPress F9 to reconnect"), _pNetwork->WhyDisconnected().str_String);
+
+        } else if (_pNetwork->IsWaitingForPlayers()) {
+          strIndicator = LOCALIZE("Waiting for all players to connect");
+
+        } else if (_pNetwork->IsWaitingForServer()) {
+          strIndicator = LOCALIZE("Waiting for server to continue");
+
+        } else if (!_pNetwork->IsConnectionStable()) {
+          strIndicator = LOCALIZE("Trying to stabilize connection...");
+
+        } else if (_pNetwork->IsGameFinished()) {
+          strIndicator = LOCALIZE("Game finished");
+
+        } else if (_pNetwork->IsPaused() || _pNetwork->GetLocalPause()) {
+          strIndicator = LOCALIZE("Paused");
+
+        } else if (_tvMenuQuickSave.tv_llValue != 0I64
+         && (_pTimer->GetHighPrecisionTimer() - _tvMenuQuickSave).GetSeconds() < 3) {
+          strIndicator = LOCALIZE("Use F6 for QuickSave during game!");
+
+        } else if (_pNetwork->ga_sesSessionState.ses_strMOTD != "") {
+          CTString strMotd = _pNetwork->ga_sesSessionState.ses_strMOTD;
+          static CTString strLastMotd = "";
+          static CTimerValue tvLastMotd(0I64);
+
+          if (strLastMotd != strMotd) {
+            tvLastMotd = _pTimer->GetHighPrecisionTimer();
+            strLastMotd = strMotd;
+          }
+
+          if (tvLastMotd.tv_llValue != 0I64 && (_pTimer->GetHighPrecisionTimer() - tvLastMotd).GetSeconds() < 3) {
+            strIndicator = strMotd;
+          }
         }
-        if (tvLastMotd.tv_llValue!=0I64 && (_pTimer->GetHighPrecisionTimer()-tvLastMotd).GetSeconds()<3) {
-          strIndicator = strMotd;
+
+        if (strIndicator != "") {
+          // setup font
+          dpMsg.SetFont(_pfdDisplayFont);
+          dpMsg.SetTextAspect(1.0f);
+          dpMsg.SetTextScaling(1.0f);
+          dpMsg.PutTextCXY(strIndicator, dpMsg.GetWidth() * 0.5f, dpMsg.GetHeight() * 0.4f, SE_COL_BLUEGREEN_LT|192);
         }
       }
 
-      if (strIndicator!="") {
-        // setup font
-        dpMsg.SetFont( _pfdDisplayFont);
-        dpMsg.SetTextAspect( 1.0f);
-        dpMsg.PutTextCXY( strIndicator, 
-        dpMsg.GetWidth()*0.5f, 
-        dpMsg.GetHeight()*0.4f, SE_COL_BLUEGREEN_LT|192);
-      }
       // print recording indicator
       if (_pNetwork->IsRecordingDemo()) {
         // setup font
