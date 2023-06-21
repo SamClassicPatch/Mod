@@ -29,13 +29,16 @@ static CIniConfig _iniTheme;
 // Currently loading theme
 static CIniConfig *_pini = NULL;
 
-// Set texture from a file without reporting potential errors
-static inline void SetTexture(CTextureObject &to, const CTString &strFile) {
+// Set texture from a file or show a potential error message
+static inline void SetTexture(CTextureObject &to, const CTString &strFile, BOOL bShowError) {
   try {
     to.SetData_t(strFile);
+    ((CTextureData *)to.GetData())->Force(TEX_CONSTANT);
 
   } catch (char *strError) {
-    (void)strError;
+    if (bShowError) {
+      FatalError("%s", strError);
+    }
   }
 };
 
@@ -67,21 +70,16 @@ void CGameTheme::ReloadTextures(CTString strBackdrop, CTString strClouds, CTStri
   if (strClouds == "*") strClouds = "Textures\\General\\Background6.tex";
   if (strGrid == "*") strGrid = "TexturesMP\\General\\Grid.tex";
 
-  SetTexture(toBackdrop, strBackdrop);
-  SetTexture(toClouds, strClouds);
-  SetTexture(toGrid, strGrid);
+  SetTexture(toBackdrop, strBackdrop, FALSE);
+  SetTexture(toClouds, strClouds, FALSE);
+  SetTexture(toGrid, strGrid, FALSE);
 
   // Make sure the pointer texture is always loaded
   if (strPointer == "*" || !FileExists(strPointer)) {
     strPointer = "TexturesMP\\General\\Pointer.tex";
   }
 
-  try {
-    toPointer.SetData_t(strPointer);
-
-  } catch (char *strError) {
-    FatalError("%s", strError);
-  }
+  SetTexture(toPointer, strPointer, TRUE);
 };
 
 // Load game theme from a config file

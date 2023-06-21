@@ -61,8 +61,8 @@ void CGame::LCDInit(void) {
     FatalError("%s", strError);
   }
 
-  // [Cecil] Load default textures for the theme
-  _gmtTheme.ReloadTextures("*", "*", "*", "*");
+  // [Cecil] Load theme for the first time
+  _gmtTheme.Update();
 };
 
 void CGame::LCDEnd(void)
