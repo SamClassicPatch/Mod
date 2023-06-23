@@ -2164,7 +2164,11 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
         if (ppls == NULL) continue;
 
         // Add local player entity
-        cenViewers.Add(_pNetwork->GetLocalPlayerEntity(ppls));
+        CEntity *penLocal = _pNetwork->GetLocalPlayerEntity(ppls);
+
+        if (penLocal == NULL) continue;
+
+        cenViewers.Add(penLocal);
 
         // Precreate action for it for this tick
         if (bDoPrescan) {
