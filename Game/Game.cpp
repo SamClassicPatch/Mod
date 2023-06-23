@@ -1980,7 +1980,8 @@ static void MakeSplitDrawports(CGame::SplitScreenCfg ssc, INDEX iCount, BOOL bOt
 
     // Up to 3 views overlayed
     if (bObserverOverlay) {
-      iCount = ClampUp(iCount, 3L);
+      // Reset to no views like in vanilla (instead of limiting)
+      if (iCount > 3) iCount = 0;
 
     // Free space on the side for extra observer views, only if there are others
     } else if (bOtherPlayers && iCount != 0) {
