@@ -16,6 +16,9 @@
     <Filter Include="Wizard Files">
       <UniqueIdentifier>{a705b770-faa3-4caf-9ab9-bba0444a333b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Cecil">
+      <UniqueIdentifier>{5fe97812-b58e-402f-b9c6-d9470e797036}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ActionsListControl.cpp">
@@ -68,6 +71,9 @@
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cecil\Module.cpp">
+      <Filter>Source Files\Cecil</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

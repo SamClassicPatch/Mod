@@ -266,6 +266,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_TFE105|Win32'">
       </ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Cecil\Module.cpp" />
     <ClCompile Include="ConsoleSymbolsCombo.cpp" />
     <ClCompile Include="DlgAudioQuality.cpp" />
     <ClCompile Include="DlgConsole.cpp" />
