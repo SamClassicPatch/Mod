@@ -47,18 +47,14 @@ static inline void SetTexture(CTextureObject &to, const CTString &strFile, BOOL 
 
 // Set color from a config to a variable
 static inline void SetColor(const CTString &strKey, COLOR &colVariable) {
-  CTString strValue = _pini->GetValue("Colors", strKey, "");
-
-  // Valid color value
-  if (strValue != "" && strValue.ScanF("%X", &colVariable) == 1) {
-    // Make space for the alpha channel
-    colVariable <<= 8;
-  }
+  // Shift to ignore alpha channel in configs
+  colVariable = _pini->GetIntValue("Colors", strKey, colVariable >> 8);
+  colVariable <<= 8;
 };
 
 // Set flag from a config to a variable
 static inline void SetFlag(const CTString &strKey, BOOL &bVariable, BOOL bDefValue) {
-  bVariable = (_pini->GetValue("Flags", strKey, bDefValue ? "1" : "0") != "0");
+  bVariable = _pini->GetBoolValue("Flags", strKey, bDefValue);
 };
 
 // Reload textures ("*" for default TSE)
@@ -106,7 +102,7 @@ void CGameTheme::Load(const CTString &strFile, BOOL bNewTheme) {
       _iniTheme = iniConfig;
 
     // Disallow recursive synchronization
-    } else if (iniConfig.GroupExists("Sync")) {
+    } else if (iniConfig.SectionExists("Sync")) {
       ThrowF_t(TRANS("Trying to load a sync theme during an ongoing synchronization!"));
     }
 

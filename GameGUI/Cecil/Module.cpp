@@ -16,13 +16,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdAfx.h"
 
 // Retrieve module information
-MODULE_API void Module_GetInfo(CPluginAPI::PluginInfo *pInfo) {
+MODULE_API void Module_GetInfo(CPluginInfo &info) {
   // Don't set utility flags, so it doesn't get freed by the plugin API
-  pInfo->apiVer = CORE_API_VERSION;
+  info.SetUtility(PLF_MANUAL);
 
   // Metadata
-  pInfo->strAuthor = "Croteam, Dreamy Cecil";
-  pInfo->strName = "Game GUI library";
-  pInfo->strDescription = "Serious Editor component that provides custom game interfaces.";
-  pInfo->ulVersion = CORE_PATCH_VERSION;
+  info.strAuthor = "Croteam, Dreamy Cecil";
+  info.strName = "Game GUI library";
+  info.strDescription = "Serious Editor component that provides custom game interfaces.";
+  info.ulVersion = CORE_PATCH_VERSION;
 };
