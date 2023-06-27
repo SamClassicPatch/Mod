@@ -21,7 +21,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 CGameTheme _gmtTheme;
 
 // Path to the theme config to set
-CTString CGameTheme::strTheme = "Scripts\\ClassicsPatch\\Themes\\03_TSE.ini";
+#if SE1_GAME == SS_TFE
+  CTString CGameTheme::strTheme = "Scripts\\ClassicsPatch\\Themes\\01_TFE.ini";
+#else
+  CTString CGameTheme::strTheme = "Scripts\\ClassicsPatch\\Themes\\03_TSE.ini";
+#endif
 
 // Loaded theme config
 static CIniConfig _iniTheme;
