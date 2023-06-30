@@ -490,8 +490,9 @@ void Particles_ViewerLocal(CEntity *penView)
     // shared height box variables
     FLOATaabbox3D boxTerrainMap;
     CTextureData *ptdTerrainMap;
-      
-    if (boxViewer.HasContactWith(boxViewTreshold)) {
+
+    // [Cecil] Ignore boundaries for TFE rain to make it cover the entire level
+    if (_EnginePatches._bFirstEncounter || boxViewer.HasContactWith(boxViewTreshold)) {
       switch (eph->m_eptType) {
         
       case EPTH_GROWTH:
