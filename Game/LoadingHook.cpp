@@ -104,6 +104,12 @@ static void LoadingHook_t(CProgressHookInfo *pphi)
   // get session properties currently loading
   CSessionProperties *psp = (CSessionProperties *)_pNetwork->GetSessionProperties();
   ULONG ulLevelMask = psp->sp_ulLevelsMask;
+
+  // [Cecil] Shift flags to make up for the lack of intro image
+  #if SE1_GAME == SS_TFE
+    ulLevelMask <<= 1;
+  #endif
+
   INDEX iLevel = -1;
   if (psp->sp_bCooperative) {
     INDEX iLevel = -1;

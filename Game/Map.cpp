@@ -73,6 +73,7 @@ static BOOL ObtainMapData(void) {
 
     } else {
       _atoIcons.New(16);
+      _atoIcons[ 0].SetData(NULL); // [Cecil] TFE has no intro picture
       _atoIcons[ 1].SetData_t(CTFILENAME("Textures\\Computer\\Map\\Level00.tex"));
       _atoIcons[ 2].SetData_t(CTFILENAME("Textures\\Computer\\Map\\Level01.tex"));
       _atoIcons[ 3].SetData_t(CTFILENAME("Textures\\Computer\\Map\\Level02.tex"));
@@ -160,7 +161,7 @@ void RenderMap( CDrawPort *pdp, ULONG ulLevelMask, CProgressHookInfo *pphi)
   const IntPair_t *aPathPrevNextLevels = (_iMapType == 1 ? _aPathBetweenLevelsTSE : _aPathBetweenLevelsTFE);
 
   // Render intro background
-  if (ulLevelMask == 0x1) {
+  if (ulLevelMask == 0x1 && _atoIcons[0].GetData() != NULL) {
     PIX pixX = aIconCoords[0][0] * fStretch + pixC1S;
     PIX pixY = aIconCoords[0][1] * fStretch + pixR1S;
 
@@ -230,7 +231,7 @@ void RenderMap( CDrawPort *pdp, ULONG ulLevelMask, CProgressHookInfo *pphi)
 
     // set coordinates and dot colors
     if (_iMapType == 1) {
-      if (ulLevelMask == 0x00000001) {
+      if (ulLevelMask == 0x1) {
         iPosX = 200;
         iPosY = 330;
         colText = 0x5c6a9aff;
