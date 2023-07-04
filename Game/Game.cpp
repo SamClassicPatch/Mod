@@ -1068,7 +1068,7 @@ void CGame::InitInternal( void)
   CON_DiscardLastLineTimes();
 
   // [Cecil] Link to the latest patch release
-  _strModURL = "https://github.com/SamClassicPatch/SuperProject/releases/latest";
+  _strModURL = CLASSICSPATCH_URL_LATESTRELEASE;
 }
 
 // internal cleanup
