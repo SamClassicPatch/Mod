@@ -47,6 +47,13 @@ public:
     GD_EXTREME,
   };
 
+public:
+  // [Cecil] Make sure it's of an acceptable size
+  CSessionProperties() {
+    ASSERT(sizeof(CSessionProperties) <= sizeof(CSesPropsContainer));
+  };
+
+public:
   INDEX sp_ctMaxPlayers;    // maximum number of players in game
   BOOL sp_bWaitAllPlayers;  // wait for all players to connect
   BOOL sp_bQuickTest;       // set when game is tested from wed
@@ -97,23 +104,6 @@ public:
 
   ONLY_TSE_SP(BOOL sp_bUseExtraEnemies); // spawn extra multiplayer enemies
   ONLY_TFE_SP(BOOL sp_bRespawnInPlace); // players respawn on the place where they were killed, not on markers (coop only)
-};
-
-// NOTE: never instantiate CSessionProperties, as its size is not fixed to the size defined in engine
-// use CUniversalSessionProperties for instantiating an object
-class CUniversalSessionProperties {
-public:
-  union {
-    CSessionProperties usp_sp;
-    UBYTE usp_aubDummy[NET_MAXSESSIONPROPERTIES];
-  };
-
-  // must have exact the size as allocated block in engine
-  CUniversalSessionProperties() { 
-    ASSERT(sizeof(CSessionProperties)<=NET_MAXSESSIONPROPERTIES); 
-    ASSERT(sizeof(CUniversalSessionProperties)==NET_MAXSESSIONPROPERTIES); 
-  }
-  operator CSessionProperties&(void) { return usp_sp; }
 };
 
 #endif  /* include-once check. */
