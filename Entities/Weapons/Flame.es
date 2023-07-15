@@ -168,7 +168,7 @@ functions:
     FLOAT fDeathFactor=1.0f;
     if( _pTimer->CurrentTick()>m_tmDeathParticlesStart)
     {
-      fDeathFactor=1.0f-Clamp((_pTimer->CurrentTick()-m_tmDeathParticlesStart)/DEATH_BURN_TIME, 0.0f, 1.0f);
+      fDeathFactor=1.0f-Clamp((_pTimer->CurrentTick()-m_tmDeathParticlesStart)/DEATH_BURN_TIME, (TIME)0.0, (TIME)1.0);
     }
     CEntity *penParent= GetParent();
     FLOAT fPower=ClampUp(m_fDamageStep-MIN_DAMAGE_QUANTUM, MAX_DAMAGE_QUANTUM)/MAX_DAMAGE_QUANTUM;

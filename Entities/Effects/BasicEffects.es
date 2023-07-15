@@ -498,7 +498,7 @@ functions:
       TIME tmAge = _pTimer->GetLerpedCurrentTick()-m_tmSpawn;
       COLOR col = GetModelColor() ;
       col = (col &~CT_AMASK) |
-        (ULONG)((255)*Clamp(tmAge*m_fFadeInSpeed/m_fWaitTime, 0.0f, 1.0f));
+        (ULONG)((255)*Clamp(tmAge*m_fFadeInSpeed/m_fWaitTime, (TIME)0.0, (TIME)1.0));
       SetModelColor(col);
     }
 

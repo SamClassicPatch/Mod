@@ -1710,7 +1710,7 @@ functions:
     // print game limits
     const CSessionProperties &sp = *GetSP();
     if (sp.sp_iTimeLimit>0) {
-      FLOAT fTimeLeft = ClampDn(sp.sp_iTimeLimit*60.0f - _pNetwork->GetGameTime(), 0.0f);
+      FLOAT fTimeLeft = ClampDn(sp.sp_iTimeLimit*60.0f - _pNetwork->GetGameTime(), (TIME)0.0);
       strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%s", LOCALIZE("TIME LEFT"), TimeToString(fTimeLeft)));
       strStats+="\n";
     }
@@ -2778,7 +2778,7 @@ functions:
       FLOAT fHealth = GetHealth();
       FLOAT fTopHealth = TopHealth();
       if (fHealth<fTopHealth) {
-        SetHealth(ClampUp(fHealth+_pTimer->TickQuantum, fTopHealth));  // one unit per second
+        SetHealth(ClampUp(fHealth+_pTimer->TickQuantum, (TIME)fTopHealth));  // one unit per second
       }
     }
 
@@ -3905,7 +3905,7 @@ functions:
         FLOAT fSpeed = m_fAutoSpeed;
         if (GetActionMarker()->m_paaAction==PAA_RUNANDSTOP) {
           // adjust speed
-          fSpeed = Min(fSpeed, fDistance/_pTimer->TickQuantum);
+          fSpeed = Min((TIME)fSpeed, fDistance/_pTimer->TickQuantum);
         }
         // adjust rotation
         if (Abs(aDH)>5.0f) {
@@ -4590,7 +4590,7 @@ functions:
     // apply center view
     if( ulButtonsNow&PLACT_CENTER_VIEW) {
       // center view with speed of 45 degrees per 1/20 seconds
-      paAction.pa_aRotation(2) += Clamp( -en_plViewpoint.pl_OrientationAngle(2)/_pTimer->TickQuantum, -900.0f, +900.0f);
+      paAction.pa_aRotation(2) += Clamp( -en_plViewpoint.pl_OrientationAngle(2)/_pTimer->TickQuantum, (TIME)-900.0, (TIME)+900.0);
     }
   };
 

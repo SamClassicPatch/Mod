@@ -44,11 +44,11 @@ event EChangeMusic {
 
 float FadeInFactor(TIME fFadeTime)
 {
-  return (float) pow(MUSIC_VOLUMEMAX/MUSIC_VOLUMEMIN, 1/(fFadeTime/_pTimer->TickQuantum));
+  return (float) powf(MUSIC_VOLUMEMAX/MUSIC_VOLUMEMIN, 1/(fFadeTime/_pTimer->TickQuantum));
 }
 float FadeOutFactor(TIME fFadeTime)
 {
-  return (float) pow(MUSIC_VOLUMEMIN/MUSIC_VOLUMEMAX, 1/(fFadeTime/_pTimer->TickQuantum));
+  return (float) powf(MUSIC_VOLUMEMIN/MUSIC_VOLUMEMAX, 1/(fFadeTime/_pTimer->TickQuantum));
 }
 %}
 

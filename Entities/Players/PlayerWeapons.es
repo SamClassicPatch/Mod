@@ -1389,7 +1389,7 @@ functions:
       pdp->SetTextScaling( fScaling);
       pdp->SetTextAspect( 1.0f);
       // do faded printout
-      ULONG ulA = (FLOAT)ulAlpha * Clamp( 2*tmDelta, 0.0f, 1.0f);
+      ULONG ulA = (FLOAT)ulAlpha * Clamp( 2*tmDelta, (TIME)0.0, (TIME)1.0);
 
       // [Cecil] Pick color based on the Advanced HUD theme
       static CSymbolPtr pHudTheme("ahud_iTheme");

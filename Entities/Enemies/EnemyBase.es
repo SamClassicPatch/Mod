@@ -1470,7 +1470,7 @@ functions:
         
         fTimeRatio=1.0f;
         if(m_fTacticVar2>0) {
-          fTimeRatio=1.0f-(ClampUp((_pTimer->CurrentTick() - m_tmTacticsActivation)/m_fTacticVar2, 1.0f));
+          fTimeRatio=1.0f-(ClampUp((_pTimer->CurrentTick() - m_tmTacticsActivation)/m_fTacticVar2, (TIME)1.0));
         }
       
         angEnemy(1) = m_fTacticVar1*fDistanceRatio*fTimeRatio;

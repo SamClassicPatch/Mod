@@ -1218,7 +1218,7 @@ extern void DrawHUD( const CPlayer *penPlayerCurrent, CDrawPort *pdpCurrent, BOO
     if ((bScoreMatch || bFragMatch) && hud_bShowMatchInfo){
       CTString strLimitsInfo="";  
       if (GetSP()->sp_iTimeLimit>0) {
-        FLOAT fTimeLeft = ClampDn(GetSP()->sp_iTimeLimit*60.0f - _pNetwork->GetGameTime(), 0.0f);
+        FLOAT fTimeLeft = ClampDn(GetSP()->sp_iTimeLimit*60.0f - _pNetwork->GetGameTime(), (TIME)0.0);
         strLimitsInfo.PrintF("%s^cFFFFFF%s: %s\n", strLimitsInfo, LOCALIZE("TIME LEFT"), TimeToString(fTimeLeft));
       }
       extern INDEX SetAllPlayersStats( INDEX iSortKey);
