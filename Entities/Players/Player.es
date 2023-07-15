@@ -4619,7 +4619,7 @@ functions:
   // check if cheats can be active
   BOOL CheatsEnabled(void)
   {
-    return (GetSP()->sp_ctMaxPlayers==1||GetSP()->sp_bQuickTest) && m_penActionMarker==NULL && !_SE_DEMO;
+    return (GetSP()->sp_ctMaxPlayers == 1 || GetSP()->sp_bQuickTest) && m_penActionMarker == NULL;
   }
 
   // Cheats
