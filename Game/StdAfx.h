@@ -25,12 +25,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Cecil/GameThemes.h"
 
 // [Cecil] Include common header for Entities
-#if SE1_GAME != SS_TFE
+#if SE1_VER >= SE1_107
   #include <Entities/EntitiesAPI.h>
   #include <Entities/Players/Player.h>
 
 #else
-  // [Cecil] Vanilla entities for TFE
+  // [Cecil] Vanilla entities for 1.05
   #ifdef NDEBUG
     #pragma comment(lib, "EntitiesV.lib")
   #else
