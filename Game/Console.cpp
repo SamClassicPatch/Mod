@@ -85,7 +85,8 @@ BOOL GetLineCountBackward(const char *pchrStringStart, const char *pchrStringEnd
 
 void CGame::ConsoleRender(CDrawPort *pdp)
 {
-  if( _pGame->gm_csConsoleState==CS_OFF) {
+  // [Cecil] Abort console rendering if it's fully closed
+  if (_pGame->gm_csConsoleState == CS_OFF && fConsoleFadeValue < 0.001f) {
     con_iFirstLine = 1;
     tvConsoleLast  = _pTimer->GetHighPrecisionTimer();
     return;
@@ -101,6 +102,15 @@ void CGame::ConsoleRender(CDrawPort *pdp)
   CTimerValue tvDelta = tvNow - tvConsoleLast;
   tvConsoleLast       = tvNow;
   FLOAT fFadeSpeed    = (FLOAT)(tvDelta.GetSeconds() / con_tmConsoleFade);
+
+  // [Cecil] Force console to be gradually turned on and off
+  if (_pGame->gm_csConsoleState == CS_ON && fConsoleFadeValue <= 0.999f) {
+    _pGame->gm_csConsoleState = CS_TURNINGON;
+  }
+
+  if (_pGame->gm_csConsoleState == CS_OFF && fConsoleFadeValue >= 0.001f) {
+    _pGame->gm_csConsoleState = CS_TURNINGOFF;
+  }
 
   // if console is dropping down
   if( _pGame->gm_csConsoleState==CS_TURNINGON) {
