@@ -226,21 +226,41 @@ static void PlayScriptSound(INDEX iChannel, const CTString &strSound, FLOAT fVol
   } catch (char *strError) {
     CPrintF("%s\n", strError);
   }
-}
-static void StopScriptSound(INDEX iChannel)
-{
+};
+
+// [Cecil] Shell symbol function
+static void PlayScriptSoundSS(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iChannel = NEXT_ARG(INDEX);
+  const CTString &strSound = *NEXT_ARG(CTString *);
+  FLOAT fVolume = NEXT_ARG(FLOAT);
+  FLOAT fPitch = NEXT_ARG(FLOAT);
+  BOOL bLooping = NEXT_ARG(INDEX);
+
+  PlayScriptSound(iChannel, strSound, fVolume, fPitch, bLooping);
+};
+
+// [Cecil] Shell symbol arguments
+static void StopScriptSound(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iChannel = NEXT_ARG(INDEX);
+
   if (iChannel<0 || iChannel>=MAX_SCRIPTSOUNDS||_apsoScriptChannels[iChannel]==NULL) {
     return;
   }
   _apsoScriptChannels[iChannel]->Stop();
-} 
-static INDEX IsScriptSoundPlaying(INDEX iChannel)
-{
+};
+
+// [Cecil] Shell symbol arguments
+static INDEX IsScriptSoundPlaying(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX iChannel = NEXT_ARG(INDEX);
+
   if (iChannel<0 || iChannel>=MAX_SCRIPTSOUNDS||_apsoScriptChannels[iChannel]==NULL) {
     return 0;
   }
   return _apsoScriptChannels[iChannel]->IsPlaying();
-}
+};
 
 // Dump recorded profiling stats to file.
 static void DumpProfileToFile(void)
@@ -268,15 +288,23 @@ static void SaveScreenShot(void)
   bSaveScreenShot=TRUE;
 }
 
-static void Say(const CTString &strText)
-{
-  _pNetwork->SendChat(-1, -1, strText);
-}
-static void SayFromTo(INDEX ulFrom, INDEX ulTo, const CTString &strText)
-{
-  _pNetwork->SendChat(ulFrom, ulTo, strText);
-}
+// [Cecil] Shell symbol arguments
+static void Say(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  const CTString &strText = *NEXT_ARG(CTString *);
 
+  _pNetwork->SendChat(-1, -1, strText);
+};
+
+// [Cecil] Shell symbol arguments
+static void SayFromTo(SHELL_FUNC_ARGS) {
+  BEGIN_SHELL_FUNC;
+  INDEX ulFrom = NEXT_ARG(INDEX);
+  INDEX ulTo = NEXT_ARG(INDEX);
+  const CTString &strText = *NEXT_ARG(CTString *);
+
+  _pNetwork->SendChat(ulFrom, ulTo, strText);
+};
 
 // create name for a new screenshot
 static CTFileName MakeScreenShotName(void)
@@ -1000,7 +1028,7 @@ void CGame::InitInternal( void)
 
   _pShell->DeclareSymbol("user FLOAT gam_fChatSoundVolume;",      &gam_fChatSoundVolume);
 
-  _pShell->DeclareSymbol("user void PlaySound(INDEX, CTString, FLOAT, FLOAT, INDEX);", &PlayScriptSound);
+  _pShell->DeclareSymbol("user void PlaySound(INDEX, CTString, FLOAT, FLOAT, INDEX);", &PlayScriptSoundSS);
   _pShell->DeclareSymbol("user void StopSound(INDEX);", &StopScriptSound);
   _pShell->DeclareSymbol("user INDEX IsSoundPlaying(INDEX);", &IsScriptSoundPlaying);
 
