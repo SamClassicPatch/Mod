@@ -20,4 +20,9 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommand>$(SolutionDir)../../../Bin/SeriousSam.exe</LocalDebuggerCommand>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_SSR110|Win32'">
+    <LocalDebuggerCommandArguments>+game MyMod</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommand>$(SolutionDir)../../../Bin/SeriousSam.exe</LocalDebuggerCommand>
+  </PropertyGroup>
 </Project>
