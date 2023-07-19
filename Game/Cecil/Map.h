@@ -19,8 +19,14 @@ typedef SLONG IntPair_t[2];
 // Array of path dots
 typedef IntPair_t PathDots_t[10];
 
-// Current map type (0 - TFE, 1 - TSE)
-extern INDEX _iMapType;
+// Current map type
+extern ELevelFormat _eMapType;
+
+// Determine map type from level name
+ELevelFormat ScanLevelName(const CTString &strLevelName);
+
+// Determine map type from level name and return its index
+ELevelFormat ScanLevelName(INDEX &iLevel, const CTString &strLevelName);
 
 // The Second Encounter map
 

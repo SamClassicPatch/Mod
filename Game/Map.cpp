@@ -17,6 +17,53 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "Cecil/Map.h"
 
+// [Cecil] Current map type
+ELevelFormat _eMapType = E_LF_CURRENT;
+
+// [Cecil] Determine map type from level name
+ELevelFormat ScanLevelName(const CTString &strLevelName) {
+  INDEX u, v;
+  CTString &strLevel = const_cast<CTString &>(strLevelName);
+
+  // TSE level
+  if (strLevel.ScanF("%01d_%01d_", &u, &v) == 2) return E_LF_TSE;
+
+  // TFE level
+  if (strLevel.ScanF("%02d_", &u) == 1) return E_LF_TFE;
+
+  // Unknown type
+  return E_LF_CURRENT;
+};
+
+// [Cecil] Determine map type from level name and return its index
+ELevelFormat ScanLevelName(INDEX &iLevel, const CTString &strLevelName) {
+  INDEX u, v;
+  CTString &strLevel = const_cast<CTString &>(strLevelName);
+
+  iLevel = -1;
+
+  // TSE level
+  if (strLevel.ScanF("%01d_%01d_", &u, &v) == 2) {
+    iLevel = u * 10 + v;
+
+    extern void RemapLevelNames(INDEX &iLevel);
+    RemapLevelNames(iLevel);
+
+    return E_LF_TSE;
+  }
+
+  // TFE level
+  if (strLevel.ScanF("%02d_", &u) == 1) {
+    // Account for the intro level
+    iLevel = u + 1;
+
+    return E_LF_TFE;
+  }
+
+  // Unknown type
+  return E_LF_CURRENT;
+};
+
 static CStaticArray<CTextureObject> _atoIcons;
 static CTextureObject _toPathDot;
 static CTextureObject _toMapBcgLD;
@@ -42,14 +89,14 @@ static BOOL ObtainMapData(void) {
   // [Cecil] Only load new textures for a new map type
   static INDEX iLastMapType = -1;
 
-  if (iLastMapType == _iMapType) return TRUE;
-  iLastMapType = _iMapType;
+  if (iLastMapType == _eMapType) return TRUE;
+  iLastMapType = _eMapType;
 
   // [Cecil] Reset textures
   ReleaseMapData();
 
   try {
-    if (_iMapType == 1) {
+    if (_eMapType == E_LF_TSE) {
       _atoIcons.New(13);
       _atoIcons[ 0].SetData_t(CTFILENAME("TexturesMP\\Computer\\Map\\Book.tex"));
       _atoIcons[ 1].SetData_t(CTFILENAME("TexturesMP\\Computer\\Map\\Level00.tex"));
@@ -156,9 +203,9 @@ void RenderMap( CDrawPort *pdp, ULONG ulLevelMask, CProgressHookInfo *pphi)
   PIX pixR2E = pixR2S+256*fStretch;    // raw 2 end pixel
 
   // [Cecil] Select arrays for the map type
-  const IntPair_t *aIconCoords = (_iMapType == 1 ? _aIconCoordsTSE : _aIconCoordsTFE);
-  const PathDots_t *aPathDots = (_iMapType == 1 ? _aPathDotsTSE : _aPathDotsTFE);
-  const IntPair_t *aPathPrevNextLevels = (_iMapType == 1 ? _aPathBetweenLevelsTSE : _aPathBetweenLevelsTFE);
+  const IntPair_t *aIconCoords = (_eMapType == E_LF_TSE ? _aIconCoordsTSE : _aIconCoordsTFE);
+  const PathDots_t *aPathDots = (_eMapType == E_LF_TSE ? _aPathDotsTSE : _aPathDotsTFE);
+  const IntPair_t *aPathPrevNextLevels = (_eMapType == E_LF_TSE ? _aPathBetweenLevelsTSE : _aPathBetweenLevelsTFE);
 
   // Render intro background
   if (ulLevelMask == 0x1 && _atoIcons[0].GetData() != NULL) {
@@ -213,7 +260,7 @@ void RenderMap( CDrawPort *pdp, ULONG ulLevelMask, CProgressHookInfo *pphi)
         PIX pixDotY=pixR1S+aPathDots[iPath][iDot][1]*fStretch;
         if(aPathDots[iPath][iDot][0]==-1) break;
 
-        COLOR colPathDot = (_iMapType == 1 ? C_BLACK : C_WHITE) | 255;
+        COLOR colPathDot = (_eMapType == E_LF_TSE ? C_BLACK : C_WHITE) | 255;
         pdp->PutTexture(&_toPathDot, PIXaabbox2D(PIX2D(pixDotX, pixDotY), PIX2D(pixDotX + 8 * fStretch, pixDotY + 8 * fStretch)), colPathDot);
       }
     }
@@ -230,7 +277,7 @@ void RenderMap( CDrawPort *pdp, ULONG ulLevelMask, CProgressHookInfo *pphi)
     COLOR colText;
 
     // set coordinates and dot colors
-    if (_iMapType == 1) {
+    if (_eMapType == E_LF_TSE) {
       if (ulLevelMask == 0x1) {
         iPosX = 200;
         iPosY = 330;
@@ -253,7 +300,7 @@ void RenderMap( CDrawPort *pdp, ULONG ulLevelMask, CProgressHookInfo *pphi)
     pdp->PutTextC( pphi->phi_strDescription, pixhtcx, pixhtcy, colText);
     for( INDEX iProgresDot=0; iProgresDot<16; iProgresDot+=1)
     {
-      if (_iMapType == 1) {
+      if (_eMapType == E_LF_TSE) {
         PIX pixDotX = pixC1S + ((iPosX - 68) + iProgresDot * 8) * fStretch;
         PIX pixDotY = pixR1S + (iPosY + 19) * fStretch;
 

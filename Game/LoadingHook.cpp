@@ -28,9 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 static CDrawPort *_pdpLoadingHook = NULL;  // drawport for loading hook
 extern BOOL _bUserBreakEnabled;
 
-// [Cecil] Current map type
-INDEX _iMapType = -1;
-
 #define REFRESHTIME (0.2f)
 
 void RemapLevelNames(INDEX &iLevel)
@@ -98,9 +95,6 @@ static void LoadingHook_t(CProgressHookInfo *pphi)
   // clear screen
   dpHook.Fill(C_BLACK|255);
 
-  // [Cecil] Determine map type
-  _iMapType = _EnginePatches._bFirstEncounter ? 0 : 1;
-
   // get session properties currently loading
   CSessionProperties *psp = (CSessionProperties *)_pNetwork->GetSessionProperties();
   ULONG ulLevelMask = psp->sp_ulLevelsMask;
@@ -110,45 +104,15 @@ static void LoadingHook_t(CProgressHookInfo *pphi)
     ulLevelMask <<= 1;
   #endif
 
-  INDEX iLevel = -1;
   if (psp->sp_bCooperative) {
-    INDEX iLevel = -1;
-    INDEX iLevelNext = -1;
-    CTString strLevelName = _pNetwork->ga_fnmWorld.FileName();
-    CTString strNextLevelName = _pNetwork->ga_fnmNextLevel.FileName();
+    // [Cecil] Scan level names and determine map type
+    INDEX iCurr, iNext;
 
-    // [Cecil] Scan TFE or TSE level names
-    if (_iMapType == 1) {
-      INDEX u = -1;
-      INDEX v = -1;
+    _eMapType = ScanLevelName(iCurr, _pNetwork->ga_fnmWorld.FileName());
+    ScanLevelName(iNext, _pNetwork->ga_fnmNextLevel.FileName());
 
-      if (strLevelName.ScanF("%01d_%01d_", &u, &v) == 2) {
-        iLevel = u * 10 + v;
-        RemapLevelNames(iLevel);
-      }
-
-      if (strNextLevelName.ScanF("%01d_%01d_", &u, &v) == 2) {
-        iLevelNext = u * 10 + v;
-        RemapLevelNames(iLevelNext);
-      }
-
-    } else {
-      // Account for the intro level
-      if (strLevelName.ScanF("%02d_", &iLevel) == 1) {
-        iLevel++;
-      }
-
-      if (strNextLevelName.ScanF("%02d_", &iLevelNext) == 1) {
-        iLevelNext++;
-      }
-    }
-
-    if (iLevel>0) {
-      ulLevelMask|=1<<(iLevel-1);
-    }
-    if (iLevelNext>0) {
-      ulLevelMask|=1<<(iLevelNext-1);
-    }
+    if (iCurr > 0) ulLevelMask |= 1 << (iCurr - 1);
+    if (iNext > 0) ulLevelMask |= 1 << (iNext - 1);
   }
 
   if (ulLevelMask!=0 && !_pNetwork->IsPlayingDemo()) {

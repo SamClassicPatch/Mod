@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // [Cecil]
 #include <CoreLib/Interfaces/DataFunctions.h>
+#include "Cecil/Map.h"
 
 static const FLOAT tmComputerFade   = 1.0f;  // how many seconds it takes computer to fade in/out
 static FLOAT fComputerFadeValue     = 0.0f;  // faded value of computer (0..1)
@@ -821,7 +822,9 @@ void RenderMessageStats(CDrawPort *pdp)
     ulLevelMask <<= 1;
   #endif
 
-  INDEX iLevel = -1;
+  // [Cecil] Scan level name and determine map type
+  _eMapType = ScanLevelName(_pNetwork->ga_fnmWorld.FileName());
+
   if (psp->sp_bCooperative) {
     extern void RenderMap( CDrawPort *pdp, ULONG ulLevelMask, CProgressHookInfo *pphi);
     if (pdp->Lock()) {
