@@ -56,10 +56,23 @@ public:
 public:
   INDEX sp_ctMaxPlayers;    // maximum number of players in game
   BOOL sp_bWaitAllPlayers;  // wait for all players to connect
+
+#if SE1_GAME == SS_REV
+  // [Cecil] Rev: Wait until all players are ready (Survival and Duel)
+  BOOL sp_bWaitReady;
+#endif
+
   BOOL sp_bQuickTest;       // set when game is tested from wed
   BOOL sp_bCooperative;     // players are not intended to kill each other
   BOOL sp_bSinglePlayer;    // single player mode has some special rules
   BOOL sp_bUseFrags;        // set if frags matter instead of score
+
+#if SE1_GAME == SS_REV
+  // [Cecil] Rev: Team deathmatch gamemode and its balancing
+  BOOL sp_bTeamDM;
+  BOOL sp_bAutoBalance;
+  INDEX sp_iFairBalance;
+#endif
 
   enum GameMode sp_gmGameMode;    // general game rules
 
@@ -67,9 +80,19 @@ public:
   ULONG sp_ulSpawnFlags;
   BOOL sp_bMental;            // set if mental mode engaged
 
+#if SE1_GAME == SS_REV
+  // [Cecil] Rev: Ugh-Zan difficulty
+  BOOL sp_bUghZan;
+#endif
+
   INDEX sp_iScoreLimit;       // stop game after a player/team reaches given score
   INDEX sp_iFragLimit;        // stop game after a player/team reaches given score
   INDEX sp_iTimeLimit;        // stop game after given number of minutes elapses
+
+#if SE1_GAME == SS_REV
+  // [Cecil] Rev: Respawn cooldown
+  FLOAT sp_fTeamRespawn;
+#endif
 
   BOOL sp_bTeamPlay;          // players are divided in teams
   BOOL sp_bFriendlyFire;      // can harm player of same team
@@ -77,10 +100,27 @@ public:
   BOOL sp_bAmmoStays;         // ammo items do not dissapear when picked-up
   BOOL sp_bHealthArmorStays;  // health/armor items do exist
   BOOL sp_bPlayEntireGame;    // don't finish after one level in coop
+
+#if SE1_GAME != SS_REV
   BOOL sp_bAllowHealth;       // health items do exist
   BOOL sp_bAllowArmor;        // armor items do exist
   BOOL sp_bInfiniteAmmo;      // ammo is not consumed when firing
   ONLY_TSE_SP(BOOL sp_bRespawnInPlace); // players respawn on the place where they were killed, not on markers (coop only)
+
+#else
+  // [Cecil] Rev: Gameplay customization
+  BOOL sp_bAllowThirdPerson;
+  BOOL sp_bAllowHealth;
+  BOOL sp_bAllowArmor;
+  BOOL sp_bAllowSupers;
+  BOOL sp_bAllowPowerups;
+  BOOL sp_bAllowCannon;
+
+  BOOL sp_bInfiniteAmmo;
+  BOOL sp_bRespawnInPlace;
+  BOOL sp_bInstaSpeedKnife;
+  BOOL sp_bSpawnAsFarAsPossible;
+#endif
 
   FLOAT sp_fEnemyMovementSpeed; // enemy speed multiplier
   FLOAT sp_fEnemyAttackSpeed;   // enemy speed multiplier
@@ -104,6 +144,28 @@ public:
 
   ONLY_TSE_SP(BOOL sp_bUseExtraEnemies); // spawn extra multiplayer enemies
   ONLY_TFE_SP(BOOL sp_bRespawnInPlace); // players respawn on the place where they were killed, not on markers (coop only)
+
+#if SE1_GAME == SS_REV
+  // [Cecil] Rev: Other properties
+  BOOL sp_bNoSpeedrunning;
+  BOOL sp_bClassicHD;
+  BOOL sp_bClassicHDDamages;
+
+  // [Cecil] Rev: Game mutators
+  BOOL sp_bUsingMutators; // Auto-enabled if any mutator is set
+  FLOAT sp_fPlayerSpeedMultiplier;
+  FLOAT sp_fPlayerAccelerationMultiplier;
+  FLOAT sp_fPlayerDecelerationMultiplier;
+  BOOL sp_bFallDamage;
+  BOOL sp_bHeatDamage;
+  INDEX sp_iExclusiveWeapon;
+  FLOAT sp_fSpawnerMultiplier;
+  FLOAT sp_fAmmoMultiplier;
+  FLOAT sp_fFireRateMultiplier;
+  FLOAT sp_fStartHealth;
+  FLOAT sp_fStartArmor;
+  BOOL sp_bEnemiesReplacer;
+#endif
 };
 
 #endif  /* include-once check. */

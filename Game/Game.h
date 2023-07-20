@@ -168,12 +168,22 @@ public:
   CTString gam_strCustomLevel;
   CTString gam_strSessionName;
   CTString gam_strJoinAddress;
+
+#if SE1_GAME != SS_REV
   CTString gam_strConsoleInputBuffer;
 
   CTString gm_astrAxisNames[AXIS_ACTIONS_CT];
 
   CHighScoreEntry gm_ahseHighScores[HIGHSCORE_COUNT];
   INDEX gm_iLastSetHighScore;
+
+#else
+  CNetworkSession gm_nsField3; // [Cecil] Rev: Unknown field
+
+  CTString gam_strConsoleInputBuffer;
+
+  CTString gm_astrAxisNames[AXIS_ACTIONS_CT];
+#endif
 
   CPlayerCharacter gm_apcPlayers[8];
   CControls gm_actrlControls[8];
@@ -227,6 +237,14 @@ public:
   void SaveThumbnail(const CTFileName &fnm);
   CTFileName GetQuickSaveName(BOOL bSave);
   void GameHandleTimer(void);
+
+#if SE1_GAME == SS_REV
+  // [Cecil] Rev: Fly-over observing in games & demos using enhanced CAM_*() methods
+  virtual BOOL IsObservingOn(void); // Calls CAM_IsOn()
+  virtual void StartObserving(void); // Calls CAM_Start()
+  virtual void StopObserving(void); // Calls CAM_Stop()
+#endif
+
   virtual void LoadPlayersAndControls(void);
   virtual void SavePlayersAndControls(void);
   virtual void Load_t( void);
@@ -239,6 +257,14 @@ public:
   // set properties for a multiplayer session
   virtual void SetMultiPlayerSession(CSessionProperties &sp);
 
+#if SE1_GAME == SS_REV
+  // [Cecil] Rev: Survival session setup
+  virtual void SetSurvivalSession(CSessionProperties &sp, INDEX ctMaxPlayers);
+
+  // [Cecil] Rev: Set properties for survival gamemode (called by 'SetSinglePlayerSession' and 'SetMultiPlayerSession')
+  virtual void SetSurvivalProperties(CSessionProperties &sp);
+#endif
+
   // game loop functions
 #define GRV_SHOWEXTRAS  (1L<<0)   // add extra stuff like console, weapon, pause
   virtual void GameRedrawView(CDrawPort *pdpDrawport, ULONG ulFlags);
@@ -247,12 +273,29 @@ public:
   // console functions
   virtual void ConsoleKeyDown(MSG msg);
   virtual void ConsoleChar(MSG msg);
+
+#if SE1_GAME == SS_REV
+  // [Cecil] Rev: Paste clipboard contents
+  virtual void ConsolePasteClipboard(void);
+#endif
+
   virtual void ConsoleRender(CDrawPort *pdpDrawport);
   virtual void ConsolePrintLastLines(CDrawPort *pdpDrawport);
+
+#if SE1_GAME == SS_REV
+  // [Cecil] Rev: Remember mouse pointer coordinates
+  virtual void MenuMouseMove(PIX pixPointX, PIX pixPointY);
+#endif
 
   // computer functions
   virtual void ComputerMouseMove(PIX pixX, PIX pixY);
   virtual void ComputerKeyDown(MSG msg);
+
+#if SE1_GAME == SS_REV
+  // [Cecil] Rev: Handle controller input in the computer; returns pointer to CInputXController
+  virtual void *ComputerControllerInput(void);
+#endif
+
   virtual void ComputerRender(CDrawPort *pdpDrawport);
   virtual void ComputerForceOff();
 
@@ -263,9 +306,20 @@ public:
   // get default description for a game (for save games/demos)
   virtual CTString GetDefaultGameDescription(BOOL bWithInfo);
 
+#if SE1_GAME == SS_REV
+  // [Cecil] Rev: Get game tags
+  CTString GetGameTags(CTString &str);
+#endif
+
   // game start/end functions
   virtual BOOL NewGame(const CTString &strSessionName, const CTFileName &fnWorld,
     class CSessionProperties &sp);
+
+#if SE1_GAME == SS_REV
+  // [Cecil] Rev: New method for presumably setting up the world after it loads (GameInfo creation, item removal etc.)
+  virtual BOOL WorldStart(void);
+#endif
+
   virtual BOOL JoinGame(CNetworkSession &session);
   virtual BOOL LoadGame(const CTFileName &fnGame);
   virtual BOOL SaveGame(const CTFileName &fnGame);
@@ -315,6 +369,11 @@ public:
   // menu interface functions
   virtual void MenuPreRenderMenu(const char *strMenuName);
   virtual void MenuPostRenderMenu(const char *strMenuName);
+
+#if SE1_GAME == SS_REV
+  // [Cecil] Rev: Get session properties
+  virtual const CSessionProperties *GetSP(void);
+#endif
 };
 
 #endif

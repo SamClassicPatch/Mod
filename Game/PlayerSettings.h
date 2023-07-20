@@ -48,10 +48,21 @@ public:
     char achModelFile[MAX_PATH+1];
     memset(achModelFile, 0, sizeof(achModelFile));
     memcpy(achModelFile, ps_achModelFile, sizeof(ps_achModelFile));
-    CTString strModelFile = "ModelsMP\\Player\\"+CTString(achModelFile)+".amc";
-    if (!FileExists(strModelFile)) {
-      strModelFile = "Models\\Player\\"+CTString(achModelFile)+".amc";
-    }
+
+    CTString strModelName = achModelFile;
+
+    // [Cecil] Different implementation for TFE and Revolution
+    #if SE1_GAME != SS_TSE
+      CTString strModelFile = "Models\\Player\\" + strModelName + ".amc";
+
+    #else
+      CTString strModelFile = "ModelsMP\\Player\\" + strModelName + ".amc";
+
+      if (!FileExists(strModelFile)) {
+        strModelFile = "Models\\Player\\" + strModelName + ".amc";
+      }
+    #endif
+
     return strModelFile;
   }
 };

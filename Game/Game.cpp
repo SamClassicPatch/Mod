@@ -876,7 +876,12 @@ void CGame::InitInternal( void)
   gm_MenuSplitScreenCfg    = SSC_PLAY1;
   gm_StartSplitScreenCfg   = SSC_PLAY1;
   gm_CurrentSplitScreenCfg = SSC_PLAY1;
+
+  // [Cecil] Rev: No high score table
+#if SE1_GAME != SS_REV
   gm_iLastSetHighScore = 0;
+#endif
+
   gm_iSinglePlayer = 0;
   gm_iWEDSinglePlayer = 0;
   gm_bGameOn = FALSE;
@@ -1200,8 +1205,12 @@ BOOL CGame::NewGame(const CTString &strSessionName, const CTFileName &fnWorld,
   gm_bFirstLoading = FALSE;
   gm_bGameOn = TRUE;
   gm_CurrentSplitScreenCfg = gm_StartSplitScreenCfg;
+
+  // [Cecil] Rev: No high score table
+#if SE1_GAME != SS_REV
   // clear last set highscore
   gm_iLastSetHighScore = -1;
+#endif
 
   MaybeDiscardLastLines();
   return TRUE;
@@ -1282,8 +1291,12 @@ BOOL CGame::LoadGame(const CTFileName &fnGame)
   }
   gm_bGameOn = TRUE;
   gm_CurrentSplitScreenCfg = gm_StartSplitScreenCfg;
+
+  // [Cecil] Rev: No high score table
+#if SE1_GAME != SS_REV
   // clear last set highscore
   gm_iLastSetHighScore = -1;
+#endif
 
   // if it was a quicksave, and not the newest one
   if (fnGame.Matches("*\\QuickSave*") && fnGame!=GetQuickSaveName(FALSE)) {
@@ -1487,6 +1500,9 @@ CHighScoreEntry::CHighScoreEntry(void)
 }
 SLONG CGame::PackHighScoreTable(void)
 {
+// [Cecil] Rev: No high score table
+#if SE1_GAME != SS_REV
+
   // start at the beginning of buffer
   UBYTE *pub = _aubHighScoreBuffer;
   // for each entry
@@ -1509,11 +1525,17 @@ SLONG CGame::PackHighScoreTable(void)
   }
   // just copy it for now
   memcpy(_aubHighScorePacked, _aubHighScoreBuffer, MAX_HIGHSCORETABLESIZE);
+
+#endif
+
   return MAX_HIGHSCORETABLESIZE;
 }
 
 void CGame::UnpackHighScoreTable(SLONG slSize)
 {
+// [Cecil] Rev: No high score table
+#if SE1_GAME != SS_REV
+
   // just copy it for now
   memcpy(_aubHighScoreBuffer, _aubHighScorePacked, slSize);
   // start at the beginning of buffer
@@ -1560,6 +1582,8 @@ void CGame::UnpackHighScoreTable(SLONG slSize)
 
   // no last set
   gm_iLastSetHighScore = -1;
+
+#endif
 }
 
 /*
@@ -2451,6 +2475,9 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
 
 void CGame::RecordHighScore(void)
 {
+// [Cecil] Rev: No high score table
+#if SE1_GAME != SS_REV
+
   // if game is not running
   if (!gm_bGameOn) {
     // do nothing
@@ -2500,6 +2527,8 @@ void CGame::RecordHighScore(void)
 
   // remember last set
   gm_iLastSetHighScore = iLess;
+
+#endif
 }
 
 INDEX CGame::GetLivePlayersCount(void)
@@ -2778,3 +2807,23 @@ void CGame::MenuPreRenderMenu(const char *strMenuName) {
 void CGame::MenuPostRenderMenu(const char *strMenuName)
 {
 };
+
+// [Cecil] Rev: Dummy method definitions for compatibility
+#if SE1_GAME == SS_REV
+
+BOOL CGame::IsObservingOn(void) { return CAM_IsOn(); };
+void CGame::StartObserving(void) { CAM_Start(CTString("")); };
+void CGame::StopObserving(void) { CAM_Stop(); };
+
+void CGame::SetSurvivalSession(CSessionProperties &sp, INDEX ctMaxPlayers) {};
+void CGame::SetSurvivalProperties(CSessionProperties &sp) {};
+
+void CGame::ConsolePasteClipboard(void) {};
+void CGame::MenuMouseMove(PIX pixPointX, PIX pixPointY) {};
+void *CGame::ComputerControllerInput(void) { return NULL; };
+
+BOOL CGame::WorldStart(void) { return TRUE; };
+
+const CSessionProperties *CGame::GetSP(void) { return ::GetSP(); };
+
+#endif
