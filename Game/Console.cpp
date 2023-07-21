@@ -38,6 +38,49 @@ extern FLOAT con_tmLastLines;
 // [Cecil] Customizable fade time
 FLOAT con_tmConsoleFade = 0.5f;
 
+// [Cecil] Use bigger font in console (0 - never; 1 - only last lines; 2 - always)
+INDEX con_iBigFont = 0;
+
+// [Cecil] Screen height
+static PIX _pixSizeJ = 0;
+
+// [Cecil] Current console font
+static CFontData *_pfdCurrentFont = _pfdConsoleFont;
+
+// [Cecil] Check if should use big font
+static inline BOOL UseBigFont(BOOL bLastLines) {
+  // Always on or only for last lines
+  return con_iBigFont > 1 || (con_iBigFont == 1 && bLastLines);
+};
+
+// [Cecil] Set console font
+static void SetConsoleFont(CDrawPort *pdp, BOOL bLastLines) {
+  const BOOL bBig = UseBigFont(bLastLines);
+
+  _pfdCurrentFont = (bBig ? _pfdDisplayFont : _pfdConsoleFont);
+  pdp->SetFont(_pfdCurrentFont);
+
+  if (bBig) {
+    FLOAT fScaling = ClampDn((FLOAT)_pixSizeJ / 900.0f, 0.8f);
+
+    if (bLastLines) {
+      _pfdDisplayFont->SetVariableWidth();
+      pdp->SetTextCharSpacing(2.0f * fScaling);
+
+    } else {
+      _pfdDisplayFont->SetFixedWidth();
+      pdp->SetTextCharSpacing(-4.0f * fScaling);
+    }
+
+    pdp->SetTextScaling(fScaling);
+  }
+};
+
+// [Cecil] Reset console font
+static void ResetConsoleFont(void) {
+  _pfdDisplayFont->SetVariableWidth();
+};
+
 // find a line with given number in a multi-line string counting from end of string
 BOOL GetLineCountBackward(const char *pchrStringStart, const char *pchrStringEnd, 
                           INDEX iBackwardLine, CTString &strResult)
@@ -146,6 +189,9 @@ void CGame::ConsoleRender(CDrawPort *pdp)
     fConsoleFadeValue = 1.0f;
   }
 
+  // [Cecil] Get screen height
+  _pixSizeJ = pdp->GetHeight();
+
   // calculate size of console box so that it covers upper half of the screen
   FLOAT fHeight = ClampUp( fHeightFactor*fConsoleFadeValue*2, fHeightFactor);
   CDrawPort dpConsole( pdp, 0.0f, 0.0f, 1.0f, fHeight);
@@ -162,7 +208,12 @@ void CGame::ConsoleRender(CDrawPort *pdp)
   COLOR colDark  = LCDFadedColor(CECIL_COL_CONTEXT|255); // [Cecil] New separate color
   INDEX iBackwardLine = con_iFirstLine;
   if( iBackwardLine>1) Swap( colLight, colDark);
-  PIX pixLineSpacing = _pfdConsoleFont->fd_pixCharHeight + _pfdConsoleFont->fd_pixLineSpacing;
+
+  // [Cecil] Set console font
+  SetConsoleFont(&dpConsole, FALSE);
+
+  // [Cecil] Multiply by text scaling
+  const PIX pixLineSpacing = (_pfdCurrentFont->GetHeight() + _pfdCurrentFont->GetLineSpacing()) * dpConsole.dp_fTextScaling;
 
   // [Cecil] Enable clouds in console
   if (_gmtTheme.bConClouds) {
@@ -178,13 +229,18 @@ void CGame::ConsoleRender(CDrawPort *pdp)
 
   // [Cecil] New separate color
   dpConsole.DrawLine( 0, pixSizeJ-1, pixSizeI, pixSizeJ-1, LCDFadedColor(CECIL_COL_CONBORDER|255));
+
+  // [Cecil] Static 7 pixels instead of a 1.6 multiplier
+  const PIX pixEditHeight = (pixLineSpacing + 7);
+
   const COLOR colFill = (colDark & ~CT_AMASK) | 0x2F;
-  dpConsole.Fill( 0, pixSizeJ-pixLineSpacing*1.6f, pixSizeI, pixLineSpacing*1.6f, colFill);
+  dpConsole.Fill(0, pixSizeJ - pixEditHeight, pixSizeI, pixEditHeight, colFill);
 
   // setup font
   PIX pixTextX = (PIX)(dpConsole.GetWidth()*0.01f);
-  PIX pixYLine = dpConsole.GetHeight()-14;
-  dpConsole.SetFont( _pfdConsoleFont);
+
+  // [Cecil] Static 14 pixels are replaced with line spacing + 3 scaled pixels
+  PIX pixYLine = dpConsole.GetHeight() - (pixLineSpacing + 3.0f / dpConsole.dp_fTextScaling);
 
   // print editing line of text
   dpConsole.SetTextMode(-1);
@@ -200,23 +256,32 @@ void CGame::ConsoleRender(CDrawPort *pdp)
 
   // add blinking cursor
   if( ((ULONG)(_pTimer->GetRealTimeTick()*2)) & 1) {
-    CTString strCursor="_";
+    // [Cecil] Different cursor for big font
+    CTString strCursor = (UseBigFont(FALSE) ? "|" : "_");
+    const PIX pixCursorShift = (UseBigFont(FALSE) ? dpConsole.dp_fTextScaling * -2 : 2);
+
     FLOAT fTextScalingX = dpConsole.dp_fTextScaling * dpConsole.dp_fTextAspect;
-    PIX pixCellSize = _pfdConsoleFont->fd_pixCharWidth * fTextScalingX + dpConsole.dp_pixTextCharSpacing;
+    PIX pixCellSize = _pfdCurrentFont->fd_pixCharWidth * fTextScalingX + dpConsole.dp_pixTextCharSpacing;
     PIX pixCursorX  = pixTextX + (iCursorPos+strlen(strPrompt))*pixCellSize;
-    dpConsole.PutText( strCursor, pixCursorX, pixYLine+2, colDark);
+    dpConsole.PutText(strCursor, pixCursorX, pixYLine + pixCursorShift, colDark);
   }
 
   // render previous outputs
   con_iFirstLine = ClampDn( con_iFirstLine, 1L);
-  pixYLine -= (PIX)(pixLineSpacing * 1.333f);
+
+  // [Cecil] Static 3 pixels instead of a 1.333 multiplier
+  pixYLine -= (pixLineSpacing + 3);
   ctConsoleLinesOnScreen = pixYLine/pixLineSpacing;
-  while( pixYLine >= 0) {
+
+  while (pixYLine >= 0) {
     CTString strLineOnScreen = CON_GetLastLine(iBackwardLine);
     dpConsole.PutText( strLineOnScreen, pixTextX, pixYLine, colDark);
     iBackwardLine++;
     pixYLine -= pixLineSpacing;
   }
+
+  // [Cecil] Reset console font
+  ResetConsoleFont();
 
   // all done
   dpConsole.Unlock();
@@ -232,17 +297,30 @@ void CGame::ConsolePrintLastLines(CDrawPort *pdp)
   // if no lines left to print, just skip it
   if( ctLines==0) return;
 
-  // setup font
-  _pfdConsoleFont->SetFixedWidth();
-  pdp->SetFont( _pfdConsoleFont);
-  PIX pixCharHeight = _pfdConsoleFont->GetHeight() -1;
+  // [Cecil] Get screen height
+  _pixSizeJ = pdp->GetHeight();
+
+  // [Cecil] Set console font
+  SetConsoleFont(pdp, TRUE);
+
+  // [Cecil] Multiply by text scaling
+  const FLOAT fScaling = pdp->dp_fTextScaling;
+  const PIX pixCharHeight = (_pfdCurrentFont->GetHeight() - 1) * fScaling;
+
   // put some filter underneath for easier reading
   pdp->Fill( 0, 0, pdp->GetWidth(), pixCharHeight*ctLines, C_BLACK|128);
   // for each line
   for( INDEX iLine=0; iLine<ctLines; iLine++) {
     CTString strLine = CON_GetLastLine(iLine+1);
-    pdp->PutText( strLine, 0, pixCharHeight*(ctLines-iLine-1), CECIL_COL_CONTEXT|255); // [Cecil] New separate color
+
+    // [Cecil] Adjust line position for big font
+    PIX pixLineX = (UseBigFont(TRUE) ? fScaling * 4 : 0);
+    PIX pixLineY = (UseBigFont(TRUE) ? fScaling * 1 : 0) + pixCharHeight * (ctLines - iLine - 1);
+    pdp->PutText(strLine, pixLineX, pixLineY, CECIL_COL_CONTEXT|255); // [Cecil] New separate color
   }
+
+  // [Cecil] Reset console font
+  ResetConsoleFont();
 }
 
 

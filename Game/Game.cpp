@@ -1056,6 +1056,10 @@ void CGame::InitInternal( void)
   extern FLOAT con_tmConsoleFade;
   _pShell->DeclareSymbol("persistent user FLOAT con_tmConsoleFade;", &con_tmConsoleFade);
 
+  // [Cecil] Use bigger font in console
+  extern INDEX con_iBigFont;
+  _pShell->DeclareSymbol("persistent user INDEX con_iBigFont;", &con_iBigFont);
+
   CAM_Init();
 
   // load persistent symbols
