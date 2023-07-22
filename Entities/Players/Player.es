@@ -1029,34 +1029,34 @@ properties:
 
  26 CAnimObject m_aoLightAnimation,           // light animation object
  27 FLOAT m_fDamageAmmount = 0.0f,            // how much was last wound
- 28 FLOAT m_tmWoundedTime  = 0.0f,            // when was last wound
- 29 FLOAT m_tmScreamTime   = 0.0f,            // when was last wound sound played
+ 28 TIME m_tmWoundedTime   = 0.0f,            // when was last wound
+ 29 TIME m_tmScreamTime    = 0.0f,            // when was last wound sound played
 
  33 INDEX m_iGender = GENDER_MALE,            // male/female offset in various tables
  34 enum PlayerState m_pstState = PST_STAND,  // current player state
- 35 FLOAT m_fFallTime = 0.0f,                 // time passed when falling
- 36 FLOAT m_fSwimTime = 0.0f,                 // time when started swimming
- 45 FLOAT m_tmOutOfWater = 0.0f,              // time when got out of water last time
- 37 FLOAT m_tmMoveSound = 0.0f,           // last time move sound was played
+ 35 TIME m_fFallTime = 0.0f,                  // time passed when falling
+ 36 TIME m_fSwimTime = 0.0f,                  // time when started swimming
+ 45 TIME m_tmOutOfWater = 0.0f,               // time when got out of water last time
+ 37 TIME m_tmMoveSound = 0.0f,            // last time move sound was played
  38 BOOL  m_bMoveSoundLeft = TRUE,        // left or right walk channel is current
- 39 FLOAT m_tmNextAmbientOnce = 0.0f,     // next time to play local ambient sound
- 43 FLOAT m_tmMouthSoundLast = 0.0f,      // time last played some repeating mouth sound
+ 39 TIME m_tmNextAmbientOnce = 0.0f,      // next time to play local ambient sound
+ 43 TIME m_tmMouthSoundLast = 0.0f,       // time last played some repeating mouth sound
 
  40 CEntityPointer m_penCamera,           // camera for current cinematic sequence, or null
  41 CTString m_strCenterMessage="",       // center message
- 42 FLOAT m_tmCenterMessageEnd = 0.0f,    // last time to show centered message
+ 42 TIME m_tmCenterMessageEnd = 0.0f,     // last time to show centered message
  48 BOOL m_bPendingMessage = FALSE,   // message sound pending to be played
- 47 FLOAT m_tmMessagePlay = 0.0f,     // when to play the message sound
- 49 FLOAT m_tmAnalyseEnd = 0.0f,      // last time to show analysation
+ 47 TIME m_tmMessagePlay = 0.0f,      // when to play the message sound
+ 49 TIME m_tmAnalyseEnd = 0.0f,       // last time to show analysation
  50 BOOL m_bComputerInvoked = FALSE,  // set if computer was invoked at least once
- 57 FLOAT m_tmAnimateInbox = -100.0f,      // show animation of inbox icon animation
+ 57 TIME m_tmAnimateInbox = -100.0f,      // show animation of inbox icon animation
  
  44 CEntityPointer m_penMainMusicHolder,
 
- 51 FLOAT m_tmLastDamage = -1.0f,
+ 51 TIME m_tmLastDamage = -1.0f,
  52 FLOAT m_fMaxDamageAmmount = 0.0f,
  53 FLOAT3D m_vDamage = FLOAT3D(0,0,0),
- 54 FLOAT m_tmSpraySpawned = -1.0f,
+ 54 TIME m_tmSpraySpawned = -1.0f,
  55 FLOAT m_fSprayDamage = 0.0f,
  56 CEntityPointer m_penSpray,
 
@@ -1091,8 +1091,8 @@ properties:
 
  96 BOOL  m_bEndOfLevel = FALSE,
  97 BOOL  m_bEndOfGame  = FALSE,
- 98 INDEX m_iMayRespawn = 0,     // must get to 2 to be able to respawn
- 99 FLOAT m_tmSpawned = 0.0f,   // when player was spawned
+ 98 INDEX m_iMayRespawn = 0, // must get to 2 to be able to respawn
+ 99 TIME m_tmSpawned = 0.0f, // when player was spawned
  100 FLOAT3D m_vDied = FLOAT3D(0,0,0),  // where player died (for respawn in-place)
  101 FLOAT3D m_aDied = FLOAT3D(0,0,0),
 
@@ -1101,7 +1101,7 @@ properties:
  105 INDEX m_iTimeScore = 0,
  106 INDEX m_iStartTime = 0,      // game start time (ansi c time_t type)
  107 INDEX m_iEndTime   = 0,      // game end time (ansi c time_t type)
- 108 FLOAT m_tmLevelStarted = 0.0f,  // game time when level started
+ 108 TIME m_tmLevelStarted = 0.0f,  // game time when level started
  93 CTString m_strLevelStats = "",  // detailed statistics for each level
 
  // auto action vars
@@ -1109,11 +1109,11 @@ properties:
  111 FLOAT m_fAutoSpeed = 0.0f, // speed to go towards the marker
  112 INDEX m_iAutoOrgWeapon = 0, // original weapon for autoactions
  113 FLOAT3D m_vAutoSpeed = FLOAT3D(0,0,0),
- 114 FLOAT m_tmSpiritStart = 0.0f,
- 115 FLOAT m_tmFadeStart = 0.0f,
+ 114 TIME m_tmSpiritStart = 0.0f,
+ 115 TIME m_tmFadeStart = 0.0f,
 
  // 'picked up' display vars
- 120 FLOAT m_tmLastPicked = -10000.0f,  // when something was last picked up
+ 120 TIME m_tmLastPicked = -10000.0f,   // when something was last picked up
  121 CTString m_strPickedName = "",     // name of item picked
  122 FLOAT m_fPickedAmmount = 0.0f,     // total picked ammount
  123 FLOAT m_fPickedMana = 0.0f,        // total picked mana
@@ -1122,11 +1122,11 @@ properties:
  130 INDEX m_iLastHealth = 0,
  131 INDEX m_iLastArmor  = 0,
  132 INDEX m_iLastAmmo   = 0,
- 135 FLOAT m_tmHealthChanged = -9,
- 136 FLOAT m_tmArmorChanged  = -9,
- 137 FLOAT m_tmAmmoChanged   = -9,
+ 135 TIME m_tmHealthChanged = -9,
+ 136 TIME m_tmArmorChanged  = -9,
+ 137 TIME m_tmAmmoChanged   = -9,
  
- 138 FLOAT m_tmMinigunAutoFireStart = -1.0f,
+ 138 TIME m_tmMinigunAutoFireStart = -1.0f,
 
  150 FLOAT3D m_vLastStain  = FLOAT3D(0,0,0), // where last stain was left
    
@@ -1139,16 +1139,16 @@ properties:
  156 FLOAT3D m_vLocalTranslation = FLOAT3D(0,0,0),
 
  // powerups (DO NOT CHANGE ORDER!) - needed by HUD.cpp
- 160 FLOAT m_tmInvisibility    = 0.0f, 
- 161 FLOAT m_tmInvulnerability = 0.0f, 
- 162 FLOAT m_tmSeriousDamage   = 0.0f, 
- 163 FLOAT m_tmSeriousSpeed    = 0.0f, 
- 166 FLOAT m_tmInvisibilityMax    = 30.0f,
- 167 FLOAT m_tmInvulnerabilityMax = 30.0f,
- 168 FLOAT m_tmSeriousDamageMax   = 40.0f,
- 169 FLOAT m_tmSeriousSpeedMax    = 20.0f,
+ 160 TIME m_tmInvisibility    = 0.0f, 
+ 161 TIME m_tmInvulnerability = 0.0f, 
+ 162 TIME m_tmSeriousDamage   = 0.0f, 
+ 163 TIME m_tmSeriousSpeed    = 0.0f, 
+ 166 TIME m_tmInvisibilityMax    = 30.0f,
+ 167 TIME m_tmInvulnerabilityMax = 30.0f,
+ 168 TIME m_tmSeriousDamageMax   = 40.0f,
+ 169 TIME m_tmSeriousSpeedMax    = 20.0f,
 
- 180 FLOAT m_tmChainShakeEnd = 0.0f, // used to determine when to stop shaking due to chainsaw damage
+ 180 TIME m_tmChainShakeEnd = 0.0f, // used to determine when to stop shaking due to chainsaw damage
  181 FLOAT m_fChainShakeStrength = 1.0f, // strength of shaking
  182 FLOAT m_fChainShakeFreqMod = 1.0f,  // shaking frequency modifier
  183 FLOAT m_fChainsawShakeDX = 0.0f, 
@@ -1156,7 +1156,7 @@ properties:
 
  190 INDEX m_iSeriousBombCount = 0,      // ammount of serious bombs player owns
  191 INDEX m_iLastSeriousBombCount = 0,  // ammount of serious bombs player had before firing
- 192 FLOAT m_tmSeriousBombFired = -10.0f,  // when the bomb was last fired
+ 192 TIME m_tmSeriousBombFired = -10.0f, // when the bomb was last fired
 
 {
   ShellLaunchData ShellLaunchData_array;  // array of data describing flying empty shells
