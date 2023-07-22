@@ -997,8 +997,31 @@ extern void DrawHUD( const CPlayer *penPlayerCurrent, CDrawPort *pdpCurrent, BOO
 
   // draw powerup(s) if needed
   PrepareColorTransitions( colMax, colTop, colMid, C_RED, 0.66f, 0.33f, FALSE);
-  TIME *ptmPowerups = (TIME*)&_penPlayer->m_tmInvisibility;
-  TIME *ptmPowerupsMax = (TIME*)&_penPlayer->m_tmInvisibilityMax;
+
+  // [Cecil] Arrange into arrays
+  TIME ptmPowerups[] = {
+    _penPlayer->m_tmInvisibility,
+    _penPlayer->m_tmInvulnerability,
+    _penPlayer->m_tmSeriousDamage,
+    _penPlayer->m_tmSeriousSpeed,
+  };
+
+  TIME ptmPowerupsMax[] = {
+    _penPlayer->m_tmInvisibilityMax,
+    _penPlayer->m_tmInvulnerabilityMax,
+    _penPlayer->m_tmSeriousDamageMax,
+    _penPlayer->m_tmSeriousSpeedMax,
+  };
+
+  // [Cecil] Count spawn invulnerability as normal invulnerability
+  extern INDEX plr_iSpawnInvulIndicator;
+  const TIME tmSpawnInvul = GetSP()->sp_tmSpawnInvulnerability;
+
+  if (plr_iSpawnInvulIndicator > 0 && tmSpawnInvul > 0.0f) {
+    const TIME tmRemaining = _penPlayer->m_tmSpawned + tmSpawnInvul;
+    ptmPowerups[1] = Max(ptmPowerups[1], tmRemaining);
+  }
+
   fRow = pixBottomBound-fOneUnitS-fAdvUnitS;
   fCol = pixRightBound -fHalfUnitS;
   for( i=0; i<MAX_POWERUPS; i++)
@@ -1006,7 +1029,10 @@ extern void DrawHUD( const CPlayer *penPlayerCurrent, CDrawPort *pdpCurrent, BOO
     // skip if not active
     const TIME tmDelta = ptmPowerups[i] - _tmNow;
     if( tmDelta<=0) continue;
-    fNormValue = tmDelta / ptmPowerupsMax[i];
+
+    // [Cecil] Don't go over 100%
+    fNormValue = ClampUp(tmDelta / ptmPowerupsMax[i], (TIME)1.0);
+
     // draw icon and a little bar
     HUD_DrawBorder( fCol,         fRow, fOneUnitS, fOneUnitS, colBorder);
     HUD_DrawIcon(   fCol,         fRow, _atoPowerups[i], C_WHITE /*_colHUD*/, fNormValue, TRUE);

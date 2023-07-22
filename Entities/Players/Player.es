@@ -425,6 +425,9 @@ static FLOAT ctl_fButtonRotationSpeedB = 150.0f;
 // modifier for axis strafing
 static FLOAT ctl_fAxisStrafingModifier = 1.0f;
 
+// [Cecil] Spawn invulnerability indicator (0 - none, 1 - HUD, 2 - HUD & sound)
+INDEX plr_iSpawnInvulIndicator = 2;
+
 // !=NULL if some player wants to call computer
 DECL_DLL extern class CPlayer *cmp_ppenPlayer = NULL;
 // !=NULL for rendering computer on secondary display in dualhead
@@ -685,6 +688,9 @@ void CPlayer_Precache(void)
   pdec->PrecacheClass(CLASS_BASIC_EFFECT, BET_BLOODSTAIN);
   pdec->PrecacheClass(CLASS_BASIC_EFFECT, BET_BLOODSTAINGROW);
   pdec->PrecacheClass(CLASS_BASIC_EFFECT, BET_BLOODEXPLODE);
+
+  // [Cecil] Precache power-up sound
+  pdec->PrecacheSound(SOUND_POWERUP);
 }
 
 void CPlayer_OnInitClass(void)
@@ -820,6 +826,9 @@ void CPlayer_OnInitClass(void)
 
   // player appearance interface
   _pShell->DeclareSymbol("INDEX SetPlayerAppearance(INDEX, INDEX, INDEX, INDEX);", &SetPlayerAppearance);
+
+  // [Cecil] Spawn invulnerability indicator
+  _pShell->DeclareSymbol("persistent user INDEX plr_iSpawnInvulIndicator;", &plr_iSpawnInvulIndicator);
 
   // call player weapons persistant variable initialization
   extern void CPlayerWeapons_Init(void);
@@ -1289,6 +1298,8 @@ components:
 225 texture TEXTURE_FLESH_LOLLY  "Models\\Effects\\Debris\\Fruits\\LollyPop.tex",
 226 texture TEXTURE_FLESH_ORANGE "Models\\Effects\\Debris\\Fruits\\Orange.tex",
 
+// [Cecil] Power-up sound
+500 sound SOUND_POWERUP "SoundsMP\\Items\\PowerUp.wav",
 
 functions:
 
@@ -5355,6 +5366,12 @@ functions:
     m_tmSpawned = _pTimer->CurrentTick();
 
     en_tmLastBreathed = _pTimer->CurrentTick()+0.1f;  // do not take breath when spawned in air
+
+    // [Cecil] Play power-up sound for spawn invulnerability
+    if (plr_iSpawnInvulIndicator > 1 && GetSP()->sp_tmSpawnInvulnerability > 0.0f) {
+      m_soHighScore.Set3DParameters(25.0f, 5.0f, 1.0f, 1.0f);
+      PlaySound(m_soHighScore, SOUND_POWERUP, SOF_3D|SOF_VOLUMETRIC|SOF_LOCAL);
+    }
   };
 
   // note: set estimated time in advance
