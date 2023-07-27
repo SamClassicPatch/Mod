@@ -4030,6 +4030,17 @@ functions:
     //en_fDeceleration *= 0.8f;
     }
 
+    // [Cecil] Movement speed multiplier
+    if (CCoreAPI::varData.gex.fMoveSpeed != 1.0f) {
+      vTranslation(1) *= CCoreAPI::varData.gex.fMoveSpeed;
+      vTranslation(3) *= CCoreAPI::varData.gex.fMoveSpeed;
+    }
+
+    // [Cecil] Jump height multiplier
+    if (CCoreAPI::varData.gex.fJumpHeight != 1.0f) {
+      vTranslation(2) *= CCoreAPI::varData.gex.fJumpHeight;
+    }
+
     CContentType &ctUp = GetWorld()->wo_actContentTypes[en_iUpContent];
     CContentType &ctDn = GetWorld()->wo_actContentTypes[en_iDnContent];
     PlayerState pstWanted = PST_STAND;
@@ -6616,6 +6627,11 @@ procedures:
     // set initial vars
     en_tmMaxHoldBreath = 60.0f;
     en_fDensity = 1000.0f;    // same density as water - to be able to dive freely
+
+    // [Cecil] Infinite air control time
+    if (CCoreAPI::varData.gex.bUnlimitedAirControl) {
+      en_tmMaxJumpControl = 1e6;
+    }
 
     ModelChangeNotify();
 
