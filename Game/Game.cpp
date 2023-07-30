@@ -31,7 +31,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 extern FLOAT con_fHeightFactor = 0.5f;
 extern FLOAT con_tmLastLines   = 5.0f;
+
+#if SE1_GAME != SS_REV
 extern INDEX con_bTalk = 0;
+#endif
+
 CTimerValue _tvMenuQuickSave(0I64);
 
 // used filenames
@@ -57,6 +61,34 @@ static CStaticStackArray<INDEX> _actTriangles;  // world, model, particle, total
 
 extern "C" __declspec (dllexport) CGame *GAME_Create(void)
 {
+#if SE1_GAME == SS_REV
+  // [Cecil] TEMP: Initialize the patch on the fly for Revolution
+  if (GetAPI() == NULL) {
+    // [Cecil] Mark as a game
+    CCoreAPI::Setup(CCoreAPI::APP_GAME);
+
+    // Initialize the core
+    ClassicsPatch_InitCore();
+
+  #if CLASSICSPATCH_ENGINEPATCHES
+
+    // Function patches
+    CPutString("--- Sam: Intercepting Engine functions ---\n");
+    _EnginePatches.CorePatches();
+    CPutString("--- Done! ---\n");
+
+  #endif // CLASSICSPATCH_ENGINEPATCHES
+
+    _pGame = new CGame;
+    GetGameAPI()->HookFields();
+
+    // Load needed plugins after the Game library
+    GetAPI()->LoadPlugins(PLF_GAME);
+
+    return _pGame;
+  }
+#endif
+
   // [Cecil] This gets hooked into Core's '_pGame'
   return new CGame;
 }
@@ -1003,7 +1035,11 @@ void CGame::InitInternal( void)
 
   _pShell->DeclareSymbol("persistent user FLOAT con_fHeightFactor;", &con_fHeightFactor);
   _pShell->DeclareSymbol("persistent user FLOAT con_tmLastLines;",   &con_tmLastLines);
+
+#if SE1_GAME != SS_REV
   _pShell->DeclareSymbol("user INDEX con_bTalk;", &con_bTalk);
+#endif
+
   _pShell->DeclareSymbol("user void ReportDemoProfile(void);", &ReportDemoProfile);
   _pShell->DeclareSymbol("user void DumpDemoProfile(void);",   &DumpDemoProfile);
   extern CTString GetGameSpyRulesInfo(void);
@@ -1186,7 +1222,11 @@ BOOL CGame::NewGame(const CTString &strSessionName, const CTFileName &fnWorld,
     } else {
       BOOL bWaitAllPlayers = sp.sp_bWaitAllPlayers && _pNetwork->IsNetworkEnabled();
       _pNetwork->StartPeerToPeer_t( strSessionName, fnWorld, 
+      #if SE1_GAME != SS_REV
         sp.sp_ulSpawnFlags, sp.sp_ctMaxPlayers, bWaitAllPlayers, &sp);
+      #else
+        sp.sp_ulSpawnFlags, sp.sp_ctMaxPlayers, bWaitAllPlayers, &sp, "", "");
+      #endif
     }
   } catch (char *strError) {
     gm_bFirstLoading = FALSE;
@@ -1754,7 +1794,9 @@ void CGame::SavePlayersAndControls( void)
       CPlayerCharacter &pcInGame = lp.lp_pplsPlayerSource->pls_pcCharacter;
       CPlayerCharacter &pcConfig = gm_apcPlayers[lp.lp_iPlayer];
       if( pcConfig.pc_strName!=pcInGame.pc_strName
+      #if SE1_GAME != SS_REV
        || pcConfig.pc_strTeam!=pcInGame.pc_strTeam
+      #endif
        || memcmp(pcConfig.pc_aubAppearance, pcInGame.pc_aubAppearance, sizeof(pcInGame.pc_aubAppearance))!=0 ) {
         // demand change in game
         lp.lp_pplsPlayerSource->ChangeCharacter(pcConfig);
@@ -2177,10 +2219,12 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
     }
   }
 
+#if SE1_GAME != SS_REV
   if( ulFlags) {
     // pretouch memory if required (only if in game mode, not screengrabbing or profiling!)
     SE_PretouchIfNeeded();
   }
+#endif
 
   // if game is started and computer isn't on
   BOOL bClientJoined = FALSE;
@@ -2289,7 +2333,11 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
         _bPlayerViewRendered = TRUE;
 
         // Render it
+      #if SE1_GAME != SS_REV
         penViewer->RenderGameView(pdp, (void *)ulFlags);
+      #else
+        penViewer->RenderGameView(pdp, (void *)ulFlags, FALSE);
+      #endif
 
       } else {
         CAM_Render(penViewer, pdp);
