@@ -39,7 +39,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_COL_BLUEGREEN_LT   0x6cff6c00
 
 // cheats
+#if SE1_GAME != SS_REV
 extern INDEX cht_bEnable;
+#endif
+
 extern INDEX cht_bGod;
 extern INDEX cht_bFly;
 extern INDEX cht_bGhost;

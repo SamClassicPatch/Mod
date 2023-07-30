@@ -922,6 +922,13 @@ BOOL SetPlayerAppearance_internal(CModelObject *pmo, const CTFileName &fnmAMC, C
   }
 }
 
+#if SE1_GAME == SS_REV
+  // [Cecil] Rev: Wrapper method with extra team index
+  BOOL SetPlayerAppearanceRev(CModelObject *pmo, CPlayerCharacter *ppc, INDEX iTeam, CTString &strName, BOOL bPreview) {
+    return SetPlayerAppearance(pmo, ppc, strName, bPreview);
+  };
+#endif
+
 BOOL SetPlayerAppearance(CModelObject *pmo, CPlayerCharacter *ppc, CTString &strName, BOOL bPreview)
 {
   // first kill any existing model
@@ -932,7 +939,11 @@ BOOL SetPlayerAppearance(CModelObject *pmo, CPlayerCharacter *ppc, CTString &str
   pmo->mo_toBump.SetData(NULL);
   pmo->RemoveAllAttachmentModels();
 
+#if SE1_GAME != SS_REV
   DECLARE_CTFILENAME(fnmDefault, "ModelsMP\\Player\\SeriousSam.amc");
+#else
+  DECLARE_CTFILENAME(fnmDefault, "Models\\Player\\SeriousSam.amc");
+#endif
 
   // if no character, or player models are disabled
   if (ppc==NULL) {

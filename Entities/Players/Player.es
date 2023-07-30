@@ -342,7 +342,10 @@ extern INDEX cht_bFly        = FALSE;
 extern INDEX cht_bGhost      = FALSE;
 extern INDEX cht_bInvisible  = FALSE;
 extern FLOAT cht_fTranslationMultiplier = 1.0f;
+
+#if SE1_GAME != SS_REV
 extern INDEX cht_bEnable     = 0;   
+#endif
 
 // interface control
 static INDEX hud_bShowAll	    = TRUE; // used internaly in menu/console
@@ -443,6 +446,13 @@ DECL_DLL extern INDEX plr_iHiScore = 0.0f;
 // these define address and size of player controls structure
 DECL_DLL extern void *ctl_pvPlayerControls = &pctlCurrent;
 DECL_DLL extern const SLONG ctl_slPlayerControlsSize = sizeof(pctlCurrent);
+
+#if SE1_GAME == SS_REV
+  // [Cecil] Rev: Wrapper method with unused extra argument
+  DECL_DLL void ctl_ComposeActionPacket(const CPlayerCharacter &pc, CPlayerAction &paAction, BOOL bPreScan, FLOAT fUnused) {
+    ctl_ComposeActionPacket(pc, paAction, bPreScan);
+  };
+#endif
 
 // called to compose action packet from current controls
 DECL_DLL void ctl_ComposeActionPacket(const CPlayerCharacter &pc, CPlayerAction &paAction, BOOL bPreScan)
@@ -825,7 +835,13 @@ void CPlayer_OnInitClass(void)
   _pShell->DeclareSymbol("persistent user FLOAT gfx_fEnvParticlesRange;", &gfx_fEnvParticlesRange);
 
   // player appearance interface
+#if SE1_GAME != SS_REV
   _pShell->DeclareSymbol("INDEX SetPlayerAppearance(INDEX, INDEX, INDEX, INDEX);", &SetPlayerAppearance);
+
+#else
+  extern BOOL SetPlayerAppearanceRev(CModelObject *, CPlayerCharacter *, INDEX, CTString &, BOOL);
+  _pShell->DeclareSymbol("INDEX SetPlayerAppearance(INDEX, INDEX, INDEX, INDEX, INDEX);", &SetPlayerAppearanceRev);
+#endif
 
   // [Cecil] Spawn invulnerability indicator
   _pShell->DeclareSymbol("persistent user INDEX plr_iSpawnInvulIndicator;", &plr_iSpawnInvulIndicator);
@@ -2660,6 +2676,12 @@ functions:
     }
   }
 
+#if SE1_GAME == SS_REV
+  // [Cecil] Rev: Wrapper method
+  void RenderGameView(CDrawPort *pdp, void *pvUserData, BOOL bExtra) {
+    RenderGameView(pdp, pvUserData);
+  };
+#endif
 
   void RenderGameView(CDrawPort *pdp, void *pvUserData)
   {
@@ -3057,6 +3079,12 @@ functions:
     m_fSprayDamage+=fDamageAmmount;
   }
 
+#if SE1_GAME == SS_REV
+  // [Cecil] Rev: Wrapper method
+  void ReceiveDamage(CEntity *pen, DamageType dmt, FLOAT f, const FLOAT3D &vHit, const FLOAT3D &vDir, INDEX iDamageID) {
+    ReceiveDamage(pen, dmt, f, vHit, vDir);
+  };
+#endif
 
   /* Receive damage */
   void ReceiveDamage( CEntity *penInflictor, enum DamageType dmtType,
@@ -3806,12 +3834,14 @@ functions:
         pcOrg.GetNameForPrinting(), pcNew.GetNameForPrinting());
     }
 
+  #if SE1_GAME != SS_REV
     // if the team has changed
     if (pcOrg.GetTeam()!=pcNew.GetTeam()) {
       // report that
       CPrintF(LOCALIZE("%s switched to team %s\n"), 
         pcNew.GetNameForPrinting(), pcNew.GetTeamForPrinting());
     }
+  #endif
 
     // if appearance changed
     CPlayerSettings *ppsOrg = (CPlayerSettings *)pcOrg.pc_aubAppearance;

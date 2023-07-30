@@ -625,6 +625,13 @@ functions:
     return TRUE;
   }
 
+#if SE1_GAME == SS_REV
+  // [Cecil] Rev: Wrapper method
+  void ReceiveDamage(CEntity *pen, DamageType dmt, FLOAT f, const FLOAT3D &vHit, const FLOAT3D &vDir, INDEX iDamageID) {
+    ReceiveDamage(pen, dmt, f, vHit, vDir);
+  };
+#endif
+
   /* Receive damage */
   void ReceiveDamage(CEntity *penInflictor, enum DamageType dmtType,
     FLOAT fDamageAmmount, const FLOAT3D &vHitPoint, const FLOAT3D &vDirection) 
