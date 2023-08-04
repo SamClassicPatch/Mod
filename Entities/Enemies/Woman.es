@@ -460,6 +460,11 @@ procedures:
     m_fDamageWounded = 20.0f;
     m_iScore = 1000;
 
+    // [Cecil] Reset attached kamikaze in editor
+    if (GetAPI()->IsEditorApp()) {
+      m_bKamikazeAttached = FALSE;
+    }
+
     if (m_bKamikazeCarrier) {
       AttachKamikaze();
     }
