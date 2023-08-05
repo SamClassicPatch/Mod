@@ -175,6 +175,24 @@ static INDEX gam_bObserverViewOverlay = TRUE;
 static INDEX gam_bObserverViewBackground = TRUE;
 static FLOAT gam_fObserverViewSize = 0.25f;
 
+// [Cecil] Axis values to add
+static struct SAddAxisValues {
+  union {
+    struct {
+      FLOAT afTranslation[3];
+      FLOAT afRotation[3];
+      FLOAT afViewRotation[3];
+    };
+
+    UBYTE ubData[36];
+  };
+
+  // Constructor
+  SAddAxisValues() {
+    memset(ubData, 0, sizeof(ubData));
+  };
+} ctl_aav;
+
 extern BOOL _bUserBreakEnabled = FALSE;
 
 // make sure that console doesn't show last lines if not playing in network
@@ -504,6 +522,15 @@ void CControls::CreateAction(const CPlayerCharacter &pc, CPlayerAction &paAction
   }
   //CPrintF("creating: prescan %d, x:%g\n", bPreScan, paAction.pa_aRotation(1));
 
+  // [Cecil] Add axis values
+  for (INDEX iAxis = 0; iAxis < 3; iAxis++) {
+    INDEX iVector = iAxis + 1;
+
+    paAction.pa_vTranslation(iVector) += ctl_aav.afTranslation[iAxis];
+    paAction.pa_aRotation(iVector) += ctl_aav.afRotation[iAxis];
+    paAction.pa_aViewRotation(iVector) += ctl_aav.afViewRotation[iAxis];
+  }
+
   // make the player class create the action packet
   ctl_ComposeActionPacket(pc, paAction, bPreScan);
 }
@@ -804,6 +831,26 @@ void CGameTimerHandler::HandleTimer(void)
   _pGame->GameHandleTimer();
 }
 
+// [Cecil] Set or reset current controls for a specific local player
+void CGame::SetCurrentControls(INDEX iPlayer, BOOL bCurrent) {
+  UBYTE *pubState = gm_lpLocalPlayers[iPlayer].lp_ubPlayerControlsState;
+  const SLONG slCtrl = ctl_slPlayerControlsSize;
+
+  // Copy local controls to current controls
+  if (bCurrent) {
+    memcpy(ctl_pvPlayerControls, pubState, slCtrl);
+
+    // [Cecil] Copy axis values
+    memcpy(ctl_aav.ubData, &pubState[slCtrl], sizeof(ctl_aav));
+
+  // Copy local controls back
+  } else {
+    memcpy(pubState, ctl_pvPlayerControls, slCtrl);
+
+    // [Cecil] Copy axis values
+    memcpy(&pubState[slCtrl], ctl_aav.ubData, sizeof(ctl_aav));
+  }
+};
 
 void CGame::GameHandleTimer(void)
 {
@@ -842,10 +889,7 @@ void CGame::GameHandleTimer(void)
           ctl_iCurrentPlayer = gm_lpLocalPlayers[ iPlayer].lp_pplsPlayerSource->pls_Index;
 
           // copy its local controls to current controls
-          memcpy(
-            ctl_pvPlayerControls,
-            gm_lpLocalPlayers[ iPlayer].lp_ubPlayerControlsState,
-            ctl_slPlayerControlsSize);
+          SetCurrentControls(iPlayer, TRUE);
 
           // create action for it for this tick
           CPlayerAction paAction;
@@ -856,10 +900,7 @@ void CGame::GameHandleTimer(void)
           gm_lpLocalPlayers[ iPlayer].lp_pplsPlayerSource->SetAction(paAction);
 
           // copy the local controls back
-          memcpy(
-            gm_lpLocalPlayers[ iPlayer].lp_ubPlayerControlsState,
-            ctl_pvPlayerControls,
-            ctl_slPlayerControlsSize);
+          SetCurrentControls(iPlayer, FALSE);
         }
       }
       // clear player indices
@@ -1083,6 +1124,11 @@ void CGame::InitInternal( void)
   _pShell->DeclareSymbol("persistent user INDEX gam_bObserverViewOverlay;", &gam_bObserverViewOverlay);
   _pShell->DeclareSymbol("persistent user INDEX gam_bObserverViewBackground;", &gam_bObserverViewBackground);
   _pShell->DeclareSymbol("persistent user FLOAT gam_fObserverViewSize;", &gam_fObserverViewSize);
+
+  // [Cecil] Axis values to add
+  _pShell->DeclareSymbol("user FLOAT ctl_afAddTranslation[3];",  &ctl_aav.afTranslation);
+  _pShell->DeclareSymbol("user FLOAT ctl_afAddRotation[3];",     &ctl_aav.afRotation);
+  _pShell->DeclareSymbol("user FLOAT ctl_afAddViewRotation[3];", &ctl_aav.afViewRotation);
 
   // [Cecil] Use bigger font in computer
   extern INDEX gam_bBigComputerFont;
@@ -2274,7 +2320,7 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
         // Precreate action for it for this tick
         if (bDoPrescan) {
           // Copy its local controls to current controls
-          memcpy(ctl_pvPlayerControls, gm_lpLocalPlayers[iLocal].lp_ubPlayerControlsState, ctl_slPlayerControlsSize);
+          SetCurrentControls(iLocal, TRUE);
 
           // Do prescanning
           CPlayerAction paPreAction;
@@ -2284,7 +2330,7 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
           ctrls.CreateAction(gm_apcPlayers[iCurrentPlayer], paPreAction, TRUE);
 
           // Copy the local controls back
-          memcpy(gm_lpLocalPlayers[iLocal].lp_ubPlayerControlsState, ctl_pvPlayerControls, ctl_slPlayerControlsSize);
+          SetCurrentControls(iLocal, FALSE);
         }
       }
     }

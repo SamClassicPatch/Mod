@@ -238,6 +238,9 @@ public:
   CTFileName GetQuickSaveName(BOOL bSave);
   void GameHandleTimer(void);
 
+  // [Cecil] Set or reset current controls for a specific local player
+  void SetCurrentControls(INDEX iPlayer, BOOL bCurrent);
+
 #if SE1_GAME == SS_REV
   // [Cecil] Rev: Fly-over observing in games & demos using enhanced CAM_*() methods
   virtual BOOL IsObservingOn(void); // Calls CAM_IsOn()
