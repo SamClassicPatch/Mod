@@ -459,6 +459,9 @@ procedures:
 
     autowait(0.35f);
 
+    // [Cecil] Stop making fuss
+    RemoveFromFuss();
+
     return EEnd();
   };
 
