@@ -105,7 +105,7 @@
     <ExecutablePath>$(SdkExe)</ExecutablePath>
     <IncludePath>$(SamEngineIncludes);$(SdkIncl)</IncludePath>
     <LibraryPath>$(SamEngineLibraries);$(SdkLibs)</LibraryPath>
-    <TargetName>Entities</TargetName>
+    <TargetName>Entities_Custom</TargetName>
     <OutDir>$(BinDir)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_TSE105|Win32'">

@@ -107,7 +107,7 @@
     <ExecutablePath>$(SdkExe)</ExecutablePath>
     <IncludePath>$(SamEngineIncludes);$(SdkIncl)</IncludePath>
     <LibraryPath>$(SamEngineLibraries);$(SdkLibs)</LibraryPath>
-    <TargetName>Game</TargetName>
+    <TargetName>Game_Custom</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_TSE105|Win32'">
     <OutDir>$(BinDir)</OutDir>
