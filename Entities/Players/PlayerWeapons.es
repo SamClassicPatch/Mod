@@ -16,8 +16,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 402
 %{
 #include "StdH.h"
-  
+
 #include <Engine/Build.h>
+#include <Game/PlayerSettings.h>
 
 #include "Players/Player.h"
 #include "Weapons/Bullet.h"

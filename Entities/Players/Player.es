@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <Engine/Build.h>
 #include <Engine/Network/Network.h>
+#include <Game/PlayerSettings.h>
 #include <locale.h>
 
 #include "ModelsMP/Player/SeriousSam/Player.h"
@@ -1423,7 +1424,7 @@ functions:
     return (CPlayerAnimator *)&*m_penAnimator;
   }
 
-  CPlayerSettings *GetSettings(void)
+  class CPlayerSettings *GetSettings(void)
   {
     return (CPlayerSettings *)en_pcCharacter.pc_aubAppearance;
   }
