@@ -316,3 +316,13 @@ void SpawnHitTypeEffect(CEntity *pen, enum BulletHitType bhtType, BOOL bSound, F
   FLOAT3D vIncommingBulletDir, FLOAT3D vDistance);
 
 #define FRndIn(a, b) (a + FRnd()*(b - a))
+
+// [Cecil] Don't let users set specific values to entity properties (e.g. types for Revolution compatibility)
+template<class Type> inline
+void ResetCompatibilityValue(Type &prop, Type valCheck, Type valResetTo)
+{
+  if (GetAPI()->IsEditorApp() && prop == valCheck) {
+    prop = valResetTo;
+    WarningMessage("[Classics Patch] This value cannot be used due to being added for compatibility reasons (e.g. Revolution map conversions).");
+  }
+};
