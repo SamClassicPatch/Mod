@@ -29,6 +29,7 @@ enum PowerUpItemType {
   2 PUIT_DAMAGE   "SeriousDamage",
   3 PUIT_SPEED    "SeriousSpeed",
   4 PUIT_BOMB     "SeriousBomb",
+  5 PUIT_JUMP     "SeriousJump", // [Cecil] Rev: New powerup
 };
 
 // event for sending through receive item
@@ -89,13 +90,10 @@ functions:
 
   void Precache(void)
   {
-    switch( m_puitType) {
-    case PUIT_INVISIB :  /*PrecacheSound(SOUND_INVISIB );  break;*/
-    case PUIT_INVULNER:  /*PrecacheSound(SOUND_INVULNER);  break; */                                    
-    case PUIT_DAMAGE  :  /*PrecacheSound(SOUND_DAMAGE  );  break;*/
-    case PUIT_SPEED   :  /*PrecacheSound(SOUND_SPEED   );  break;*/
-                         PrecacheSound(SOUND_PICKUP  );  break;
-    case PUIT_BOMB    :  PrecacheSound(SOUND_BOMB    );  break;
+    if (m_puitType == PUIT_BOMB) {
+      PrecacheSound(SOUND_BOMB);
+    } else {
+      PrecacheSound(SOUND_PICKUP);
     }
   }
 
@@ -109,11 +107,13 @@ functions:
     pes->es_iScore = 0;//m_iScore;
     
     switch( m_puitType) {
-    case PUIT_INVISIB :  pes->es_strName += " invisibility";     break;
-    case PUIT_INVULNER:  pes->es_strName += " invulnerability";  break;
-    case PUIT_DAMAGE  :  pes->es_strName += " serious damage";   break;
-    case PUIT_SPEED   :  pes->es_strName += " serious speed";    break;
-    case PUIT_BOMB    :  pes->es_strName = "Serious Bomb!"; 
+      case PUIT_INVISIB:  pes->es_strName += " invisibility"; break;
+      case PUIT_INVULNER: pes->es_strName += " invulnerability"; break;
+      case PUIT_DAMAGE:   pes->es_strName += " serious damage"; break;
+      case PUIT_SPEED:    pes->es_strName += " serious speed"; break;
+      case PUIT_JUMP:     pes->es_strName += " serious jump"; break; // [Cecil] Rev: New powerup
+
+      case PUIT_BOMB: pes->es_strName = "Serious Bomb!"; break;
     }
     return TRUE;
   }
@@ -137,6 +137,7 @@ functions:
         Particles_Stardust( this, 1.0f*0.75f, 0.75f*0.75f, PT_STAR08, 128);
         break;
       case PUIT_SPEED:
+      case PUIT_JUMP: // [Cecil] Rev: New powerup
         Particles_Stardust( this, 1.0f*0.75f, 0.75f*0.75f, PT_STAR08, 128);
         break;
       case PUIT_BOMB:
@@ -178,10 +179,11 @@ functions:
         StretchItem( FLOAT3D(1.0f*0.75f, 1.0f*0.75f, 1.0f*0.75));
         break;
       case PUIT_SPEED:
+      case PUIT_JUMP: // [Cecil] Rev: New powerup
         StartModelAnim( ITEMHOLDER_ANIM_SMALLOSCILATION, AOF_LOOPING|AOF_NORESTART);
         ForceCollisionBoxIndexChange( ITEMHOLDER_COLLISION_BOX_BIG);
         m_fRespawnTime = (m_fCustomRespawnTime>0) ? m_fCustomRespawnTime : 40.0f; 
-        m_strDescription.PrintF("SeriousSpeed");
+        m_strDescription.PrintF(m_puitType == PUIT_JUMP ? "SeriousJump" : "SeriousSpeed");
         AddItem(  MODEL_SPEED, TEXTURE_SPEED, 0, 0, 0);  // set appearance
         AddFlare( MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0,0.2f,0), FLOAT3D(1,1,0.3f) );  // add flare
         StretchItem( FLOAT3D(1.0f*0.75f, 1.0f*0.75f, 1.0f*0.75));
@@ -238,6 +240,7 @@ procedures:
           case PUIT_DAMAGE:   IFeel_PlayEffect("PU_Invulnerability"); break;
           case PUIT_SPEED:    IFeel_PlayEffect("PU_FastShoes"); break; 
           case PUIT_BOMB:     IFeel_PlayEffect("PU_SeriousBomb"); break; 
+          case PUIT_JUMP:     IFeel_PlayEffect("PU_SeriousJump"); break; // [Cecil] Rev: New powerup
         }
       }
       
@@ -258,6 +261,8 @@ procedures:
 
   Main()
   {
+    ResetCompatibilityValue(m_puitType, PUIT_JUMP, PUIT_SPEED); // [Cecil]
+
     Initialize();     // initialize base class
     SetProperties();  // set properties
     jump CItem::ItemLoop();

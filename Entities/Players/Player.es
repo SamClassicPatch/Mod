@@ -1175,6 +1175,9 @@ properties:
  191 INDEX m_iLastSeriousBombCount = 0,  // ammount of serious bombs player had before firing
  192 TIME m_tmSeriousBombFired = -10.0f, // when the bomb was last fired
 
+ // [Cecil] Special flags for enabling Serious Speed and Serious Jump
+ 200 INDEX m_iSeriousSpeedAndJump = 0,
+
 {
   ShellLaunchData ShellLaunchData_array;  // array of data describing flying empty shells
   INDEX m_iFirstEmptySLD;                         // index of last added empty shell
@@ -3451,7 +3454,14 @@ functions:
       case PUIT_DAMAGE  :  m_tmSeriousDamage   = tmNow + m_tmSeriousDamageMax;
         ItemPicked(LOCALIZE("^cFF0000Serious Damage!"), 0);
         return TRUE;
-      case PUIT_SPEED   :  m_tmSeriousSpeed    = tmNow + m_tmSeriousSpeedMax;
+      case PUIT_SPEED:
+        // [Cecil] Set flags or clear them if time has expired
+        if (tmNow > m_tmSeriousSpeed) {
+          m_iSeriousSpeedAndJump = 0;
+        }
+        m_iSeriousSpeedAndJump |= 1;
+
+        m_tmSeriousSpeed = tmNow + m_tmSeriousSpeedMax;
         ItemPicked(LOCALIZE("^cFF9400Serious Speed"), 0);
         return TRUE;
       case PUIT_BOMB    :
@@ -3465,6 +3475,18 @@ functions:
           this->SendEvent(eMsg);
         }
         return TRUE;              
+
+      // [Cecil] Rev: New powerup
+      case PUIT_JUMP:
+        // [Cecil] Set flags or clear them if time has expired
+        if (tmNow > m_tmSeriousSpeed) {
+          m_iSeriousSpeedAndJump = 0;
+        }
+        m_iSeriousSpeedAndJump |= 2;
+
+        m_tmSeriousSpeed = tmNow + m_tmSeriousSpeedMax;
+        ItemPicked(LOCALIZE("^c666666Serious Jump"), 0);
+        return TRUE;
       }
     }
 
@@ -4048,8 +4070,16 @@ functions:
     // enable faster moving (but not higher jumping!) if having SerousSpeed powerup
     const TIME tmDelta = m_tmSeriousSpeed - _pTimer->CurrentTick();
     if( tmDelta>0 && m_fAutoSpeed==0.0f) { 
-      vTranslation(1) *= 2.0f;
-      vTranslation(3) *= 2.0f;
+      // [Cecil] If using Serious Jump
+      if (m_iSeriousSpeedAndJump & 2) {
+        vTranslation(2) *= 2.5f;
+      }
+
+      // [Cecil] If using Serious Speed
+      if (m_iSeriousSpeedAndJump & 1) {
+        vTranslation(1) *= 2.0f;
+        vTranslation(3) *= 2.0f;
+      }
     }
     
     en_fAcceleration = plr_fAcceleration;
