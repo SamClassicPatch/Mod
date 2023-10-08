@@ -159,30 +159,33 @@ functions:
     if (GetRenderType()!=CEntity::RT_MODEL || !ShowItemParticles()) {
       return;
     }
+
     switch (m_kitType) {
-    case KIT_BOOKOFWISDOM    :
-    case KIT_CRYSTALSKULL    :   
-    case KIT_HOLYGRAIL       :
-      Particles_Stardust(this, 1.0f, 0.5f, PT_STAR08, 64);
-      break;
-    case KIT_JAGUARGOLDDUMMY :
-      Particles_Stardust(this, 2.0f, 2.0f, PT_STAR08, 64);
-      break;
-    case KIT_CROSSWOODEN     :
-    case KIT_CROSSMETAL      :   
-    case KIT_CROSSGOLD       :      
-    case KIT_HAWKWINGS01DUMMY:
-    case KIT_HAWKWINGS02DUMMY:
-    case KIT_TABLESDUMMY     :
-    case KIT_WINGEDLION      :
-    case KIT_ELEPHANTGOLD    :
-    case KIT_STATUEHEAD01    :
-    case KIT_STATUEHEAD02    :
-    case KIT_STATUEHEAD03    :
-    case KIT_KINGSTATUE      :
-    default:
-      Particles_Stardust(this, 1.5f, 1.1f, PT_STAR08, 64);
-      break;    
+      case KIT_BOOKOFWISDOM:
+      case KIT_CRYSTALSKULL:   
+      case KIT_HOLYGRAIL:
+        Particles_Stardust(this, 1.0f, 0.5f, PT_STAR08, 64);
+        break;
+
+      case KIT_JAGUARGOLDDUMMY:
+        Particles_Stardust(this, 2.0f, 2.0f, PT_STAR08, 64);
+        break;
+
+      case KIT_CROSSWOODEN:
+      case KIT_CROSSMETAL:   
+      case KIT_CROSSGOLD:      
+      case KIT_HAWKWINGS01DUMMY:
+      case KIT_HAWKWINGS02DUMMY:
+      case KIT_TABLESDUMMY:
+      case KIT_WINGEDLION:
+      case KIT_ELEPHANTGOLD:
+      case KIT_STATUEHEAD01:
+      case KIT_STATUEHEAD02:
+      case KIT_STATUEHEAD03:
+      case KIT_KINGSTATUE:
+      default:
+        Particles_Stardust(this, 1.5f, 1.1f, PT_STAR08, 64);
+        break;    
     }
   }
   
@@ -191,139 +194,44 @@ functions:
   // set health properties depending on type
   void SetProperties(void)
   {
-    m_fRespawnTime = (m_fCustomRespawnTime>0) ? m_fCustomRespawnTime : 10.0f; 
+    m_fRespawnTime = (m_fCustomRespawnTime > 0) ? m_fCustomRespawnTime : 10.0f;
     m_strDescription = GetKeyName(m_kitType);
 
     switch (m_kitType) {
-      case KIT_BOOKOFWISDOM :
-        // set appearance
-        AddItem(MODEL_BOOKOFWISDOM, TEXTURE_BOOKOFWISDOM , 0, 0, 0);
-        // add flare
-        AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0,0.2f,0), FLOAT3D(1,1,0.3f) );
-        StretchItem(FLOAT3D(1.0f, 1.0f, 1.0f));
-        m_iSoundComponent = SOUND_KEY;
-        break;
-      case KIT_CROSSWOODEN:
-        // set appearance
-        AddItem(MODEL_CROSSWOODEN, TEXTURE_CROSSWOODEN, 0, 0, 0);
-        // add flare
-        AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0,0.2f,0), FLOAT3D(1,1,0.3f) );
-        StretchItem(FLOAT3D(1.0f, 1.0f, 1.0f));
-        m_iSoundComponent = SOUND_KEY;
-        break;
-      case KIT_CROSSMETAL:
-        // set appearance
-        AddItem(MODEL_CROSSMETAL, TEXTURE_CROSSMETAL, TEX_REFL_METAL01, TEX_SPEC_MEDIUM, 0);
-        // add flare
-        AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0,0.2f,0), FLOAT3D(1,1,0.3f) );
-        StretchItem(FLOAT3D(1.0f, 1.0f, 1.0f));
-        m_iSoundComponent = SOUND_KEY;
-        break;
-      case KIT_CROSSGOLD:
-        // set appearance
-        AddItem(MODEL_CROSSGOLD, TEXTURE_CROSSGOLD, TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0);
-        // add flare
-        AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0,0.2f,0), FLOAT3D(1,1,0.3f) );
-        StretchItem(FLOAT3D(1.0f, 1.0f, 1.0f));
-        m_iSoundComponent = SOUND_KEY;
-        break;
+      case KIT_BOOKOFWISDOM:     AddItem(MODEL_BOOKOFWISDOM,   TEXTURE_BOOKOFWISDOM,   0, 0, 0); break;
+      case KIT_CROSSWOODEN:      AddItem(MODEL_CROSSWOODEN,    TEXTURE_CROSSWOODEN,    0, 0, 0); break;
+      case KIT_CROSSMETAL:       AddItem(MODEL_CROSSMETAL,     TEXTURE_CROSSMETAL,     TEX_REFL_METAL01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_CROSSGOLD:        AddItem(MODEL_CROSSGOLD,      TEXTURE_CROSSGOLD,      TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_JAGUARGOLDDUMMY:  AddItem(MODEL_JAGUARGOLD,     TEX_REFL_GOLD01,        TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_HAWKWINGS01DUMMY: AddItem(MODEL_HAWKWINGS01,    TEXTURE_HAWKWINGS,      0, 0, 0); break;
+      case KIT_HAWKWINGS02DUMMY: AddItem(MODEL_HAWKWINGS02,    TEXTURE_HAWKWINGS,      0, 0, 0); break;
+      case KIT_HOLYGRAIL:        AddItem(MODEL_HOLYGRAIL,      TEXTURE_HOLYGRAIL,      TEX_REFL_METAL01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_TABLESDUMMY:      AddItem(MODEL_TABLESOFWISDOM, TEXTURE_TABLESOFWISDOM, TEX_REFL_METAL01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_WINGEDLION:       AddItem(MODEL_WINGEDLION,     TEX_REFL_GOLD01,        TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_ELEPHANTGOLD:     AddItem(MODEL_ELEPHANTGOLD,   TEX_REFL_GOLD01,        TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_STATUEHEAD01:     AddItem(MODEL_STATUEHEAD01,   TEXTURE_STATUEHEAD01,   0, 0, 0); break;
+      case KIT_STATUEHEAD02:     AddItem(MODEL_STATUEHEAD02,   TEXTURE_STATUEHEAD02,   0, 0, 0); break;
+      case KIT_STATUEHEAD03:     AddItem(MODEL_STATUEHEAD03,   TEXTURE_STATUEHEAD03,   0, 0, 0); break;
+      case KIT_KINGSTATUE:       AddItem(MODEL_KINGSTATUE,     TEX_REFL_GOLD01,        TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_CRYSTALSKULL:     AddItem(MODEL_CRYSTALSKULL,   TEXTURE_CRYSTALSKULL,   TEX_REFL_METAL01, TEX_SPEC_MEDIUM, 0); break;
+    }
+
+    // Common flare
+    switch (m_kitType) {
       case KIT_JAGUARGOLDDUMMY:
-        // set appearance
-        AddItem(MODEL_JAGUARGOLD, TEX_REFL_GOLD01, TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0);
-        // add flare
-        AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0,0.5f,0), FLOAT3D(2,2,0.3f) );
-        StretchItem(FLOAT3D(1.0f, 1.0f, 1.0f));
-        m_iSoundComponent = SOUND_KEY;
-        break;
-      case KIT_HAWKWINGS01DUMMY:
-        // set appearance
-        AddItem(MODEL_HAWKWINGS01, TEXTURE_HAWKWINGS, 0, 0, 0);
-        // add flare
-        AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0,0.2f,0), FLOAT3D(1,1,0.3f) );
-        StretchItem(FLOAT3D(1.0f, 1.0f, 1.0f));
-        m_iSoundComponent = SOUND_KEY;
-        break;
-      case KIT_HAWKWINGS02DUMMY:
-        // set appearance
-        AddItem(MODEL_HAWKWINGS02, TEXTURE_HAWKWINGS, 0, 0, 0);
-        // add flare
-        AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0,0.2f,0), FLOAT3D(1,1,0.3f) );
-        StretchItem(FLOAT3D(1.0f, 1.0f, 1.0f));
-        m_iSoundComponent = SOUND_KEY;
-        break;
-      case KIT_HOLYGRAIL:
-        // set appearance
-        AddItem(MODEL_HOLYGRAIL, TEXTURE_HOLYGRAIL, TEX_REFL_METAL01, TEX_SPEC_MEDIUM, 0);
-        // add flare
-        AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0,0.2f,0), FLOAT3D(1,1,0.3f) );
-        StretchItem(FLOAT3D(1.0f, 1.0f, 1.0f));
-        m_iSoundComponent = SOUND_KEY;
-        break;
-      case KIT_TABLESDUMMY:
-        // set appearance
-        AddItem(MODEL_TABLESOFWISDOM, TEXTURE_TABLESOFWISDOM, TEX_REFL_METAL01, TEX_SPEC_MEDIUM, 0);
-        // add flare
-        AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0,0.2f,0), FLOAT3D(1,1,0.3f) );
-        StretchItem(FLOAT3D(1.0f, 1.0f, 1.0f));
-        m_iSoundComponent = SOUND_KEY;
-        break;
-      case KIT_WINGEDLION:
-        // set appearance
-        AddItem(MODEL_WINGEDLION, TEX_REFL_GOLD01, TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0);
-        // add flare
-        AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0,0.2f,0), FLOAT3D(1,1,0.3f) );
-        StretchItem(FLOAT3D(1.0f, 1.0f, 1.0f));
-        m_iSoundComponent = SOUND_KEY;
-        break;
       case KIT_ELEPHANTGOLD:
-        // set appearance
-        AddItem(MODEL_ELEPHANTGOLD, TEX_REFL_GOLD01, TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0);
-        // add flare
-        AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0,0.5f,0), FLOAT3D(2,2,0.3f) );
-        StretchItem(FLOAT3D(1.0f, 1.0f, 1.0f));
-        m_iSoundComponent = SOUND_KEY;
-        break;      
-      case KIT_STATUEHEAD01:
-        // set appearance
-        AddItem(MODEL_STATUEHEAD01, TEXTURE_STATUEHEAD01, 0, 0, 0);
-        // add flare
-        AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0,0.2f,0), FLOAT3D(1,1,0.3f) );
-        StretchItem(FLOAT3D(1.0f, 1.0f, 1.0f));
-        m_iSoundComponent = SOUND_KEY;
+        AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0.0f, 0.5f, 0.0f), FLOAT3D(2.0f, 2.0f, 0.3f));
         break;
-      case KIT_STATUEHEAD02:
-        // set appearance
-        AddItem(MODEL_STATUEHEAD02, TEXTURE_STATUEHEAD02, 0, 0, 0);
-        // add flare
-        AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0,0.2f,0), FLOAT3D(1,1,0.3f) );
-        StretchItem(FLOAT3D(1.0f, 1.0f, 1.0f));
-        m_iSoundComponent = SOUND_KEY;
-        break;      
-      case KIT_STATUEHEAD03:
-        // set appearance
-        AddItem(MODEL_STATUEHEAD03, TEXTURE_STATUEHEAD03, 0, 0, 0);
-        // add flare
-        AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0,0.2f,0), FLOAT3D(1,1,0.3f) );
-        StretchItem(FLOAT3D(1.0f, 1.0f, 1.0f));
-        m_iSoundComponent = SOUND_KEY;
-        break;
-      case KIT_KINGSTATUE:
-        // set appearance
-        AddItem(MODEL_KINGSTATUE, TEX_REFL_GOLD01, TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0);
-        // add flare
-        AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0,0.2f,0), FLOAT3D(1,1,0.3f) );
-        StretchItem(FLOAT3D(1.0f, 1.0f, 1.0f));
-        m_iSoundComponent = SOUND_KEY;
-        break;
-      case KIT_CRYSTALSKULL:
-        // set appearance
-        AddItem(MODEL_CRYSTALSKULL, TEXTURE_CRYSTALSKULL, TEX_REFL_METAL01, TEX_SPEC_MEDIUM, 0);
-        // add flare
-        AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0,0.2f,0), FLOAT3D(1,1,0.3f) );
-        StretchItem(FLOAT3D(1.0f, 1.0f, 1.0f));
-        m_iSoundComponent = SOUND_KEY;
+
+      default:
+        AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0.0f, 0.2f, 0.0f), FLOAT3D(1.0f, 1.0f, 0.3f));
         break;
     }
+
+    // Common settings
+    m_iSoundComponent = SOUND_KEY;
+    StretchItem(FLOAT3D(1, 1, 1));
+
     GetModelObject()->StretchModel(FLOAT3D(m_fSize, m_fSize, m_fSize));
   };
 
