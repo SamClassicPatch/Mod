@@ -16,12 +16,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 605
 %{
 #include "StdH.h"
+
+// [Cecil] Rev: Chunk for new blend modes
+#define TOGGLED_LIGHTS_CHUNK CChunkID("TLTM")
+%}
+
+%{
+// [Cecil] Rev: Declare symbol with 'm_tmBlendSpeed' field offset
+void CWorldSettingsController_OnInitClass(void)
+{
+  static INDEX ent_iWSCBlendSpeedOffset = offsetof(CWorldSettingsController, m_tmBlendSpeed);
+  _pShell->DeclareSymbol("const INDEX ent_iWSCBlendSpeedOffset;", &ent_iWSCBlendSpeedOffset);
+};
 %}
 
 class CWorldSettingsController: CEntity {
 name      "WorldSettingsController";
 thumbnail "Thumbnails\\WorldSettingsController.tbn";
-features  "IsTargetable", "HasName", "IsImportant";
+features  "IsTargetable", "HasName", "IsImportant", "ImplementsOnInitClass";
 
 properties:
   1 FLOAT m_tmStormStart = -1.0f,                 // storm start time
@@ -81,31 +93,60 @@ properties:
  72 CEntityPointer m_penCreditsHolder,
  73 CEntityPointer m_penHudPicFXHolder,
 
- // [Cecil] Rev: New blend modes
- 74 FLOAT m_tmActivatedToggledLights1 = 1e6,
- 75 FLOAT m_tmDeactivatedToggledLights1 = 1e6,
- 76 FLOAT m_tmActivatedToggledLights2 = 1e6,
- 77 FLOAT m_tmDeactivatedToggledLights2 = 1e6,
- 78 FLOAT m_tmActivatedToggledLights3 = 1e6,
- 79 FLOAT m_tmDeactivatedToggledLights3 = 1e6,
- 80 FLOAT m_tmActivatedToggledLights4 = 1e6,
- 81 FLOAT m_tmDeactivatedToggledLights4 = 1e6,
- 82 FLOAT m_tmActivatedInstToggledLights1 = 1e6,
- 83 FLOAT m_tmDeactivatedInstToggledLights1 = 1e6,
- 84 FLOAT m_tmActivatedInstToggledLights2 = 1e6,
- 85 FLOAT m_tmDeactivatedInstToggledLights2 = 1e6,
- 86 FLOAT m_tmActivatedInstToggledLights3 = 1e6,
- 87 FLOAT m_tmDeactivatedInstToggledLights3 = 1e6,
- 88 FLOAT m_tmActivatedInstToggledLights4 = 1e6,
- 89 FLOAT m_tmDeactivatedInstToggledLights4 = 1e6,
- 90 FLOAT m_tmBlendSpeed "Transition speed for controlled blending" = 2.0f,
+{
+  // [Cecil] Rev: New blend modes
+  CStaticArray<FLOAT> m_atmToggledLights;
+  FLOAT m_tmBlendSpeed;
+}
 
 components:
   1 model   MODEL_WORLD_SETTINGS_CONTROLLER     "Models\\Editor\\WorldSettingsController.mdl",
   2 texture TEXTURE_WORLD_SETTINGS_CONTROLLER   "Models\\Editor\\WorldSettingsController.tex"
 
 functions:
-  
+  // [Cecil] Rev: Reset properties for new blend modes
+  void CWorldSettingsController(void) {
+    m_atmToggledLights.New(16);
+
+    for (INDEX i = 0; i < 16; i++) {
+      m_atmToggledLights[i] = 1e6;
+    }
+
+    m_tmBlendSpeed = 2.0f;
+  };
+
+  // [Cecil] Rev: Write properties for new blend modes
+  void Write_t(CTStream *istr) {
+    CEntity::Write_t(istr);
+
+    if (_EnginePatches._eWorldFormat == E_LF_SSR && !GetAPI()->IsEditorApp())
+    {
+      istr->WriteID_t(TOGGLED_LIGHTS_CHUNK);
+
+      for (INDEX i = 0; i < 16; i++) {
+        *istr << m_atmToggledLights[i];
+      }
+    }
+  };
+
+  // [Cecil] Rev: Read properties for new blend modes
+  void Read_t(CTStream *ostr) {
+    CEntity::Read_t(ostr);
+
+    if (_EnginePatches._eWorldFormat == E_LF_SSR)
+    {
+      CChunkID cid = ostr->PeekID_t();
+
+      if (cid == TOGGLED_LIGHTS_CHUNK) {
+        ostr->GetID_t();
+
+        for (INDEX i = 0; i < 16; i++) {
+          *ostr >> m_atmToggledLights[i];
+        }
+      }
+    }
+  };
+
   BOOL IsTargetValid(SLONG slPropertyOffset, CEntity *penTarget)
   {
     if( slPropertyOffset == offsetof(CWorldSettingsController, m_penEnvPartHolder))

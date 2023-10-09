@@ -32,14 +32,14 @@ enum BlendControllerType {
   6 BCT_ACTIVATE_PYRAMID_MORPH_ROOM "Pyramid morph room",        // pyramid morph room activated
 
   // [Cecil] Rev: New blend modes
-  7 BCT_TOGGLE_LIGHTS_1            "Toggle lights 1",
-  8 BCT_TOGGLE_LIGHTS_2            "Toggle lights 2",
-  9 BCT_TOGGLE_LIGHTS_3            "Toggle lights 3",
- 10 BCT_TOGGLE_LIGHTS_4            "Toggle lights 4",
- 11 BCT_TOGGLE_CONTROLLED_LIGHTS_1 "Toggle controlled lights 1",
- 12 BCT_TOGGLE_CONTROLLED_LIGHTS_2 "Toggle controlled lights 2",
- 13 BCT_TOGGLE_CONTROLLED_LIGHTS_3 "Toggle controlled lights 3",
- 14 BCT_TOGGLE_CONTROLLED_LIGHTS_4 "Toggle controlled lights 4",
+  7 BCT_TOGGLE_LIGHTS_1            "[SSR] Toggle lights 1",
+  8 BCT_TOGGLE_LIGHTS_2            "[SSR] Toggle lights 2",
+  9 BCT_TOGGLE_LIGHTS_3            "[SSR] Toggle lights 3",
+ 10 BCT_TOGGLE_LIGHTS_4            "[SSR] Toggle lights 4",
+ 11 BCT_TOGGLE_CONTROLLED_LIGHTS_1 "[SSR] Toggle controlled lights 1",
+ 12 BCT_TOGGLE_CONTROLLED_LIGHTS_2 "[SSR] Toggle controlled lights 2",
+ 13 BCT_TOGGLE_CONTROLLED_LIGHTS_3 "[SSR] Toggle controlled lights 3",
+ 14 BCT_TOGGLE_CONTROLLED_LIGHTS_4 "[SSR] Toggle controlled lights 4",
 };
 
 class CBlendController: CMarker
@@ -70,6 +70,9 @@ functions:
     }
     FLOAT tmNow = _pTimer->CurrentTick();
 
+    // [Cecil] Rev: Timers for new blend modes
+    CStaticArray<FLOAT> &atm = pwsc->m_atmToggledLights;
+
     if (ee.ee_slEvent==EVENTCODE_EActivate)
     {
       switch(m_bctType)
@@ -99,39 +102,39 @@ functions:
 
         // [Cecil] Rev: New blend types
         case BCT_TOGGLE_LIGHTS_1:
-          pwsc->m_tmActivatedToggledLights1 = tmNow;
+          atm[0] = tmNow;
           break;
 
         case BCT_TOGGLE_LIGHTS_2:
-          pwsc->m_tmActivatedToggledLights2 = tmNow;
+          atm[2] = tmNow;
           break;
 
         case BCT_TOGGLE_LIGHTS_3:
-          pwsc->m_tmActivatedToggledLights3 = tmNow;
+          atm[4] = tmNow;
           break;
 
         case BCT_TOGGLE_LIGHTS_4:
-          pwsc->m_tmActivatedToggledLights4 = tmNow;
+          atm[6] = tmNow;
           break;
 
         case BCT_TOGGLE_CONTROLLED_LIGHTS_1:
-          pwsc->m_tmActivatedInstToggledLights1 = tmNow;
-          pwsc->m_tmDeactivatedInstToggledLights1 = 1e6;
+          atm[8] = tmNow;
+          atm[9] = 1e6;
           break;
 
         case BCT_TOGGLE_CONTROLLED_LIGHTS_2:
-          pwsc->m_tmActivatedInstToggledLights2 = tmNow;
-          pwsc->m_tmDeactivatedInstToggledLights2 = 1e6;
+          atm[10] = tmNow;
+          atm[11] = 1e6;
           break;
 
         case BCT_TOGGLE_CONTROLLED_LIGHTS_3:
-          pwsc->m_tmActivatedInstToggledLights3 = tmNow;
-          pwsc->m_tmDeactivatedInstToggledLights3 = 1e6;
+          atm[12] = tmNow;
+          atm[13] = 1e6;
           break;
 
         case BCT_TOGGLE_CONTROLLED_LIGHTS_4:
-          pwsc->m_tmActivatedInstToggledLights4 = tmNow;
-          pwsc->m_tmDeactivatedInstToggledLights4 = 1e6;
+          atm[14] = tmNow;
+          atm[15] = 1e6;
           break;
       }
     }
@@ -154,39 +157,39 @@ functions:
 
         // [Cecil] Rev: New blend types
         case BCT_TOGGLE_LIGHTS_1:
-          pwsc->m_tmDeactivatedToggledLights1 = tmNow;
+          atm[1] = tmNow;
           break;
 
         case BCT_TOGGLE_LIGHTS_2:
-          pwsc->m_tmDeactivatedToggledLights2 = tmNow;
+          atm[3] = tmNow;
           break;
 
         case BCT_TOGGLE_LIGHTS_3:
-          pwsc->m_tmDeactivatedToggledLights3 = tmNow;
+          atm[5] = tmNow;
           break;
 
         case BCT_TOGGLE_LIGHTS_4:
-          pwsc->m_tmDeactivatedToggledLights4 = tmNow;
+          atm[7] = tmNow;
           break;
 
         case BCT_TOGGLE_CONTROLLED_LIGHTS_1:
-          pwsc->m_tmActivatedInstToggledLights1 = 1e6;
-          pwsc->m_tmDeactivatedInstToggledLights1 = tmNow;
+          atm[8] = 1e6;
+          atm[9] = tmNow;
           break;
 
         case BCT_TOGGLE_CONTROLLED_LIGHTS_2:
-          pwsc->m_tmActivatedInstToggledLights2 = 1e6;
-          pwsc->m_tmDeactivatedInstToggledLights2 = tmNow;
+          atm[10] = 1e6;
+          atm[11] = tmNow;
           break;
 
         case BCT_TOGGLE_CONTROLLED_LIGHTS_3:
-          pwsc->m_tmActivatedInstToggledLights3 = 1e6;
-          pwsc->m_tmDeactivatedInstToggledLights3 = tmNow;
+          atm[12] = 1e6;
+          atm[13] = tmNow;
           break;
 
         case BCT_TOGGLE_CONTROLLED_LIGHTS_4:
-          pwsc->m_tmActivatedInstToggledLights4 = 1e6;
-          pwsc->m_tmDeactivatedInstToggledLights4 = tmNow;
+          atm[14] = 1e6;
+          atm[15] = tmNow;
           break;
       }
     }

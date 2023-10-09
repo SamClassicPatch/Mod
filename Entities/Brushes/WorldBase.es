@@ -895,7 +895,7 @@ void CWorldBase_OnWorldRender(CWorld *pwo)
     SetPyramidMorphRoomAlpha(pwo, 15, pwsc->m_tmPyramidMorphRoomActivated);
 
     // [Cecil] Rev: New blend modes
-    const FLOAT *atm = &pwsc->m_tmActivatedToggledLights1;
+    const CStaticArray<FLOAT> &atm = pwsc->m_atmToggledLights;
     SetPyramidPlateActivateAlpha(pwo, 16, atm[0], atm[1], FALSE);
     SetPyramidPlateActivateAlpha(pwo, 17, atm[2], atm[3], FALSE);
     SetPyramidPlateActivateAlpha(pwo, 18, atm[4], atm[5], FALSE);
