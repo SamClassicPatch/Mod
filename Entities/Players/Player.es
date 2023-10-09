@@ -3415,14 +3415,29 @@ functions:
       if (m_penActionMarker!=NULL) {
         return FALSE;
       }
+
+      // [Cecil] Shift TFE keys to fit into original bits
+      const BOOL bNonTSE = (_EnginePatches._eWorldFormat != E_LF_TSE);
+      INDEX iKeyType = ((EKey &)ee).kitType;
+
+      if (bNonTSE && iKeyType >= KIT_ANKHWOOD) {
+        iKeyType -= KIT_ANKHWOOD;
+      }
+
       // make key mask
-      ULONG ulKey = 1<<INDEX(((EKey&)ee).kitType);
+      ULONG ulKey = (1 << iKeyType);
       EKey &eKey = (EKey&)ee;
       if(eKey.kitType == KIT_HAWKWINGS01DUMMY || eKey.kitType == KIT_HAWKWINGS02DUMMY
         || eKey.kitType == KIT_TABLESDUMMY || eKey.kitType ==KIT_JAGUARGOLDDUMMY)
       {
         ulKey = 0;
       }
+
+      // [Cecil] Dummy TFE keys
+      if (bNonTSE && (eKey.kitType == KIT_ANKHGOLDDUMMY || eKey.kitType == KIT_SCARABDUMMY)) {
+        ulKey = 0;
+      }
+
       // if key is already in inventory
       if (m_ulKeys&ulKey) {
         // ignore it
@@ -3478,15 +3493,18 @@ functions:
 
       // [Cecil] Rev: New powerup
       case PUIT_JUMP:
-        // [Cecil] Set flags or clear them if time has expired
-        if (tmNow > m_tmSeriousSpeed) {
-          m_iSeriousSpeedAndJump = 0;
-        }
-        m_iSeriousSpeedAndJump |= 2;
+        if (_EnginePatches._eWorldFormat != E_LF_TSE) {
+          // [Cecil] Set flags or clear them if time has expired
+          if (tmNow > m_tmSeriousSpeed) {
+            m_iSeriousSpeedAndJump = 0;
+          }
+          m_iSeriousSpeedAndJump |= 2;
 
-        m_tmSeriousSpeed = tmNow + m_tmSeriousSpeedMax;
-        ItemPicked(LOCALIZE("^c666666Serious Jump"), 0);
-        return TRUE;
+          m_tmSeriousSpeed = tmNow + m_tmSeriousSpeedMax;
+          ItemPicked(LOCALIZE("^c666666Serious Jump"), 0);
+          return TRUE;
+        }
+        break;
       }
     }
 

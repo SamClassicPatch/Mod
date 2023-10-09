@@ -39,6 +39,27 @@ enum KeyItemType {
  13 KIT_STATUEHEAD03      "Ix Chel mask",
  14 KIT_KINGSTATUE        "Statue of King Tilmun",
  15 KIT_CRYSTALSKULL      "Crystal Skull",
+
+ // [Cecil] TFE keys (original indices offsetted by 16)
+ 16 KIT_ANKHWOOD          "[TFE/SSR] Wooden ankh",
+ 17 KIT_ANKHROCK          "[TFE/SSR] Stone ankh",
+ 18 KIT_ANKHGOLD          "[TFE/SSR] Gold ankh",
+ 19 KIT_AMONGOLD          "[TFE/SSR] Gold amon",
+ 20 KIT_ANKHGOLDDUMMY     "[TFE/SSR] Gold ankh dummy key",
+ 21 KIT_ELEMENTEARTH      "[TFE/SSR] Element - Earth",
+ 22 KIT_ELEMENTWATER      "[TFE/SSR] Element - Water",
+ 23 KIT_ELEMENTAIR        "[TFE/SSR] Element - Air",
+ 24 KIT_ELEMENTFIRE       "[TFE/SSR] Element - Fire",
+ 25 KIT_RAKEY             "[TFE/SSR] Ra Key",
+ 26 KIT_MOONKEY           "[TFE/SSR] Moon Key",
+ 28 KIT_EYEOFRA           "[TFE/SSR] Eye of Ra",
+ 29 KIT_SCARAB            "[TFE/SSR] Scarab",
+ 30 KIT_COBRA             "[TFE/SSR] Cobra",
+ 31 KIT_SCARABDUMMY       "[TFE/SSR] Scarab dummy",
+ 32 KIT_HEART             "[TFE/SSR] Gold Heart",
+ 33 KIT_FEATHER           "[TFE/SSR] Feather of Truth",
+ 34 KIT_SPHINX1           "[TFE/SSR] Sphinx 1",
+ 35 KIT_SPHINX2           "[TFE/SSR] Sphinx 2",
 };
 
 // event for sending through receive item
@@ -51,23 +72,45 @@ event EKey {
 const char *GetKeyName(enum KeyItemType kit)
 {
   switch(kit) {
-  case KIT_BOOKOFWISDOM     :  return LOCALIZE("Book of wisdom"); break;
-  case KIT_CROSSWOODEN      :  return LOCALIZE("Wooden cross"); break;
-  case KIT_CROSSGOLD        :  return LOCALIZE("Gold cross"); break;
-  case KIT_CROSSMETAL       :  return LOCALIZE("Silver cross"); break;
-  case KIT_JAGUARGOLDDUMMY  :  return LOCALIZE("Gold jaguar"); break;
-  case KIT_HAWKWINGS01DUMMY :  return LOCALIZE("Hawk wings - part 1"); break;
-  case KIT_HAWKWINGS02DUMMY :  return LOCALIZE("Hawk wings - part 2"); break;
-  case KIT_HOLYGRAIL        :  return LOCALIZE("Holy grail"); break;
-  case KIT_TABLESDUMMY      :  return LOCALIZE("Tablet of wisdom"); break;
-  case KIT_WINGEDLION       :  return LOCALIZE("Winged lion"); break;
-  case KIT_ELEPHANTGOLD     :  return LOCALIZE("Gold elephant"); break;    
-  case KIT_STATUEHEAD01     :  return LOCALIZE("Seriously scary ceremonial mask"); break;
-  case KIT_STATUEHEAD02     :  return LOCALIZE("Hilariously happy ceremonial mask"); break;
-  case KIT_STATUEHEAD03     :  return LOCALIZE("Ix Chel mask"); break;   
-  case KIT_KINGSTATUE       :  return LOCALIZE("Statue of King Tilmun"); break;   
-  case KIT_CRYSTALSKULL     :  return LOCALIZE("Crystal Skull"); break;   
-  default: return LOCALIZE("unknown item"); break;
+    case KIT_BOOKOFWISDOM     :  return LOCALIZE("Book of wisdom"); break;
+    case KIT_CROSSWOODEN      :  return LOCALIZE("Wooden cross"); break;
+    case KIT_CROSSGOLD        :  return LOCALIZE("Gold cross"); break;
+    case KIT_CROSSMETAL       :  return LOCALIZE("Silver cross"); break;
+    case KIT_JAGUARGOLDDUMMY  :  return LOCALIZE("Gold jaguar"); break;
+    case KIT_HAWKWINGS01DUMMY :  return LOCALIZE("Hawk wings - part 1"); break;
+    case KIT_HAWKWINGS02DUMMY :  return LOCALIZE("Hawk wings - part 2"); break;
+    case KIT_HOLYGRAIL        :  return LOCALIZE("Holy grail"); break;
+    case KIT_TABLESDUMMY      :  return LOCALIZE("Tablet of wisdom"); break;
+    case KIT_WINGEDLION       :  return LOCALIZE("Winged lion"); break;
+    case KIT_ELEPHANTGOLD     :  return LOCALIZE("Gold elephant"); break;    
+    case KIT_STATUEHEAD01     :  return LOCALIZE("Seriously scary ceremonial mask"); break;
+    case KIT_STATUEHEAD02     :  return LOCALIZE("Hilariously happy ceremonial mask"); break;
+    case KIT_STATUEHEAD03     :  return LOCALIZE("Ix Chel mask"); break;   
+    case KIT_KINGSTATUE       :  return LOCALIZE("Statue of King Tilmun"); break;   
+    case KIT_CRYSTALSKULL     :  return LOCALIZE("Crystal Skull"); break;   
+
+    // [Cecil] TFE keys
+    case KIT_ANKHWOOD:      return LOCALIZE("Wooden ankh"); break;
+    case KIT_ANKHROCK:      return LOCALIZE("Stone ankh"); break;
+    case KIT_ANKHGOLD:
+    case KIT_ANKHGOLDDUMMY: return LOCALIZE("Gold ankh"); break;
+    case KIT_AMONGOLD:      return LOCALIZE("Gold Amon statue"); break;
+    case KIT_ELEMENTEARTH:  return LOCALIZE("Earth element"); break;
+    case KIT_ELEMENTWATER:  return LOCALIZE("Water element"); break;
+    case KIT_ELEMENTAIR:    return LOCALIZE("Air element"); break;
+    case KIT_ELEMENTFIRE:   return LOCALIZE("Fire element"); break;
+    case KIT_RAKEY:         return LOCALIZE("Ra key"); break;
+    case KIT_MOONKEY:       return LOCALIZE("Moon key"); break;
+    case KIT_EYEOFRA:       return LOCALIZE("Eye of Ra"); break;
+    case KIT_SCARAB:
+    case KIT_SCARABDUMMY:   return LOCALIZE("Scarab"); break;
+    case KIT_COBRA:         return LOCALIZE("Cobra"); break;
+    case KIT_HEART:         return LOCALIZE("Gold Heart"); break;
+    case KIT_FEATHER:       return LOCALIZE("Feather of Truth"); break;
+    case KIT_SPHINX1:
+    case KIT_SPHINX2:       return LOCALIZE("Gold Sphinx"); break;
+
+    default: return LOCALIZE("unknown item"); break;
   };
 }
 
@@ -127,6 +170,40 @@ components:
  60 model   MODEL_CRYSTALSKULL      "ModelsMP\\Items\\Keys\\CrystalSkull\\Skull.mdl",
  61 texture TEXTURE_CRYSTALSKULL    "ModelsMP\\Items\\Keys\\CrystalSkull\\Skull.tex",
 
+// [Cecil] TFE keys (original indices offsetted by 100)
+101 model   MODEL_ANKHWOOD       "Models\\Items\\Keys\\AnkhWood\\Ankh.mdl",
+102 texture TEXTURE_ANKHWOOD     "Models\\Ages\\Egypt\\Vehicles\\BigBoat\\OldWood.tex",
+103 model   MODEL_ANKHROCK       "Models\\Items\\Keys\\AnkhStone\\Ankh.mdl",
+104 texture TEXTURE_ANKHROCK     "Models\\Items\\Keys\\AnkhStone\\Stone.tex",
+105 model   MODEL_ANKHGOLD       "Models\\Items\\Keys\\AnkhGold\\Ankh.mdl",
+106 texture TEXTURE_ANKHGOLD     "Models\\Items\\Keys\\AnkhGold\\Ankh.tex",
+107 model   MODEL_AMONGOLD       "Models\\Ages\\Egypt\\Gods\\Amon\\AmonGold.mdl",
+108 texture TEXTURE_AMONGOLD     "Models\\Ages\\Egypt\\Gods\\Amon\\AmonGold.tex",
+110 model   MODEL_ELEMENTAIR     "Models\\Items\\Keys\\Elements\\Air.mdl",
+111 texture TEXTURE_ELEMENTAIR   "Models\\Items\\Keys\\Elements\\Air.tex",
+120 model   MODEL_ELEMENTWATER   "Models\\Items\\Keys\\Elements\\Water.mdl",
+121 texture TEXTURE_ELEMENTWATER "Models\\Items\\Keys\\Elements\\Water.tex",
+130 model   MODEL_ELEMENTFIRE    "Models\\Items\\Keys\\Elements\\Fire.mdl",
+131 texture TEXTURE_ELEMENTFIRE  "Models\\Items\\Keys\\Elements\\Fire.tex",
+140 model   MODEL_ELEMENTEARTH   "Models\\Items\\Keys\\Elements\\Earth.mdl",
+141 texture TEXTURE_ELEMENTEARTH "Models\\Items\\Keys\\Elements\\Texture.tex",
+150 model   MODEL_RAKEY          "Models\\Items\\Keys\\RaKey\\Key.mdl",
+151 texture TEXTURE_RAKEY        "Models\\Items\\Keys\\RaKey\\Key.tex",
+160 model   MODEL_MOONKEY        "Models\\Items\\Keys\\RaSign\\Sign.mdl",
+161 texture TEXTURE_MOONKEY      "Models\\Items\\Keys\\RaSign\\Sign.tex",
+170 model   MODEL_EYEOFRA        "Models\\Items\\Keys\\EyeOfRa\\EyeOfRa.mdl",
+171 texture TEXTURE_EYEOFRA      "Models\\Items\\Keys\\EyeOfRa\\EyeOfRa.tex",
+180 model   MODEL_SCARAB         "Models\\Items\\Keys\\Scarab\\Scarab.mdl",
+181 texture TEXTURE_SCARAB       "Models\\Items\\Keys\\Scarab\\Scarab.tex",
+190 model   MODEL_COBRA          "Models\\Items\\Keys\\Uaset\\Uaset.mdl",
+191 texture TEXTURE_COBRA        "Models\\Items\\Keys\\Uaset\\Uaset.tex",
+192 model   MODEL_FEATHER        "Models\\Items\\Keys\\Luxor\\FeatherOfTruth.mdl",
+193 texture TEXTURE_FEATHER      "Models\\Items\\Keys\\Luxor\\FeatherOfTruth.tex",
+194 model   MODEL_HEART          "Models\\Items\\Keys\\Luxor\\GoldHeart.mdl",
+195 texture TEXTURE_HEART        "Models\\Items\\Keys\\Luxor\\GoldHeart.tex",
+196 model   MODEL_SPHINXGOLD     "Models\\Items\\Keys\\GoldSphinx\\GoldSphinx.mdl",
+197 texture TEXTURE_SPHINXGOLD   "Models\\Items\\Keys\\GoldSphinx\\Sphinx.tex",
+
  // ********* MISC *********
 250 texture TEXTURE_FLARE       "ModelsMP\\Items\\Flares\\Flare.tex",
 251 model   MODEL_FLARE         "ModelsMP\\Items\\Flares\\Flare.mdl",
@@ -160,32 +237,51 @@ functions:
       return;
     }
 
-    switch (m_kitType) {
-      case KIT_BOOKOFWISDOM:
-      case KIT_CRYSTALSKULL:   
-      case KIT_HOLYGRAIL:
-        Particles_Stardust(this, 1.0f, 0.5f, PT_STAR08, 64);
-        break;
+    // [Cecil] TFE keys
+    if (_EnginePatches._eWorldFormat != E_LF_TSE && m_kitType >= KIT_ANKHWOOD) {
+      switch (m_kitType) {
+        case KIT_ANKHWOOD:
+        case KIT_ANKHROCK:
+        case KIT_ANKHGOLD:
+        case KIT_ANKHGOLDDUMMY:
+        default:
+          Particles_Stardust(this, 0.9f, 0.70f, PT_STAR08, 32);
+          break;
 
-      case KIT_JAGUARGOLDDUMMY:
-        Particles_Stardust(this, 2.0f, 2.0f, PT_STAR08, 64);
-        break;
+        case KIT_AMONGOLD:
+          Particles_Stardust(this, 1.6f, 1.00f, PT_STAR08, 32);
+          break;
+      }
 
-      case KIT_CROSSWOODEN:
-      case KIT_CROSSMETAL:   
-      case KIT_CROSSGOLD:      
-      case KIT_HAWKWINGS01DUMMY:
-      case KIT_HAWKWINGS02DUMMY:
-      case KIT_TABLESDUMMY:
-      case KIT_WINGEDLION:
-      case KIT_ELEPHANTGOLD:
-      case KIT_STATUEHEAD01:
-      case KIT_STATUEHEAD02:
-      case KIT_STATUEHEAD03:
-      case KIT_KINGSTATUE:
-      default:
-        Particles_Stardust(this, 1.5f, 1.1f, PT_STAR08, 64);
-        break;    
+    // TSE keys
+    } else {
+      switch (m_kitType) {
+        case KIT_BOOKOFWISDOM:
+        case KIT_CRYSTALSKULL:   
+        case KIT_HOLYGRAIL:
+          Particles_Stardust(this, 1.0f, 0.5f, PT_STAR08, 64);
+          break;
+
+        case KIT_JAGUARGOLDDUMMY:
+          Particles_Stardust(this, 2.0f, 2.0f, PT_STAR08, 64);
+          break;
+
+        case KIT_CROSSWOODEN:
+        case KIT_CROSSMETAL:   
+        case KIT_CROSSGOLD:      
+        case KIT_HAWKWINGS01DUMMY:
+        case KIT_HAWKWINGS02DUMMY:
+        case KIT_TABLESDUMMY:
+        case KIT_WINGEDLION:
+        case KIT_ELEPHANTGOLD:
+        case KIT_STATUEHEAD01:
+        case KIT_STATUEHEAD02:
+        case KIT_STATUEHEAD03:
+        case KIT_KINGSTATUE:
+        default:
+          Particles_Stardust(this, 1.5f, 1.1f, PT_STAR08, 64);
+          break;
+      }
     }
   }
   
@@ -214,12 +310,34 @@ functions:
       case KIT_STATUEHEAD03:     AddItem(MODEL_STATUEHEAD03,   TEXTURE_STATUEHEAD03,   0, 0, 0); break;
       case KIT_KINGSTATUE:       AddItem(MODEL_KINGSTATUE,     TEX_REFL_GOLD01,        TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0); break;
       case KIT_CRYSTALSKULL:     AddItem(MODEL_CRYSTALSKULL,   TEXTURE_CRYSTALSKULL,   TEX_REFL_METAL01, TEX_SPEC_MEDIUM, 0); break;
+
+      // [Cecil] TFE keys
+      case KIT_ANKHWOOD:      AddItem(MODEL_ANKHWOOD,     TEXTURE_ANKHWOOD,     0, 0, 0); break;
+      case KIT_ANKHROCK:      AddItem(MODEL_ANKHROCK,     TEXTURE_ANKHROCK,     0, 0, 0); break;
+      case KIT_ANKHGOLD:
+      case KIT_ANKHGOLDDUMMY: AddItem(MODEL_ANKHGOLD,     TEXTURE_ANKHGOLD,     TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_SPHINX1:
+      case KIT_SPHINX2:       AddItem(MODEL_SPHINXGOLD,   TEXTURE_SPHINXGOLD,   TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_AMONGOLD:      AddItem(MODEL_AMONGOLD,     TEXTURE_AMONGOLD,     TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_ELEMENTEARTH:  AddItem(MODEL_ELEMENTEARTH, TEXTURE_ELEMENTEARTH, TEX_REFL_METAL01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_ELEMENTAIR:    AddItem(MODEL_ELEMENTAIR,   TEXTURE_ELEMENTAIR,   TEX_REFL_METAL01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_ELEMENTWATER:  AddItem(MODEL_ELEMENTWATER, TEXTURE_ELEMENTWATER, TEX_REFL_METAL01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_ELEMENTFIRE:   AddItem(MODEL_ELEMENTFIRE,  TEXTURE_ELEMENTFIRE,  TEX_REFL_METAL01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_RAKEY:         AddItem(MODEL_RAKEY,        TEXTURE_RAKEY,        TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_MOONKEY:       AddItem(MODEL_MOONKEY,      TEXTURE_MOONKEY,      TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_EYEOFRA:       AddItem(MODEL_EYEOFRA,      TEXTURE_EYEOFRA,      TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_SCARAB:
+      case KIT_SCARABDUMMY:   AddItem(MODEL_SCARAB,       TEXTURE_SCARAB,       TEX_REFL_METAL01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_COBRA:         AddItem(MODEL_COBRA,        TEXTURE_COBRA,        TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0); break;
+      case KIT_FEATHER:       AddItem(MODEL_FEATHER,      TEXTURE_FEATHER,      0, 0, 0); break;
+      case KIT_HEART:         AddItem(MODEL_HEART,        TEXTURE_HEART,        TEX_REFL_GOLD01, TEX_SPEC_MEDIUM, 0); break;
     }
 
     // Common flare
     switch (m_kitType) {
       case KIT_JAGUARGOLDDUMMY:
       case KIT_ELEPHANTGOLD:
+      case KIT_AMONGOLD: // [Cecil] TFE key
         AddFlare(MODEL_FLARE, TEXTURE_FLARE, FLOAT3D(0.0f, 0.5f, 0.0f), FLOAT3D(2.0f, 2.0f, 0.3f));
         break;
 
@@ -233,6 +351,12 @@ functions:
     StretchItem(FLOAT3D(1, 1, 1));
 
     GetModelObject()->StretchModel(FLOAT3D(m_fSize, m_fSize, m_fSize));
+
+    // [Cecil] Bigger TFE keys
+    if (_EnginePatches._eWorldFormat != E_LF_TSE
+     && (m_kitType == KIT_SPHINX1 || m_kitType == KIT_SPHINX2 || m_kitType == KIT_AMONGOLD)) {
+      StretchItem(FLOAT3D(2, 2, 2) * m_fSize);
+    }
   };
 
 procedures:
@@ -255,6 +379,37 @@ procedures:
   };
 
   Main() {
+    // [Cecil] Replace TFE keys with TSE
+    if (GetAPI()->IsEditorApp()) {
+      INDEX iKey = -1;
+
+      switch (m_kitType) {
+        case KIT_ANKHWOOD:      iKey = KIT_CROSSWOODEN; break;
+        case KIT_ANKHROCK:      iKey = KIT_CROSSMETAL; break;
+        case KIT_ANKHGOLD:      iKey = KIT_CROSSGOLD; break;
+        case KIT_AMONGOLD:      iKey = KIT_KINGSTATUE; break;
+        case KIT_ANKHGOLDDUMMY: iKey = KIT_TABLESDUMMY; break;
+        case KIT_ELEMENTEARTH:  iKey = KIT_CROSSWOODEN; break;
+        case KIT_ELEMENTWATER:  iKey = KIT_CROSSMETAL; break;
+        case KIT_ELEMENTAIR:    iKey = KIT_CRYSTALSKULL; break;
+        case KIT_ELEMENTFIRE:   iKey = KIT_CROSSGOLD; break;
+        case KIT_RAKEY:         iKey = KIT_HOLYGRAIL; break;
+        case KIT_MOONKEY:       iKey = KIT_BOOKOFWISDOM; break;
+        case KIT_EYEOFRA:       iKey = KIT_BOOKOFWISDOM; break;
+        case KIT_SCARAB:        iKey = KIT_STATUEHEAD03; break;
+        case KIT_COBRA:         iKey = KIT_HOLYGRAIL; break;
+        case KIT_SCARABDUMMY:   iKey = KIT_TABLESDUMMY; break;
+        case KIT_HEART:         iKey = KIT_STATUEHEAD01; break;
+        case KIT_FEATHER:       iKey = KIT_STATUEHEAD02; break;
+        case KIT_SPHINX1:       iKey = KIT_WINGEDLION; break;
+        case KIT_SPHINX2:       iKey = KIT_ELEPHANTGOLD; break;
+      }
+
+      if (iKey != -1) {
+        ResetCompatibilityValue(m_kitType, m_kitType, (KeyItemType)iKey);
+      }
+    }
+
     Initialize();     // initialize base class
     StartModelAnim(ITEMHOLDER_ANIM_SMALLOSCILATION, AOF_LOOPING|AOF_NORESTART);
     ForceCollisionBoxIndexChange(ITEMHOLDER_COLLISION_BOX_BIG);

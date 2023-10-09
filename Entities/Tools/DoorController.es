@@ -260,8 +260,16 @@ procedures:
         on (EPass ePass) : {
           if (IsDerivedFromClass(ePass.penOther, "Player")) {
             CPlayer *penPlayer = (CPlayer*)&*ePass.penOther;
+
+            // [Cecil] Shift TFE keys to fit into original bits
+            INDEX iKeyType = m_kitKey;
+
+            if (_EnginePatches._eWorldFormat != E_LF_TSE && iKeyType >= KIT_ANKHWOOD) {
+              iKeyType -= KIT_ANKHWOOD;
+            }
+
             // if he has the key
-            ULONG ulKey = (1<<INDEX(m_kitKey));
+            ULONG ulKey = (1 << iKeyType);
             if (penPlayer->m_ulKeys&ulKey) {
               // use the key
               penPlayer->m_ulKeys&=~ulKey;
