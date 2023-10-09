@@ -255,6 +255,10 @@ static void KillAllEnemies(CEntity *penKiller)
 #define PLF_ISZOOMING             (1UL<<10)  // marks that player is zoomed in with the sniper
 #define PLF_RESPAWNINPLACE        (1UL<<11)  // don't move to marker when respawning (for current death only)
 
+// [Cecil] Flags for determining currently active powerup modes
+#define PLF_SERIOUSSPEED (1UL << 30)
+#define PLF_SERIOUSJUMP  (1UL << 31)
+
 // defines representing flags used to fill player buttoned actions
 #define PLACT_FIRE                (1L<<0)
 #define PLACT_RELOAD              (1L<<1)
@@ -1174,9 +1178,6 @@ properties:
  190 INDEX m_iSeriousBombCount = 0,      // ammount of serious bombs player owns
  191 INDEX m_iLastSeriousBombCount = 0,  // ammount of serious bombs player had before firing
  192 TIME m_tmSeriousBombFired = -10.0f, // when the bomb was last fired
-
- // [Cecil] Special flags for enabling Serious Speed and Serious Jump
- 200 INDEX m_iSeriousSpeedAndJump = 0,
 
 {
   ShellLaunchData ShellLaunchData_array;  // array of data describing flying empty shells
@@ -3471,10 +3472,12 @@ functions:
         return TRUE;
       case PUIT_SPEED:
         // [Cecil] Set flags or clear them if time has expired
-        if (tmNow > m_tmSeriousSpeed) {
-          m_iSeriousSpeedAndJump = 0;
+        if (_EnginePatches._eWorldFormat != E_LF_TSE) {
+          if (tmNow > m_tmSeriousSpeed) {
+            m_ulFlags &= ~(PLF_SERIOUSSPEED | PLF_SERIOUSJUMP);
+          }
+          m_ulFlags |= PLF_SERIOUSSPEED;
         }
-        m_iSeriousSpeedAndJump |= 1;
 
         m_tmSeriousSpeed = tmNow + m_tmSeriousSpeedMax;
         ItemPicked(LOCALIZE("^cFF9400Serious Speed"), 0);
@@ -3496,9 +3499,9 @@ functions:
         if (_EnginePatches._eWorldFormat != E_LF_TSE) {
           // [Cecil] Set flags or clear them if time has expired
           if (tmNow > m_tmSeriousSpeed) {
-            m_iSeriousSpeedAndJump = 0;
+            m_ulFlags &= ~(PLF_SERIOUSSPEED | PLF_SERIOUSJUMP);
           }
-          m_iSeriousSpeedAndJump |= 2;
+          m_ulFlags |= PLF_SERIOUSJUMP;
 
           m_tmSeriousSpeed = tmNow + m_tmSeriousSpeedMax;
           ItemPicked(LOCALIZE("^c666666Serious Jump"), 0);
@@ -4088,13 +4091,18 @@ functions:
     // enable faster moving (but not higher jumping!) if having SerousSpeed powerup
     const TIME tmDelta = m_tmSeriousSpeed - _pTimer->CurrentTick();
     if( tmDelta>0 && m_fAutoSpeed==0.0f) { 
-      // [Cecil] If using Serious Jump
-      if (m_iSeriousSpeedAndJump & 2) {
-        vTranslation(2) *= 2.5f;
-      }
+      // [Cecil] If using Serious Speed or Serious Jump on non-TSE maps
+      if (_EnginePatches._eWorldFormat != E_LF_TSE) {
+        if (m_ulFlags & PLF_SERIOUSJUMP) {
+          vTranslation(2) *= 2.5f;
+        }
 
-      // [Cecil] If using Serious Speed
-      if (m_iSeriousSpeedAndJump & 1) {
+        if (m_ulFlags & PLF_SERIOUSSPEED) {
+          vTranslation(1) *= 2.0f;
+          vTranslation(3) *= 2.0f;
+        }
+
+      } else {
         vTranslation(1) *= 2.0f;
         vTranslation(3) *= 2.0f;
       }
