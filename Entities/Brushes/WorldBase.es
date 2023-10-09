@@ -399,35 +399,35 @@ void CWorldBase_OnWorldInit(CWorld *pwo)
   pwo->wo_atbTextureBlendings[15].tb_colMultiply     = C_WHITE|0x00;
 
   // [Cecil] Rev: New blend modes
-  pwo->wo_atbTextureBlendings[16].tb_strName        = "Toggled Lights 1";
+  pwo->wo_atbTextureBlendings[16].tb_strName        = "[SSR] Toggled Lights 1";
   pwo->wo_atbTextureBlendings[16].tb_ubBlendingType = STXF_BLEND_ADD;
   pwo->wo_atbTextureBlendings[16].tb_colMultiply    = C_BLACK | 0xFF;
 
-  pwo->wo_atbTextureBlendings[17].tb_strName        = "Toggled Lights 2";
+  pwo->wo_atbTextureBlendings[17].tb_strName        = "[SSR] Toggled Lights 2";
   pwo->wo_atbTextureBlendings[17].tb_ubBlendingType = STXF_BLEND_ADD;
   pwo->wo_atbTextureBlendings[17].tb_colMultiply    = C_BLACK | 0xFF;
 
-  pwo->wo_atbTextureBlendings[18].tb_strName        = "Toggled Lights 3";
+  pwo->wo_atbTextureBlendings[18].tb_strName        = "[SSR] Toggled Lights 3";
   pwo->wo_atbTextureBlendings[18].tb_ubBlendingType = STXF_BLEND_ADD;
   pwo->wo_atbTextureBlendings[18].tb_colMultiply    = C_BLACK | 0xFF;
 
-  pwo->wo_atbTextureBlendings[19].tb_strName        = "Toggled Lights 4";
+  pwo->wo_atbTextureBlendings[19].tb_strName        = "[SSR] Toggled Lights 4";
   pwo->wo_atbTextureBlendings[19].tb_ubBlendingType = STXF_BLEND_ADD;
   pwo->wo_atbTextureBlendings[19].tb_colMultiply    = C_BLACK | 0xFF;
 
-  pwo->wo_atbTextureBlendings[20].tb_strName        = "Controlled Toggled Lights 1";
+  pwo->wo_atbTextureBlendings[20].tb_strName        = "[SSR] Controlled Toggled Lights 1";
   pwo->wo_atbTextureBlendings[20].tb_ubBlendingType = STXF_BLEND_ADD;
   pwo->wo_atbTextureBlendings[20].tb_colMultiply    = C_BLACK | 0xFF;
 
-  pwo->wo_atbTextureBlendings[21].tb_strName        = "Controlled Toggled Lights 2";
+  pwo->wo_atbTextureBlendings[21].tb_strName        = "[SSR] Controlled Toggled Lights 2";
   pwo->wo_atbTextureBlendings[21].tb_ubBlendingType = STXF_BLEND_ADD;
   pwo->wo_atbTextureBlendings[21].tb_colMultiply    = C_BLACK | 0xFF;
 
-  pwo->wo_atbTextureBlendings[22].tb_strName        = "Controlled Toggled Lights 3";
+  pwo->wo_atbTextureBlendings[22].tb_strName        = "[SSR] Controlled Toggled Lights 3";
   pwo->wo_atbTextureBlendings[22].tb_ubBlendingType = STXF_BLEND_ADD;
   pwo->wo_atbTextureBlendings[22].tb_colMultiply    = C_BLACK | 0xFF;
 
-  pwo->wo_atbTextureBlendings[23].tb_strName        = "Controlled Toggled Lights 4";
+  pwo->wo_atbTextureBlendings[23].tb_strName        = "[SSR] Controlled Toggled Lights 4";
   pwo->wo_atbTextureBlendings[23].tb_ubBlendingType = STXF_BLEND_ADD;
   pwo->wo_atbTextureBlendings[23].tb_colMultiply    = C_BLACK | 0xFF;
 
@@ -594,7 +594,55 @@ void CWorldBase_OnWorldInit(CWorld *pwo)
   pwo->wo_astSurfaceTypes[21].st_fStairsHeight = 1.0f;
   pwo->wo_astSurfaceTypes[21].st_fJumpSlopeCos = Cos(45.0f);
   pwo->wo_astSurfaceTypes[21].st_fClimbSlopeCos = Cos(45.0f);
-  
+
+  // [Cecil] Rev: New surfaces
+  pwo->wo_astSurfaceTypes[SURFACE_SLIDING_WEEEE].st_strName = "[SSR] Sliding weeee slope";
+  pwo->wo_astSurfaceTypes[SURFACE_SLIDING_WEEEE].st_fFriction = 0.001f;
+  pwo->wo_astSurfaceTypes[SURFACE_SLIDING_WEEEE].st_fStairsHeight = 0.0f;
+  pwo->wo_astSurfaceTypes[SURFACE_SLIDING_WEEEE].st_fJumpSlopeCos = Cos(1.0f);
+  pwo->wo_astSurfaceTypes[SURFACE_SLIDING_WEEEE].st_fClimbSlopeCos = Cos(1.0f);
+
+  pwo->wo_astSurfaceTypes[SURFACE_GRAVEL].st_strName = "[SSR] Gravel";
+  pwo->wo_astSurfaceTypes[SURFACE_GRAVEL].st_fFriction = 0.8f;
+  pwo->wo_astSurfaceTypes[SURFACE_GRAVEL].st_fStairsHeight = 1.0f;
+  pwo->wo_astSurfaceTypes[SURFACE_GRAVEL].st_fJumpSlopeCos = Cos(20.0f);
+  pwo->wo_astSurfaceTypes[SURFACE_GRAVEL].st_fClimbSlopeCos = Cos(25.0f);
+
+  pwo->wo_astSurfaceTypes[SURFACE_GRAVEL_NOIMPACT].st_strName = "[SSR] Gravel no impact";
+  pwo->wo_astSurfaceTypes[SURFACE_GRAVEL_NOIMPACT].st_fFriction = 0.8f;
+  pwo->wo_astSurfaceTypes[SURFACE_GRAVEL_NOIMPACT].st_fStairsHeight = 1.0f;
+  pwo->wo_astSurfaceTypes[SURFACE_GRAVEL_NOIMPACT].st_fJumpSlopeCos = Cos(20.0f);
+  pwo->wo_astSurfaceTypes[SURFACE_GRAVEL_NOIMPACT].st_fClimbSlopeCos = Cos(25.0f);
+  pwo->wo_astSurfaceTypes[SURFACE_GRAVEL_NOIMPACT].st_ulFlags = STF_NOIMPACT;
+
+  pwo->wo_astSurfaceTypes[SURFACE_SAND_NOIMPACT].st_strName = "[SSR] Sand no impact";
+  pwo->wo_astSurfaceTypes[SURFACE_SAND_NOIMPACT].st_fFriction = 1.0f;
+  pwo->wo_astSurfaceTypes[SURFACE_SAND_NOIMPACT].st_fStairsHeight = 1.0f;
+  pwo->wo_astSurfaceTypes[SURFACE_SAND_NOIMPACT].st_fJumpSlopeCos = Cos(45.0f);
+  pwo->wo_astSurfaceTypes[SURFACE_SAND_NOIMPACT].st_fClimbSlopeCos = Cos(45.0f);
+  pwo->wo_astSurfaceTypes[SURFACE_SAND_NOIMPACT].st_ulFlags = STF_NOIMPACT;
+
+  pwo->wo_astSurfaceTypes[SURFACE_RED_SAND_NOIMPACT].st_strName = "[SSR] Red sand no impact";
+  pwo->wo_astSurfaceTypes[SURFACE_RED_SAND_NOIMPACT].st_fFriction = 1.0f;
+  pwo->wo_astSurfaceTypes[SURFACE_RED_SAND_NOIMPACT].st_fStairsHeight = 1.0f;
+  pwo->wo_astSurfaceTypes[SURFACE_RED_SAND_NOIMPACT].st_fJumpSlopeCos = Cos(45.0f);
+  pwo->wo_astSurfaceTypes[SURFACE_RED_SAND_NOIMPACT].st_fClimbSlopeCos = Cos(45.0f);
+  pwo->wo_astSurfaceTypes[SURFACE_RED_SAND_NOIMPACT].st_ulFlags = STF_NOIMPACT;
+
+  pwo->wo_astSurfaceTypes[SURFACE_WOOD_NOIMPACT].st_strName = "[SSR] Wood no impact";
+  pwo->wo_astSurfaceTypes[SURFACE_WOOD_NOIMPACT].st_fFriction = 1.0f;
+  pwo->wo_astSurfaceTypes[SURFACE_WOOD_NOIMPACT].st_fStairsHeight = 1.0f;
+  pwo->wo_astSurfaceTypes[SURFACE_WOOD_NOIMPACT].st_fJumpSlopeCos = Cos(45.0f);
+  pwo->wo_astSurfaceTypes[SURFACE_WOOD_NOIMPACT].st_fClimbSlopeCos = Cos(45.0f);
+  pwo->wo_astSurfaceTypes[SURFACE_WOOD_NOIMPACT].st_ulFlags = STF_NOIMPACT;
+
+  pwo->wo_astSurfaceTypes[SURFACE_SNOW_NOIMPACT].st_strName = "[SSR] Snow no impact";
+  pwo->wo_astSurfaceTypes[SURFACE_SNOW_NOIMPACT].st_fFriction = 1.0f;
+  pwo->wo_astSurfaceTypes[SURFACE_SNOW_NOIMPACT].st_fStairsHeight = 1.0f;
+  pwo->wo_astSurfaceTypes[SURFACE_SNOW_NOIMPACT].st_fJumpSlopeCos = Cos(45.0f);
+  pwo->wo_astSurfaceTypes[SURFACE_SNOW_NOIMPACT].st_fClimbSlopeCos = Cos(45.0f);
+  pwo->wo_astSurfaceTypes[SURFACE_SNOW_NOIMPACT].st_ulFlags = STF_NOIMPACT;
+
   // contents
   pwo->wo_actContentTypes[0].ct_strName = "Air";
   pwo->wo_actContentTypes[0].ct_fDensity = 0.0f;

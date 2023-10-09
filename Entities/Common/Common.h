@@ -25,6 +25,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define SURFACE_WOOD 18
 #define SURFACE_SNOW 21
 
+// [Cecil] Rev: New surfaces
+#define SURFACE_SLIDING_WEEEE     22
+#define SURFACE_GRAVEL            23
+#define SURFACE_GRAVEL_NOIMPACT   24
+#define SURFACE_SAND_NOIMPACT     25
+#define SURFACE_RED_SAND_NOIMPACT 26
+#define SURFACE_WOOD_NOIMPACT     27
+#define SURFACE_SNOW_NOIMPACT     28
+
 // Max ammo
 #define MAX_BULLETS INDEX(500)
 #define MAX_SHELLS INDEX(100)
