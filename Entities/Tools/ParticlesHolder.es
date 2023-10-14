@@ -80,7 +80,8 @@ functions:
   // render particles
   void RenderParticles(void)
   {
-    if( !m_bActive)
+    // [Cecil] Keep rendering on TFE levels
+    if (_EnginePatches._eWorldFormat != E_LF_TFE && !m_bActive)
     {
       return;
     }
