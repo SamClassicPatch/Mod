@@ -1058,7 +1058,7 @@ void CGame::InitInternal( void)
 
   _pShell->DeclareSymbol("user INDEX gam_bQuickLoad;", &gam_bQuickLoad);
   _pShell->DeclareSymbol("user INDEX gam_bQuickSave;", &gam_bQuickSave);
-  _pShell->DeclareSymbol("user INDEX gam_iQuickSaveSlots;", &gam_iQuickSaveSlots);
+  _pShell->DeclareSymbol("persistent user INDEX gam_iQuickSaveSlots;", &gam_iQuickSaveSlots); // [Cecil] Made persistent
   _pShell->DeclareSymbol("user INDEX gam_iQuickStartDifficulty;", &gam_iQuickStartDifficulty);
   _pShell->DeclareSymbol("user INDEX gam_iQuickStartMode;",       &gam_iQuickStartMode);
   _pShell->DeclareSymbol("user INDEX gam_bQuickStartMP;",       &gam_bQuickStartMP);
