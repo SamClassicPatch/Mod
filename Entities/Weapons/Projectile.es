@@ -912,6 +912,13 @@ functions:
       case PRT_LAVAMAN_BOMB: Particles_LavaBombTrail(this, 1.0f); break;
       case PRT_BEAST_PROJECTILE: Particles_BeastProjectileTrail( this, 2.0f, 0.25f, 48); break;
       case PRT_BEAST_BIG_PROJECTILE:
+        // [Cecil] No after burner particles in TFE
+        Particles_BeastBigProjectileTrail(this, 4.0f, 0.25f, 0.0f, 64);
+        if (_EnginePatches._eWorldFormat != E_LF_TFE) {
+          Particles_AfterBurner(this, m_fStartTime, 1.0f);
+        }
+        break;
+
       case PRT_DEMON_FIREBALL:
         Particles_BeastBigProjectileTrail( this, 4.0f, 0.25f, 0.0f, 64);
         Particles_AfterBurner( this, m_fStartTime, 1.0f);
@@ -1807,7 +1814,13 @@ void BeastBigProjectile(void) {
 
   SetModel(MODEL_BEAST_FIRE);
   SetModelMainTexture(TEXTURE_BEAST_BIG_FIRE);
-  GetModelObject()->StretchModel(FLOAT3D(2.5f, 2.5f, 2.5f));
+
+  // [Cecil] Smaller projectile in TFE
+  if (_EnginePatches._eWorldFormat == E_LF_TFE) {
+    GetModelObject()->StretchModel(FLOAT3D(1.5f, 1.5f, 1.5f));
+  } else {
+    GetModelObject()->StretchModel(FLOAT3D(2.5f, 2.5f, 2.5f));
+  }
 
   ModelChangeNotify();
   // play the flying sound
@@ -1822,12 +1835,21 @@ void BeastBigProjectile(void) {
   m_bExplode = FALSE;
   m_bLightSource = FALSE;
   m_bCanHitHimself = FALSE;
-  m_bCanBeDestroyed = FALSE;
   m_fWaitAfterDeath = 0.0f;
-  m_pmtMove = PMT_GUIDED_FAST;
-  m_fGuidedMaxSpeedFactor = 90.0f;
-  SetHealth(10000.0f);
   m_aRotateSpeed = 100.0f;
+
+  // [Cecil] Different properties in TFE
+  if (_EnginePatches._eWorldFormat == E_LF_TFE) {
+    m_bCanBeDestroyed = TRUE;
+    m_pmtMove = PMT_GUIDED;
+    SetHealth(11.0f);
+
+  } else {
+    m_bCanBeDestroyed = FALSE;
+    m_pmtMove = PMT_GUIDED_FAST;
+    m_fGuidedMaxSpeedFactor = 90.0f;
+    SetHealth(10000.0f);
+  }
 };
 
 void BeastDebris(void)

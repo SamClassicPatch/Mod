@@ -373,9 +373,15 @@ procedures:
 
           PlaySound(m_soSound, SOUND_FIRE, SOF_3D);
           autowait(0.34f);
-          ShootProjectile(PRT_BEAST_BIG_PROJECTILE, FLOAT3D( 0.0f, 1.5f*BIG_BEAST_STRETCH, 0.0f),
-            ANGLE3D(0.0f, 0.0f, 0.0f));
-            //ANGLE3D( AngleDeg(40.0f*Cos(m_iCounter*360.0/6.0f)), AngleDeg(20.0f*Sin(m_iCounter*180.0/6.0f)), 0));
+
+          // [Cecil] Random angle in TFE
+          if (_EnginePatches._eWorldFormat == E_LF_TFE) {
+            ShootProjectile(PRT_BEAST_BIG_PROJECTILE, FLOAT3D(0.0f, 1.5f * BIG_BEAST_STRETCH, 0.0f),
+              ANGLE3D(AngleDeg(40.0f * Cos(m_iCounter * 360.0f / 6.0f)), AngleDeg(20.0f * Sin(m_iCounter * 180.0f / 6.0f)), 0.0f));
+          } else {
+            ShootProjectile(PRT_BEAST_BIG_PROJECTILE, FLOAT3D(0.0f, 1.5f * BIG_BEAST_STRETCH, 0.0f), ANGLE3D(0.0f, 0.0f, 0.0f));
+          }
+
           //autowait(0.15f);
           m_iCounter++;
         }
@@ -392,10 +398,15 @@ procedures:
 
           PlaySound(m_soSound, SOUND_FIRE, SOF_3D);
           autowait(0.5f);
-          ShootProjectile(PRT_BEAST_BIG_PROJECTILE, FLOAT3D( 0.0f, 1.5f*BIG_BEAST_STRETCH, 0.0f),
-            ANGLE3D(0.0f, 0.0f, 0.0f));
-            //ANGLE3D( AngleDeg(20.0f*Cos(m_iCounter*360.0/3.0f)), AngleDeg(10.0f*Sin(m_iCounter*180.0/3.0f)), 0));
-            //ANGLE3D( FRnd()*20.0f-10.0f, FRnd()*10.0f-5.0f, 0));
+
+          // [Cecil] Random angle in TFE
+          if (_EnginePatches._eWorldFormat == E_LF_TFE) {
+            ShootProjectile(PRT_BEAST_BIG_PROJECTILE, FLOAT3D(0.0f, 1.5f * BIG_BEAST_STRETCH, 0.0f),
+              ANGLE3D(AngleDeg(20.0f * Cos(m_iCounter * 360.0f / 3.0f)), AngleDeg(10.0f * Sin(m_iCounter * 180.0f / 3.0f)), 0.0f));
+          } else {
+            ShootProjectile(PRT_BEAST_BIG_PROJECTILE, FLOAT3D(0.0f, 1.5f * BIG_BEAST_STRETCH, 0.0f), ANGLE3D(0.0f, 0.0f, 0.0f));
+          }
+
           //autowait(0.25f);
           m_iCounter++;
         }
@@ -542,9 +553,17 @@ procedures:
     }
     else if (m_bcType == BT_BIG)
     {
-      m_fAttackRunSpeed = 25.0f;//8
       m_aAttackRotateSpeed = AngleDeg(600.0f);
-      SetHealth(3000.0f);//500
+
+      // [Cecil] Different properties in TFE
+      if (_EnginePatches._eWorldFormat == E_LF_TFE) {
+        m_fAttackRunSpeed = 8.0f;
+        SetHealth(2000.0f);
+      } else {
+        m_fAttackRunSpeed = 25.0f;
+        SetHealth(3000.0f);
+      }
+
       SetModelMainTexture(TEXTURE_BEAST_BIG);
       m_fBlowUpAmount = 10000.0f;//500
       m_fBodyParts = 6;
