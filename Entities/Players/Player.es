@@ -2554,12 +2554,21 @@ functions:
     PIX pixDPHeight = pdp->GetHeight();
     FLOAT fScale = HEIGHT_SCALING(pdp);
 
+    // [Cecil] Determine vertical screen edge offset
+    static CSymbolPtr piScreenEdge("ahud_iScreenEdgeY");
+    PIX pixScreenEdge = 0;
+
+    if (piScreenEdge.Exists()) {
+      pixScreenEdge = ClampDn(piScreenEdge.GetIndex(), (INDEX)0) * fScale;
+    }
+
     // print center message
     if (_pTimer->CurrentTick()<m_tmCenterMessageEnd) {
       pdp->SetFont( _pfdDisplayFont);
       pdp->SetTextScaling( fScale);
       pdp->SetTextAspect( 1.0f);
-      pdp->PutTextCXY( m_strCenterMessage, pixDPWidth*0.5f, pixDPHeight*0.85f, C_WHITE|0xDD);
+      // [Cecil] Apply screen edge offset
+      pdp->PutTextCXY( m_strCenterMessage, pixDPWidth*0.5f, pixDPHeight*0.85f - pixScreenEdge, C_WHITE|0xDD);
     // print picked item
     } else if (_pTimer->CurrentTick()<m_tmLastPicked+PICKEDREPORT_TIME) {
       pdp->SetFont( _pfdDisplayFont);
@@ -2571,11 +2580,13 @@ functions:
       } else {
         strPicked.PrintF("%s +%d", m_strPickedName, int(m_fPickedAmmount));
       }
-      pdp->PutTextCXY( strPicked, pixDPWidth*0.5f, pixDPHeight*0.82f, C_WHITE|0xDD);
+      // [Cecil] Apply screen edge offset
+      pdp->PutTextCXY( strPicked, pixDPWidth*0.5f, pixDPHeight*0.82f - pixScreenEdge, C_WHITE|0xDD);
       if (!GetSP()->sp_bCooperative && !GetSP()->sp_bUseFrags && m_fPickedMana>=1) {
         CTString strValue;
         strValue.PrintF("%s +%d", LOCALIZE("Value"), INDEX(m_fPickedMana));
-        pdp->PutTextCXY( strValue, pixDPWidth*0.5f, pixDPHeight*0.85f, C_WHITE|0xDD);
+        // [Cecil] Apply screen edge offset
+        pdp->PutTextCXY( strValue, pixDPWidth*0.5f, pixDPHeight*0.85f - pixScreenEdge, C_WHITE|0xDD);
       }
     }
 
@@ -2596,7 +2607,8 @@ functions:
         }
       }
 
-      pdp->PutTextCXY( LOCALIZE("Analyzing..."), pixDPWidth*0.5f, pixDPHeight*0.2f, colMessage|ubA);
+      // [Cecil] Apply screen edge offset
+      pdp->PutTextCXY( LOCALIZE("Analyzing..."), pixDPWidth*0.5f, pixDPHeight*0.2f + pixScreenEdge, colMessage|ubA);
     }
   }
 
@@ -2677,7 +2689,16 @@ functions:
       pdp->SetFont( _pfdDisplayFont);
       pdp->SetTextScaling( fScale);
       pdp->SetTextAspect( 1.0f);
-      pdp->PutTextCXY( m_strCenterMessage, pixDPWidth*0.5f, pixDPHeight*0.85f, C_WHITE|0xDD);
+
+      // [Cecil] Determine vertical screen edge offset and apply it
+      static CSymbolPtr piScreenEdge("ahud_iScreenEdgeY");
+      PIX pixScreenEdge = 0;
+
+      if (piScreenEdge.Exists()) {
+        pixScreenEdge = ClampDn(piScreenEdge.GetIndex(), (INDEX)0) * fScale;
+      }
+
+      pdp->PutTextCXY( m_strCenterMessage, pixDPWidth*0.5f, pixDPHeight*0.85f - pixScreenEdge, C_WHITE|0xDD);
     }
   }
 
