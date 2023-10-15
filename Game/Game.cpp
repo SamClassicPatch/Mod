@@ -1965,7 +1965,14 @@ static void PrintStats( CDrawPort *pdpDrawPort)
     newtime = localtime(&long_time);
     // printout
     CTString strTime;
-    strTime.PrintF( "%2d:%02d", newtime->tm_hour, newtime->tm_min);
+
+    // [Cecil] Show seconds as extra
+    if (hud_bShowClock > 1) {
+      strTime.PrintF("%2d:%02d:%02d", newtime->tm_hour, newtime->tm_min, newtime->tm_sec);
+    } else {
+      strTime.PrintF("%2d:%02d", newtime->tm_hour, newtime->tm_min);
+    }
+
     pdpDrawPort->PutTextR( strTime, slDPWidth-3, 2, C_lYELLOW|CT_OPAQUE);
   }
 
