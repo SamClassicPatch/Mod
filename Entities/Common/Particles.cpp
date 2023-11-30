@@ -1485,11 +1485,19 @@ void DECL_DLL Particles_Waterfall(CEntity *pen, INDEX ctCount, FLOAT fStretchAll
 void Particles_BloodTrail(CEntity *pen)
 {
   // get blood type
-  const INDEX iBloodType = GetSP()->sp_iBlood;
-  if( iBloodType<1) return;
+  const BloodTheme blood = GetBloodTheme();
+
+  // [Cecil] Transparent
+  if (blood.GetColor(0, 0xFF, 0xFF) & 0xFF == 0) return;
+
   COLOR col;
-  if( iBloodType==3) Particle_PrepareTexture( &_toFlowerSprayTexture, PBT_BLEND);
-  else               Particle_PrepareTexture( &_toBloodSprayTexture,  PBT_BLEND);
+
+  // [Cecil] Local blood customization
+  if (blood.eType == BloodTheme::E_HIPPIE) {
+    Particle_PrepareTexture(&_toFlowerSprayTexture, PBT_BLEND);
+  } else {
+    Particle_PrepareTexture(&_toBloodSprayTexture, PBT_BLEND);
+  }
 
   CLastPositions *plp = pen->GetLastPositions(BLOOD01_TRAIL_POSITIONS);
   FLOAT fGA = ((CMovableEntity *)pen)->en_fGravityA;
@@ -1506,9 +1514,10 @@ void Particles_BloodTrail(CEntity *pen)
     vPos += vGDir*fGA*fT*fT/8.0f;
     FLOAT fSize = 0.2f-iPos*0.15f/BLOOD01_TRAIL_POSITIONS;
     UBYTE ub = 255-iPos*255/BLOOD01_TRAIL_POSITIONS;
-         if( iBloodType==3) col = C_WHITE|ub;
-    else if( iBloodType==2) col = RGBAToColor(ub,20,20,ub);
-    else                    col = RGBAToColor(0,ub,0,ub);
+
+    // [Cecil] Local blood customization
+    col = blood.GetColor(pen->en_ulID, ub, ub);
+
     Particle_RenderSquare( vPos, fSize, fAngle, col);
   }
   // all done
@@ -4248,7 +4257,7 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
   FLOAT fRotation = 0.0f;
 
   // readout blood type
-  const INDEX iBloodType = GetSP()->sp_iBlood;
+  const BloodTheme blood = GetBloodTheme();
 
   // determine time difference
   FLOAT fNow = _pTimer->GetLerpedCurrentTick();
@@ -4261,9 +4270,15 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
     case SPT_SLIME:
     case SPT_GOO:
     {
-      if( iBloodType<1) return;
-      if( iBloodType==3) Particle_PrepareTexture( &_toFlowerSprayTexture, PBT_BLEND);
-      else               Particle_PrepareTexture( &_toBloodSprayTexture,  PBT_BLEND);
+      // [Cecil] Transparent
+      if (blood.GetColor(0, 0xFF, 0xFF) & 0xFF == 0) return;
+
+      // [Cecil] Local blood customization
+      if (blood.eType == BloodTheme::E_HIPPIE) {
+        Particle_PrepareTexture(&_toFlowerSprayTexture, PBT_BLEND);
+      } else {
+        Particle_PrepareTexture(&_toBloodSprayTexture, PBT_BLEND);
+      }
       break;
     }
     case SPT_BONES:
@@ -4354,8 +4369,14 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
     if( (sptType==SPT_FEATHER) && (iSpray==ctSprays/2) )
     {
       Particle_Flush();
-      if( iBloodType==3) Particle_PrepareTexture( &_toFlowerSprayTexture, PBT_BLEND);
-      else               Particle_PrepareTexture( &_toBloodSprayTexture,  PBT_BLEND);
+
+      // [Cecil] Local blood customization
+      if (blood.eType == BloodTheme::E_HIPPIE) {
+        Particle_PrepareTexture(&_toFlowerSprayTexture, PBT_BLEND);
+      } else {
+        Particle_PrepareTexture(&_toBloodSprayTexture, PBT_BLEND);
+      }
+
       fDamagePower/=2.0f;
     }
 
@@ -4409,20 +4430,35 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
     case SPT_BLOOD:
     {
       UBYTE ubRndCol = UBYTE( 128+afStarsPositions[ int(iSpray+tmStarted*10)%CT_MAX_PARTICLES_TABLE][0]*64);
-      if( iBloodType==2) col = RGBAToColor( ubRndCol, 0, 0, ubAlpha);
-      if( iBloodType==1) col = RGBAToColor( 0, ubRndCol, 0, ubAlpha);
+
+      // [Cecil] Local blood customization
+      col = blood.GetColor(iSpray + tmStarted / _pTimer->TickQuantum, ubRndCol, ubAlpha);
       break;
     }
     case SPT_SLIME:
     {
       UBYTE ubRndCol = UBYTE( 128+afStarsPositions[ int(iSpray+tmStarted*10)%CT_MAX_PARTICLES_TABLE][0]*64);
-      if( iBloodType!=3) col = RGBAToColor(0, ubRndCol, 0, ubAlpha);
+
+      // [Cecil] Local blood customization
+      if (blood.eType != BloodTheme::E_COLOR) {
+        col = blood.GetColor(iSpray + tmStarted / _pTimer->TickQuantum, ubRndCol, ubAlpha);
+
+      } else {
+        col = RGBAToColor(0, ubRndCol, 0, ubAlpha); // Green
+      }
       break;
     }
     case SPT_GOO:
     {
       UBYTE ubRndCol = UBYTE( 128+afStarsPositions[ int(iSpray+tmStarted*10)%CT_MAX_PARTICLES_TABLE][0]*64);
-      if( iBloodType!=3) col = RGBAToColor(ubRndCol, 128, 12, ubAlpha);
+
+      // [Cecil] Local blood customization
+      if (blood.eType != BloodTheme::E_COLOR) {
+        col = blood.GetColor(iSpray + tmStarted / _pTimer->TickQuantum, ubRndCol, ubAlpha);
+
+      } else {
+        col = RGBAToColor(ubRndCol, 128, 12, ubAlpha); // Goo
+      }
       break;
     }
     case SPT_BONES:
@@ -4439,8 +4475,9 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
       if(iSpray>=ctSprays/2)
       {
         UBYTE ubRndCol = UBYTE( 128+afStarsPositions[ int(iSpray+tmStarted*10)%CT_MAX_PARTICLES_TABLE][0]*64);
-        if( iBloodType==2) col = RGBAToColor( ubRndCol, 0, 0, ubAlpha);
-        if( iBloodType==1) col = RGBAToColor( 0, ubRndCol, 0, ubAlpha);
+
+        // [Cecil] Local blood customization
+        col = blood.GetColor(iSpray + tmStarted / _pTimer->TickQuantum, ubRndCol, ubAlpha);
       }
       else
       {

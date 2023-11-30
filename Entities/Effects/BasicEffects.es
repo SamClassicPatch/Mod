@@ -210,6 +210,16 @@ void CBasicEffect_OnPrecache(CDLLEntityClass *pdec, INDEX iUser)
     pdec->PrecacheTexture(TEXTURE_BLOOD_FLOWER1);
     pdec->PrecacheTexture(TEXTURE_BLOOD_FLOWER2);
     pdec->PrecacheTexture(TEXTURE_BLOOD_FLOWER3);
+
+    // [Cecil] Blood textures for coloring
+    pdec->PrecacheTexture(TEX_BRIGHT_BLOOD_EXPLODE);
+    pdec->PrecacheTexture(TEX_BRIGHT_BLOOD_STAIN1);
+    pdec->PrecacheTexture(TEX_BRIGHT_BLOOD_STAIN2);
+    pdec->PrecacheTexture(TEX_BRIGHT_BLOOD_STAIN3);
+    pdec->PrecacheTexture(TEX_BRIGHT_BLOOD_STAIN4);
+    pdec->PrecacheTexture(TEX_BRIGHT_BLOOD_SPILL1);
+    pdec->PrecacheTexture(TEX_BRIGHT_BLOOD_SPILL2);
+    pdec->PrecacheTexture(TEX_BRIGHT_BLOOD_SPILL3);
     break;
   case BET_TELEPORT:
     pdec->PrecacheModel(MODEL_TELEPORT_EFFECT);
@@ -336,6 +346,16 @@ components:
 // ********** Water shockwave texture **********
  100 texture TEXTURE_WATER_WAVE          "Models\\Effects\\ShockWave01\\Textures\\WaterWave.tex",
 
+// [Cecil] Blood textures for coloring
+150 texture TEX_BRIGHT_BLOOD_EXPLODE "TexturesPatch\\Blood\\Explode.tex",
+151 texture TEX_BRIGHT_BLOOD_STAIN1  "TexturesPatch\\Blood\\Stain1.tex",
+152 texture TEX_BRIGHT_BLOOD_STAIN2  "TexturesPatch\\Blood\\Stain2.tex",
+153 texture TEX_BRIGHT_BLOOD_STAIN3  "TexturesPatch\\Blood\\Stain3.tex",
+154 texture TEX_BRIGHT_BLOOD_STAIN4  "TexturesPatch\\Blood\\Stain4.tex",
+155 texture TEX_BRIGHT_BLOOD_SPILL1  "TexturesPatch\\Blood\\Spill1.tex",
+156 texture TEX_BRIGHT_BLOOD_SPILL2  "TexturesPatch\\Blood\\Spill2.tex",
+157 texture TEX_BRIGHT_BLOOD_SPILL3  "TexturesPatch\\Blood\\Spill3.tex",
+
 functions:
 
   // dump sync data to text file
@@ -441,40 +461,42 @@ functions:
       Particles_BulletSpray(en_ulID, GetLerpedPlacement().pl_PositionVector, m_vGravity, 
         m_eptType, m_tmSpawn, m_vStretch, fStretch);
     }
+
+    // [Cecil] Added 'else' before subsequent checks for optimization
     if(m_betType==BET_EXPLOSION_DEBRIS)
     {
       Particles_ExplosionDebris1(this, m_tmSpawn, m_vStretch, m_colMultiplyColor);
       Particles_ExplosionDebris2(this, m_tmSpawn, m_vStretch, m_colMultiplyColor);
       Particles_ExplosionDebris3(this, m_tmSpawn, m_vStretch, m_colMultiplyColor);
     }
-    if(m_betType==BET_COLLECT_ENERGY)
+    else if(m_betType==BET_COLLECT_ENERGY)
     {
       Particles_CollectEnergy(this, m_tmSpawn, m_tmSpawn+m_fWaitTime);
     }
-    /*if(m_betType==BET_SNIPER_RESIDUE)
+    /*else if(m_betType==BET_SNIPER_RESIDUE)
     {
       Particles_SniperResidue(this, m_tmSpawn, m_tmSpawn+m_fWaitTime, m_vNormal, m_vDirection);
     }*/
-	  if(m_betType==BET_EXPLOSION_SMOKE && _pTimer->GetLerpedCurrentTick()>(m_tmSpawn+m_fWaitTime) )
+    else if(m_betType==BET_EXPLOSION_SMOKE && _pTimer->GetLerpedCurrentTick()>(m_tmSpawn+m_fWaitTime) )
     {
       Particles_ExplosionSmoke(this, m_tmSpawn+m_fWaitTime, m_vStretch, m_colMultiplyColor);
     }
-    if(m_betType==BET_SUMMONERSTAREXPLOSION)
+    else if(m_betType==BET_SUMMONERSTAREXPLOSION)
     {
       Particles_SummonerExplode(this, GetPlacement().pl_PositionVector,
                                 60.0f, 1.0f, m_tmSpawn, m_fWaitTime);
     }
-    if(m_betType==BET_GROWING_SWIRL)
+    else if(m_betType==BET_GROWING_SWIRL)
     {
       FLOAT fStretch=(m_vStretch(1)+m_vStretch(2)+m_vStretch(3))/3.0f;
       Particles_GrowingSwirl(this, fStretch, m_tmSpawn);
     }
-    if(m_betType==BET_DISAPPEAR_DUST)
+    else if(m_betType==BET_DISAPPEAR_DUST)
     {
       FLOAT fStretch=(m_vStretch(1)+m_vStretch(2)+m_vStretch(3))/3.0f;
       Particles_DisappearDust(this, fStretch, m_tmSpawn);
     }
-    if(m_betType==BET_DUST_FALL)
+    else if(m_betType==BET_DUST_FALL)
     {
       Particles_DustFall(this, m_tmSpawn, m_vStretch);
     }    
@@ -1189,6 +1211,23 @@ functions:
       if( iBloodType==2) { SetModelColor( RGBAToColor( 250,20,20,255)); }
       else               { SetModelColor( RGBAToColor( 0,250,0,255)); }
     }
+
+    // [Cecil] Replace with custom colors and textures
+    const BloodTheme blood = GetBloodTheme();
+
+    if (blood.eType == BloodTheme::E_HIPPIE) {
+      SetModelMainTexture(TEXTURE_BLOOD_FLOWER1 + rand() % 3);
+
+    // New textures for complex types
+    } else if (blood.eType != BloodTheme::E_COLOR) {
+      SetModelMainTexture(TEX_BRIGHT_BLOOD_EXPLODE);
+
+    } else {
+      SetModelMainTexture(TEXTURE_BLOOD_EXPLODE);
+    }
+
+    SetModelColor(blood.GetColor(rand(), 0xFF, 0xFF));
+
     //RandomBanking();
     m_soEffect.Set3DParameters(7.5f, 5.0f, 1.0f, 1.0f);
     PlaySound(m_soEffect, SOUND_BULLET_FLESH, SOF_3D);
@@ -1228,6 +1267,22 @@ functions:
       else               { SetModelColor( RGBAToColor( 0,250,0,255)); }
     }
 
+    // [Cecil] Replace with custom colors and textures
+    const BloodTheme blood = GetBloodTheme();
+
+    if (blood.eType == BloodTheme::E_HIPPIE) {
+      SetModelMainTexture(TEXTURE_BLOOD_FLOWER1 + rand() % 3);
+
+    // New textures for complex types
+    } else if (blood.eType != BloodTheme::E_COLOR) {
+      SetModelMainTexture(TEX_BRIGHT_BLOOD_STAIN1 + rand() % 4);
+
+    } else {
+      SetModelMainTexture(TEXTURE_BLOOD_STAIN1 + rand() % 4);
+    }
+
+    SetModelColor(blood.GetColor(rand(), 0xFF, 0xFF));
+
     SetNormalAndDirection();
     m_fWaitTime = 12.0f + FRnd()*3.0f;
     m_fFadeTime = 3.0f;
@@ -1261,6 +1316,23 @@ functions:
       if( iBloodType==2) { SetModelColor( RGBAToColor( 250,20,20,255)); }
       else               { SetModelColor( RGBAToColor( 0,250,0,255)); }
     }
+
+    // [Cecil] Replace with custom colors and textures
+    const BloodTheme blood = GetBloodTheme();
+
+    if (blood.eType == BloodTheme::E_HIPPIE) {
+      SetModelMainTexture(TEXTURE_BLOOD_FLOWER1 + rand() % 3);
+
+    // New textures for complex types
+    } else if (blood.eType != BloodTheme::E_COLOR) {
+      SetModelMainTexture(TEX_BRIGHT_BLOOD_STAIN4);
+
+    } else {
+      SetModelMainTexture(TEXTURE_BLOOD_STAIN4);
+    }
+
+    SetModelColor(blood.GetColor(rand(), 0xFF, 0xFF));
+
     SetNormalAndDirection();
     m_bLightSource = FALSE;
     m_fDepthSortOffset = -0.1f;
@@ -1301,6 +1373,24 @@ functions:
       default: { SetModelMainTexture(TEXTURE_BLOOD_STAIN4);   break; }
       }
     }
+
+    // [Cecil] Replace with custom colors and textures
+    const BloodTheme blood = GetBloodTheme();
+
+    if (blood.eType == BloodTheme::E_HIPPIE) {
+      SetModelMainTexture(TEXTURE_BLOOD_FLOWER1 + rand() % 3);
+      SetModelColor(0xFFFFFFFF);
+
+    // New textures for complex types
+    } else if (blood.eType != BloodTheme::E_COLOR) {
+      SetModelMainTexture(TEX_BRIGHT_BLOOD_STAIN1 + rand() % 4);
+      SetModelColor(blood.GetColor(rand(), 0xFF, 0xFF));
+
+    } else {
+      SetModelMainTexture(TEXTURE_BLOOD_STAIN1 + rand() % 4);
+      SetModelColor(0x00FA00FF); // Green
+    }
+
     SetNormalAndDirection();
     m_fWaitTime = 15.0f + FRnd()*2.0f;
     m_fFadeTime = 2.0f;
@@ -1342,6 +1432,29 @@ functions:
       }
       else               { SetModelColor( RGBAToColor( 0,250,0,255)); }
     }
+
+    // [Cecil] Replace with custom colors and textures
+    const BloodTheme blood = GetBloodTheme();
+    COLOR colCustom = blood.GetColor(rand(), 0xFF, 0xFF);
+
+    if (blood.eType == BloodTheme::E_HIPPIE) {
+      SetModelMainTexture(TEXTURE_BLOOD_FLOWER1 + rand() % 3);
+
+    // New textures for complex types
+    } else if (blood.eType != BloodTheme::E_COLOR) {
+      SetModelMainTexture(TEX_BRIGHT_BLOOD_SPILL1 + rand() % 3);
+
+    } else {
+      SetModelMainTexture(TEXTURE_BLOOD_SPILL1 + rand() % 3);
+
+      // Only override red color
+      if (colBloodSpillColor != BLOOD_SPILL_RED) {
+        colCustom = colBloodSpillColor;
+      }
+    }
+
+    SetModelColor(colCustom);
+
     SetNormalAndDirection();
     m_fWaitTime = 15.0f + FRnd()*2.0f;
     m_fFadeTime = 2.0f;

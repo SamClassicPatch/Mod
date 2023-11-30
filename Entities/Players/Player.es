@@ -703,6 +703,9 @@ void CPlayer_Precache(void)
   pdec->PrecacheTexture(TEXTURE_FLESH_LOLLY); 
   pdec->PrecacheTexture(TEXTURE_FLESH_ORANGE); 
 
+  // [Cecil] Flesh texture for coloring
+  pdec->PrecacheTexture(TEXTURE_FLESH);
+
   pdec->PrecacheClass(CLASS_BASIC_EFFECT, BET_BLOODSPILL);
   pdec->PrecacheClass(CLASS_BASIC_EFFECT, BET_BLOODSTAIN);
   pdec->PrecacheClass(CLASS_BASIC_EFFECT, BET_BLOODSTAINGROW);
@@ -1329,6 +1332,9 @@ components:
 
 // [Cecil] Power-up sound
 500 sound SOUND_POWERUP "SoundsMP\\Items\\PowerUp.wav",
+
+// [Cecil] Flesh texture for coloring
+510 texture TEXTURE_FLESH "TexturesPatch\\Blood\\Flesh.tex",
 
 functions:
 
@@ -3326,8 +3332,46 @@ functions:
         default: { ulFleshModel = MODEL_FLESH_ORANGE;  ulFleshTexture = TEXTURE_FLESH_ORANGE;  break; }
         }
       }
+
+      // [Cecil] Get spawned debris
+      CDebris *penDebris = (CDebris *)(CEntity *)
       Debris_Spawn( this, this, ulFleshModel, ulFleshTexture, 0, 0, 0, IRnd()%4, 0.5f,
                     FLOAT3D(FRnd()*0.6f+0.2f, FRnd()*0.6f+0.2f, FRnd()*0.6f+0.2f));
+
+      // [Cecil] Replace with custom debris
+      const BloodTheme blood = GetBloodTheme();
+      COLOR colFlesh = blood.GetColor(rand(), 0xFF, 0xFF);
+
+      CModelObject &moDebris = penDebris->SetCustomModel();
+      ULONG ulCustomModel = MODEL_FLESH;
+      ULONG ulCustomTexture = TEXTURE_FLESH;
+
+      // Use original textures if red and green colors aren't bright enough
+      UBYTE ubR, ubG, ubB;
+      ColorToRGB(colFlesh, ubR, ubG, ubB);
+
+      // Adjust brightness based on the appropriate color channel
+      if (ubR > 31 && ubG < 16 && ubB < 16) {
+        ulCustomTexture = TEXTURE_FLESH_RED;
+        colFlesh = RGBAToColor(ubR, ubR, ubR, colFlesh & 0xFF);
+
+      } else if (ubR < 16 && ubG > 31 && ubB < 16) {
+        ulCustomTexture = TEXTURE_FLESH_GREEN;
+        colFlesh = RGBAToColor(ubG, ubG, ubG, colFlesh & 0xFF);
+      }
+
+      if (blood.eType == BloodTheme::E_HIPPIE) {
+        switch (rand() % 5) {
+          case 1:  ulCustomModel = MODEL_FLESH_APPLE;  ulCustomTexture = TEXTURE_FLESH_APPLE;  break;
+          case 2:  ulCustomModel = MODEL_FLESH_BANANA; ulCustomTexture = TEXTURE_FLESH_BANANA; break;
+          case 3:  ulCustomModel = MODEL_FLESH_BURGER; ulCustomTexture = TEXTURE_FLESH_BURGER; break;
+          case 4:  ulCustomModel = MODEL_FLESH_LOLLY;  ulCustomTexture = TEXTURE_FLESH_LOLLY;  break;
+          default: ulCustomModel = MODEL_FLESH_ORANGE; ulCustomTexture = TEXTURE_FLESH_ORANGE; break;
+        }
+      }
+
+      SetComponents(this, moDebris, ulCustomModel, ulCustomTexture, 0, 0, 0);
+      moDebris.mo_colBlendColor = colFlesh;
     }
 
     // leave a stain beneath
