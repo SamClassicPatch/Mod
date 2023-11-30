@@ -1487,3 +1487,67 @@ class CWorldSettingsController *GetWSC(CEntity *pen)
   return pwsc;
 }
 
+// [Cecil] Custom blood themes
+extern INDEX gam_iCustomBloodColor;
+extern INDEX gam_iCustomBloodTheme;
+
+// [Cecil] Get dynamic blood color
+COLOR BloodTheme::GetColor(INDEX iRandom, UBYTE ubFactor, UBYTE ubAlpha) const {
+  // Default color
+  const COLOR colDefault = RGBAToColor(ubFactor, ubFactor, ubFactor, ubAlpha);
+
+  switch (eType) {
+    // Override custom color
+    case E_FORCED: return MulColors(colForced, colDefault);
+
+    // No blending for colorful textures
+    case E_HIPPIE: return colDefault;
+
+    // Birthday colors
+    case E_PARTY: {
+      const FLOAT fNorm = NormByteToFloat(ubFactor);
+
+      switch (iRandom % 6) {
+        case 0: return RGBAToColor(0xEF * fNorm, 0x7E * fNorm, 0x7A * fNorm, ubAlpha); // 0xEF7E7A
+        case 1: return RGBAToColor(0xF2 * fNorm, 0xA8 * fNorm, 0x6B * fNorm, ubAlpha); // 0xF2A86B
+        case 2: return RGBAToColor(0xD6 * fNorm, 0xE3 * fNorm, 0x8A * fNorm, ubAlpha); // 0xD6E38A
+        case 3: return RGBAToColor(0x6C * fNorm, 0xC4 * fNorm, 0xC1 * fNorm, ubAlpha); // 0x6CC4C1
+        case 4: return RGBAToColor(0x7E * fNorm, 0x8E * fNorm, 0xD9 * fNorm, ubAlpha); // 0x7E8ED9
+        case 5: return RGBAToColor(0xC7 * fNorm, 0xA6 * fNorm, 0xE3 * fNorm, ubAlpha); // 0xC7A6E3
+      }
+    } return colDefault;
+
+    // Festive colors
+    case E_CHRISTMAS: {
+      switch (iRandom % 3) {
+        case 0: return RGBAToColor(ubFactor, ubFactor * 0.15f, ubFactor * 0.15f, ubAlpha); // Red (255, 38, 38)
+        case 1: return RGBAToColor(ubFactor * 0.15f, ubFactor, ubFactor * 0.15f, ubAlpha); // Green (38, 255, 38)
+        case 2: return colDefault; // White
+      }
+    } return colDefault;
+  }
+
+  // Simply colored
+  return MulColors(gam_iCustomBloodColor, colDefault);
+};
+
+// [Cecil] Get current blood theme
+BloodTheme GetBloodTheme(void) {
+  BloodTheme::Type eType = (BloodTheme::Type)gam_iCustomBloodTheme;
+
+  // Based on the current event
+  if (eType == BloodTheme::E_AUTO) {
+    switch (GetAPI()->GetCurrentEvent()) {
+      case CCoreAPI::SPEV_VALENTINE: return BloodTheme(BloodTheme::E_FORCED, 0xFF00AFFF);
+      case CCoreAPI::SPEV_BD_PARTY:  return BloodTheme(BloodTheme::E_PARTY);
+      case CCoreAPI::SPEV_HALLOWEEN: return BloodTheme(BloodTheme::E_FORCED, 0xFF7F00FF);
+      case CCoreAPI::SPEV_CHRISTMAS: return BloodTheme(BloodTheme::E_CHRISTMAS);
+    }
+
+    // Reset to simple coloring
+    eType = BloodTheme::E_COLOR;
+  }
+
+  // Pick a specific type and blend it
+  return BloodTheme(eType, gam_iCustomBloodColor);
+};

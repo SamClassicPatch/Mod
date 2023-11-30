@@ -335,3 +335,34 @@ void ResetCompatibilityValue(Type &prop, Type valCheck, Type valResetTo)
     WarningMessage("[Classics Patch] This value cannot be used due to being added for compatibility reasons (e.g. Revolution map conversions).");
   }
 };
+
+// [Cecil] Custom blood theme
+struct BloodTheme {
+  enum Type {
+    E_AUTO      = 0, // Based on the seasonal event
+    E_COLOR     = 1, // Simple coloring
+    E_FORCED    = 2, // Color override
+
+    // Custom models and different colors
+    E_HIPPIE    = 3,
+    E_PARTY     = 4,
+    E_CHRISTMAS = 5,
+  };
+
+  Type eType;
+  COLOR colForced;
+
+  // Constructor
+  BloodTheme(Type eSetType, COLOR colSet = 0xFFFFFFFF) :
+    eType(eSetType), colForced(colSet)
+  {
+    // This shouldn't be a real type
+    ASSERT(eSetType != E_AUTO);
+  };
+
+  // Get dynamic blood color
+  COLOR GetColor(INDEX iRandom = 0, UBYTE ubFactor = 0xFF, UBYTE ubAlpha = 0xFF) const;
+};
+
+// [Cecil] Get current blood theme
+BloodTheme GetBloodTheme(void);
