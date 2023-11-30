@@ -80,6 +80,11 @@ properties:
   17 BOOL m_bTouchedGround=FALSE,
   18 CEntityPointer m_penFallFXPapa,
 
+{
+  // [Cecil] Client-side debris customization
+  BOOL m_bUseCustomDebris;
+  CModelObject m_moCustomDebris;
+}
 
 components:
 
@@ -87,6 +92,10 @@ components:
 
 
 functions:
+  // [Cecil] Constructor
+  void CDebris(void) {
+    m_bUseCustomDebris = FALSE;
+  };
 
   /* Entity info */
   void *GetEntityInfo(void) {
@@ -103,6 +112,24 @@ functions:
       return;
     }
     CMovableModelEntity::ReceiveDamage(penInflictor, dmtType, fDamageAmmount, vHitPoint, vDirection);
+  };
+
+  // [Cecil] Display custom debris model
+  CModelObject *GetModelForRendering(void) {
+    if (m_bUseCustomDebris) {
+      return &m_moCustomDebris;
+    }
+
+    return GetModelObject();
+  };
+
+  // [Cecil] Set custom debris model (after initialization)
+  CModelObject &SetCustomModel(void) {
+    // Copy base model
+    m_moCustomDebris.Copy(*GetModelObject());
+    m_bUseCustomDebris = TRUE;
+
+    return m_moCustomDebris;
   };
 
 /************************************************************
@@ -125,6 +152,13 @@ functions:
       COLOR colAlpha = GetModelObject()->mo_colBlendColor;
       colAlpha = (colAlpha&0xffffff00) + (COLOR(fTimeRemain/m_fFadeTime*0xff)&0xff);
       GetModelObject()->mo_colBlendColor = colAlpha;
+
+      // [Cecil] Change color of the custom model
+      if (m_bUseCustomDebris) {
+        colAlpha = m_moCustomDebris.mo_colBlendColor;
+        colAlpha = (colAlpha & 0xFFFFFF00) + (COLOR(fTimeRemain / m_fFadeTime * 0xFF) & 0xFF);
+        m_moCustomDebris.mo_colBlendColor = colAlpha;
+      }
     }
     
     return FALSE;
