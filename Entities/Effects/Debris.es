@@ -84,6 +84,7 @@ properties:
   // [Cecil] Client-side debris customization
   BOOL m_bUseCustomDebris;
   CModelObject m_moCustomDebris;
+  UBYTE m_ubCustomDebrisAlpha;
 }
 
 components:
@@ -95,6 +96,7 @@ functions:
   // [Cecil] Constructor
   void CDebris(void) {
     m_bUseCustomDebris = FALSE;
+    m_ubCustomDebrisAlpha = 0xFF;
   };
 
   /* Entity info */
@@ -124,12 +126,18 @@ functions:
   };
 
   // [Cecil] Set custom debris model (after initialization)
-  CModelObject &SetCustomModel(void) {
+  void SetCustomModel(void) {
     // Copy base model
     m_moCustomDebris.Copy(*GetModelObject());
-    m_bUseCustomDebris = TRUE;
+    m_ubCustomDebrisAlpha = m_moCustomDebris.mo_colBlendColor & 0xFF;
 
-    return m_moCustomDebris;
+    m_bUseCustomDebris = TRUE;
+  };
+
+  // [Cecil] Set custom debris color (after setting the model)
+  void SetCustomColor(COLOR col) {
+    m_moCustomDebris.mo_colBlendColor = col;
+    m_ubCustomDebrisAlpha = col & 0xFF;
   };
 
 /************************************************************
@@ -156,7 +164,7 @@ functions:
       // [Cecil] Change color of the custom model
       if (m_bUseCustomDebris) {
         colAlpha = m_moCustomDebris.mo_colBlendColor;
-        colAlpha = (colAlpha & 0xFFFFFF00) + (COLOR(fTimeRemain / m_fFadeTime * 0xFF) & 0xFF);
+        colAlpha = (colAlpha & 0xFFFFFF00) + (COLOR(fTimeRemain / m_fFadeTime * m_ubCustomDebrisAlpha) & 0xFF);
         m_moCustomDebris.mo_colBlendColor = colAlpha;
       }
     }

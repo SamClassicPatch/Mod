@@ -266,6 +266,11 @@ properties:
 
 {
   CLightSource m_lsLightSource;
+
+  // [Cecil] Client-side effect coloring
+  BOOL m_bUseCustomColor;
+  COLOR m_colOldColor;
+  UBYTE m_ubNewAlpha;
 }
 
 components:
@@ -357,6 +362,22 @@ components:
 157 texture TEX_BRIGHT_BLOOD_SPILL3  "TexturesPatch\\Blood\\Spill3.tex",
 
 functions:
+  // [Cecil] Constructor
+  void CBasicEffect(void) {
+    m_bUseCustomColor = FALSE;
+    m_colOldColor = 0xFFFFFFFF;
+    m_ubNewAlpha = 0xFF;
+  };
+
+  // [Cecil] Set custom model color
+  void SetCustomColor(COLOR col) {
+    m_colOldColor = GetModelColor();
+
+    SetModelColor(col);
+    m_ubNewAlpha = col & 0xFF;
+
+    m_bUseCustomColor = TRUE;
+  };
 
   // dump sync data to text file
   export void DumpSync_t(CTStream &strm, INDEX iExtensiveSyncCheck)  // throw char *
@@ -514,13 +535,21 @@ functions:
       FLOAT m_fTimeRemain = m_fFadeStartTime + m_fFadeTime - _pTimer->CurrentTick();
       if (m_fTimeRemain < 0.0f) { m_fTimeRemain = 0.0f; }
       COLOR col = GetModelColor() & ~CT_AMASK;
-      col |= (ULONG)(m_fFadeStartAlpha* m_fTimeRemain/m_fFadeTime *255.0f);
+
+      // [Cecil] Multiply by client-side alpha value
+      if (m_bUseCustomColor) {
+        col |= ULONG(NormByteToFloat(m_ubNewAlpha) * m_fTimeRemain/m_fFadeTime * 255.0f);
+      } else {
+        col |= ULONG(m_fFadeStartAlpha * m_fTimeRemain/m_fFadeTime * 255.0f);
+      }
       SetModelColor(col);
+
     } else if (m_fFadeInSpeed>0) {
       TIME tmAge = _pTimer->GetLerpedCurrentTick()-m_tmSpawn;
       COLOR col = GetModelColor() ;
+      // [Cecil] Multiply by client-side alpha value
       col = (col &~CT_AMASK) |
-        (ULONG)((255)*Clamp(tmAge*m_fFadeInSpeed/m_fWaitTime, (TIME)0.0, (TIME)1.0));
+        (ULONG)(m_ubNewAlpha * Clamp(tmAge*m_fFadeInSpeed/m_fWaitTime, (TIME)0.0, (TIME)1.0));
       SetModelColor(col);
     }
 
@@ -1226,7 +1255,7 @@ functions:
       SetModelMainTexture(TEXTURE_BLOOD_EXPLODE);
     }
 
-    SetModelColor(blood.GetColor(rand(), 0xFF, 0xFF));
+    SetCustomColor(blood.GetColor(rand(), 0xFF, 0xFF));
 
     //RandomBanking();
     m_soEffect.Set3DParameters(7.5f, 5.0f, 1.0f, 1.0f);
@@ -1281,7 +1310,7 @@ functions:
       SetModelMainTexture(TEXTURE_BLOOD_STAIN1 + rand() % 4);
     }
 
-    SetModelColor(blood.GetColor(rand(), 0xFF, 0xFF));
+    SetCustomColor(blood.GetColor(rand(), 0xFF, 0xFF));
 
     SetNormalAndDirection();
     m_fWaitTime = 12.0f + FRnd()*3.0f;
@@ -1331,7 +1360,7 @@ functions:
       SetModelMainTexture(TEXTURE_BLOOD_STAIN4);
     }
 
-    SetModelColor(blood.GetColor(rand(), 0xFF, 0xFF));
+    SetCustomColor(blood.GetColor(rand(), 0xFF, 0xFF));
 
     SetNormalAndDirection();
     m_bLightSource = FALSE;
@@ -1379,16 +1408,16 @@ functions:
 
     if (blood.eType == BloodTheme::E_HIPPIE) {
       SetModelMainTexture(TEXTURE_BLOOD_FLOWER1 + rand() % 3);
-      SetModelColor(0xFFFFFFFF);
+      SetCustomColor(0xFFFFFFFF);
 
     // New textures for complex types
     } else if (blood.eType != BloodTheme::E_COLOR) {
       SetModelMainTexture(TEX_BRIGHT_BLOOD_STAIN1 + rand() % 4);
-      SetModelColor(blood.GetColor(rand(), 0xFF, 0xFF));
+      SetCustomColor(blood.GetColor(rand(), 0xFF, 0xFF));
 
     } else {
       SetModelMainTexture(TEXTURE_BLOOD_STAIN1 + rand() % 4);
-      SetModelColor(0x00FA00FF); // Green
+      SetCustomColor(0x00FA00FF); // Green
     }
 
     SetNormalAndDirection();
@@ -1453,7 +1482,7 @@ functions:
       }
     }
 
-    SetModelColor(colCustom);
+    SetCustomColor(colCustom);
 
     SetNormalAndDirection();
     m_fWaitTime = 15.0f + FRnd()*2.0f;
@@ -1576,7 +1605,14 @@ procedures:
     // fading
     if (m_fFadeTime>0.0f) {
       m_fFadeStartTime  = _pTimer->CurrentTick();
-      m_fFadeStartAlpha = ((GetModelColor()&CT_AMASK)>>CT_ASHIFT) / 255.0f;
+
+      // [Cecil] Use old alpha
+      if (m_bUseCustomColor) {
+        m_fFadeStartAlpha = ((m_colOldColor & CT_AMASK) >> CT_ASHIFT) / 255.0f;
+      } else {
+        m_fFadeStartAlpha = ((GetModelColor() & CT_AMASK) >> CT_ASHIFT) / 255.0f;
+      }
+
       m_bFade = TRUE;
       autowait(m_fFadeTime);
       m_bFade = FALSE;

@@ -1816,7 +1816,7 @@ functions:
         const BloodTheme blood = GetBloodTheme();
         COLOR colFlesh = blood.GetColor(rand(), 0xFF, 0xFF);
 
-        CModelObject &moDebris = penDebris->SetCustomModel();
+        penDebris->SetCustomModel();
         ULONG ulCustomModel = MODEL_FLESH;
         ULONG ulCustomTexture = TEXTURE_FLESH;
 
@@ -1844,8 +1844,8 @@ functions:
           }
         }
 
-        SetComponents(this, moDebris, ulCustomModel, ulCustomTexture, 0, 0, 0);
-        moDebris.mo_colBlendColor = colFlesh;
+        SetComponents(this, penDebris->m_moCustomDebris, ulCustomModel, ulCustomTexture, 0, 0, 0);
+        penDebris->SetCustomColor(colFlesh);
       }
       // leave a stain beneath
       LeaveStain(FALSE);
