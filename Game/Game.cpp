@@ -2589,7 +2589,7 @@ void CGame::RecordHighScore(void)
     return;
   }
   // find that player
-  INDEX ipl= Clamp(int(gam_iRecordHighScore), 0, NET_MAXGAMEPLAYERS);
+  INDEX ipl= Clamp(int(gam_iRecordHighScore), 0, CORE_MAX_GAME_PLAYERS);
   CPlayer *penpl = (CPlayer *)&*CEntity::GetPlayerEntity(ipl);
   if (penpl==NULL) {
     //CPrintF( LOCALIZE("Warning: cannot record score for player %d!\n"), ipl);
@@ -2640,7 +2640,7 @@ INDEX CGame::GetLivePlayersCount(void)
 {
   INDEX ctLive = 0;
 
-  for (INDEX ipl=0; ipl<NET_MAXGAMEPLAYERS; ipl++) {
+  for (INDEX ipl=0; ipl<CORE_MAX_GAME_PLAYERS; ipl++) {
     CEntity *penpl = CEntity::GetPlayerEntity(ipl);
     if (penpl!=NULL && (penpl->GetFlags()&ENF_ALIVE)) {
       ctLive++;
@@ -2654,7 +2654,7 @@ INDEX CGame::GetPlayersCount(void)
 {
   INDEX ctPlayers = 0;
 
-  for (INDEX ipl=0; ipl<NET_MAXGAMEPLAYERS; ipl++) {
+  for (INDEX ipl=0; ipl<CORE_MAX_GAME_PLAYERS; ipl++) {
     CEntity *penpl = CEntity::GetPlayerEntity(ipl);
     if (penpl!=NULL) {
       ctPlayers++;

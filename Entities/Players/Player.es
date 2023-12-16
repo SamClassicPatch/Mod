@@ -1733,7 +1733,7 @@ functions:
   void GetDetailStatsDM(CTString &strStats)
   {
     extern INDEX SetAllPlayersStats( INDEX iSortKey);
-    extern CPlayer *_apenPlayers[NET_MAXGAMEPLAYERS];
+    extern CPlayer *_apenPlayers[CORE_MAX_GAME_PLAYERS];
     // determine type of game
     const BOOL bFragMatch = GetSP()->sp_bUseFrags;
 
@@ -1814,7 +1814,7 @@ functions:
 
     // get stats from all players
     extern INDEX SetAllPlayersStats( INDEX iSortKey);
-    extern CPlayer *_apenPlayers[NET_MAXGAMEPLAYERS];
+    extern CPlayer *_apenPlayers[CORE_MAX_GAME_PLAYERS];
     const INDEX ctPlayers = SetAllPlayersStats(3); // sort by score
 
     // for each player
