@@ -2375,6 +2375,11 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
 
       if (!pdp->Lock()) continue;
 
+      // [Cecil] Adjust aspect ratio for the HUD
+      if (CoreVarData().bAdjustAR && _EnginePatches._bAdjustForAspectRatio) {
+        pdp->dp_fWideAdjustment = ((FLOAT)pdp->GetHeight() / (FLOAT)pdp->GetWidth()) * (4.0f / 3.0f);
+      }
+
       CEntity *penViewer = cenViewers.Pointer(iViewer);
 
       // Use predictor instead
