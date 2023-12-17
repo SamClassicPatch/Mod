@@ -172,3 +172,6 @@ void DECL_DLL Particles_RunAfterBurner(CEntity *pen, FLOAT tmEnd, FLOAT fStretch
 void DECL_DLL Particles_Fireworks01(CEmiter &em);
 void DECL_DLL Particles_ModelGlow2( CModelObject *mo,  CPlacement3D pl, FLOAT tmEnd, enum ParticleTexture ptTexture, FLOAT fSize, FLOAT iVtxStep, FLOAT fAnimSpd, COLOR iCol);
 void DECL_DLL Particles_RunAfterBurner(CEntity *pen, FLOAT tmEnd, FLOAT fStretch, INDEX iGradientType);
+
+// [Cecil] Fireworks particles
+void DECL_DLL Particles_Fireworks(CEntity *pen, CPlacement3D plPos, FLOAT fArea, FLOAT fSize, FLOAT tmStart, FLOAT tmDuration, ParticleTexture ptTexture, COLOR col);

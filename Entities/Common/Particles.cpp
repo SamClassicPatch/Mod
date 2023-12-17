@@ -5100,6 +5100,52 @@ void Particles_SummonerExplode(CEntity *pen, FLOAT3D vCenter, FLOAT fArea, FLOAT
 
 }
 
+// [Cecil] Fireworks particles
+void Particles_Fireworks(CEntity *pen, CPlacement3D plPos, FLOAT fArea, FLOAT fSize, FLOAT tmStart, FLOAT tmDuration, ParticleTexture ptTexture, COLOR col) {
+  FLOAT fElapsed = _pTimer->GetLerpedCurrentTick() - tmStart;
+  SetupParticleTextureWithAddAlpha(ptTexture);
+
+  for (INDEX i = 0; i < 128; i++) {
+    // Random particles
+    INDEX iParticle = INDEX(i + pen->en_ulID + tmStart / _pTimer->TickQuantum) % CT_MAX_PARTICLES_TABLE;
+
+    FLOAT3D vPos;
+    FLOAT fAngle = auStarsColors[iParticle][0];
+
+    vPos = FLOAT3D(afStarsPositions[iParticle][0], afStarsPositions[iParticle][1], afStarsPositions[iParticle][2]);
+
+    FLOAT fAreaModificator = afStarsPositions[iParticle][2] + 1.0f;
+
+    vPos *= (5.0f - 5.0f / (fElapsed*4.0f + 1.0f)) * fArea * fAreaModificator;
+    vPos(2) -= fElapsed*fElapsed;
+
+    // Apply absolute position
+    FLOATmatrix3D mRot;
+    MakeRotationMatrixFast(mRot, plPos.pl_OrientationAngle);
+    vPos = plPos.pl_PositionVector + vPos*mRot;
+
+    UBYTE ub = 0;
+    FLOAT fFadeBegin = tmDuration * (0.6f + afStarsPositions[iParticle][2] * 0.1f);
+    FLOAT fFadeEnd   = tmDuration * (0.8f + afStarsPositions[iParticle][1] * 0.3f);
+
+    if (fElapsed < fFadeBegin) {
+      ub = 255;
+    } else if (fElapsed < fFadeEnd) {
+      ub = ((fFadeEnd - fElapsed) / (fFadeEnd - fFadeBegin)) * 255;
+    }
+
+    COLOR colColor = C_WHITE; //RGBToColor(auStarsColors[iParticle][0], auStarsColors[iParticle][1], auStarsColors[iParticle][2]);
+
+    // Multiply colors
+    colColor = MulColors(colColor, col);
+    colColor |= ub;
+
+    Particle_RenderSquare(vPos, fSize, fAngle, colColor);
+  }
+
+  Particle_Flush();
+};
+
 #define TM_TWISTER_TOTAL_LIFE 10.0f
 void Particles_Twister( CEntity *pen, FLOAT fStretch, FLOAT fStartTime, FLOAT fFadeOutStartTime, FLOAT fParticleStretch)
 {
