@@ -62,6 +62,9 @@
     <ClCompile Include="Cecil\Module.cpp">
       <Filter>Source Files\Cecil</Filter>
     </ClCompile>
+    <ClCompile Include="Cecil\SimpleConfigs.cpp">
+      <Filter>Source Files\Cecil</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CompMessage.h">
@@ -92,6 +95,9 @@
       <Filter>Header Files\Cecil headers</Filter>
     </ClInclude>
     <ClInclude Include="Cecil\Map.h">
+      <Filter>Header Files\Cecil headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Cecil\SimpleConfigs.h">
       <Filter>Header Files\Cecil headers</Filter>
     </ClInclude>
   </ItemGroup>
