@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 static __forceinline void FixupFileName_t(CTString &strPath)
 {
   if (!strPath.RemovePrefix(CTString("TF") + "NM ")) {
-    ThrowF_t(TRANS("Expected %s%s before filename"), "TF", "NM");
+    ThrowF_t(LOCALIZE("Expected %s%s before filename"), "TF", "NM");
   }
 };
 
@@ -72,7 +72,7 @@ CTString CSimpleConfig::GetNonEmptyLine_t(void) {
     }
   }
 
-  ThrowF_t(TRANS("Unexpected end of file"));
+  ThrowF_t(LOCALIZE("Unexpected end of file"));
   return "";
 };
 
@@ -80,7 +80,7 @@ void CSimpleConfig::SkipBlock_t(void)
 {
   CTString strLine = GetNonEmptyLine_t();
 
-  if (strLine != "{") ThrowF_t(TRANS("Expected '{'"));
+  if (strLine != "{") ThrowF_t(LOCALIZE("Expected '{'"));
 
   // Start with one open block
   INDEX ctLevel = 1;
@@ -111,7 +111,7 @@ BOOL CSimpleConfig::ProcessProperty(const CTString &strProp, CTString &strValue)
 void CSimpleConfig::Parse_t(void) {
   CTString strLine = GetNonEmptyLine_t();
 
-  if (strLine != "{") ThrowF_t(TRANS("Expected '{'"));
+  if (strLine != "{") ThrowF_t(LOCALIZE("Expected '{'"));
 
   while (TRUE) {
     strLine = GetNonEmptyLine_t();
@@ -181,11 +181,11 @@ BOOL CModelConfig::ProcessProperty(const CTString &strProp, CTString &strValue)
     strValue.ScanF("%d", &iAnim);
 
     if (iAnim < 0) {
-      ThrowF_t(TRANS("Invalid animation number"));
+      ThrowF_t(LOCALIZE("Invalid animation number"));
     }
 
     if (iAnim >= _pmo->GetAnimsCt()) {
-      ThrowF_t(TRANS("Animation %d does not exist in that model"), iAnim);
+      ThrowF_t(LOCALIZE("Animation %d does not exist in that model"), iAnim);
     }
 
     _pmo->PlayAnim(iAnim, AOF_LOOPING);
@@ -221,13 +221,13 @@ BOOL CModelConfig::ProcessProperty(const CTString &strProp, CTString &strValue)
     strValue.ScanF("%d", &iIndex);
 
     if (iIndex < 0) {
-      ThrowF_t(TRANS("Invalid attachment number"));
+      ThrowF_t(LOCALIZE("Invalid attachment number"));
     }
 
     CModelData *pmd = (CModelData *)_pmo->GetData();
 
     if (iIndex >= pmd->md_aampAttachedPosition.Count()) {
-      ThrowF_t(TRANS("Attachment %d does not exist in that model"), iIndex);
+      ThrowF_t(LOCALIZE("Attachment %d does not exist in that model"), iIndex);
     }
 
     CModelObject *pmoRestore = _pmo;
