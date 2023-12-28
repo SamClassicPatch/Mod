@@ -942,6 +942,28 @@ void CGame::GameHandleTimer(void)
  */
 void CGame::InitInternal( void)
 {
+  // [Cecil] Launched from vanilla game for some reason
+  if (_pShell->GetSymbol("CoreAPI", TRUE) == NULL) {
+    // Try to restart the mod on the patched executable
+    STARTUPINFOA cif;
+    ZeroMemory(&cif, sizeof(STARTUPINFOA));
+    PROCESS_INFORMATION pi;
+
+    CTString strCmd = CCoreAPI::AppPath() + "Bin\\SeriousSam_Custom.exe";
+    CTString strParam = " +game ClassicsPatchMod";
+
+    if (!CreateProcessA(strCmd.str_String, strParam.str_String, NULL, NULL, FALSE, CREATE_DEFAULT_ERROR_MODE, NULL, NULL, &cif, &pi)) {
+      // Couldn't start the patch
+      FatalError(TRANS("Mod from Classics Patch can only be launched from the patch itself by using its executables!\n\n"
+                       "Could not locate 'SeriousSam_Custom.exe'. Please reinstall the patch or locate the appropriate executable, if it has been renamed."));
+
+    } else {
+      // Close vanilla game
+      ExitProcess(1);
+      return;
+    }
+  }
+
   gam_strCustomLevel = ""; // filename of custom level chosen
   gam_strSessionName = LOCALIZE("Unnamed session"); // name of multiplayer network session
   gam_strJoinAddress = LOCALIZE("serveraddress");   // join address
