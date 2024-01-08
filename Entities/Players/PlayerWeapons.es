@@ -69,6 +69,22 @@ extern INDEX hud_bShowWeapon;
 extern const INDEX aiWeaponsRemap[19] = { 0,  1,  10,  2,  3,  4,  5,  6,  7,
                                           8,  9,  11, 13, 12, 14, 15, 16, 17, 18 };
 
+// [Cecil] Weapon viewmodel customization
+static FLOAT wpn_afViewPos[3] = { 1.0f, 1.0f, 1.0f };
+static FLOAT wpn_afViewRot[3] = { 1.0f, 1.0f, 1.0f };
+static FLOAT wpn_fViewFOV = 1.0f;
+
+static INDEX wpn_bViewMirrored = FALSE;
+static INDEX wpn_bPowerUpParticles = FALSE;
+
+// [Cecil] Reset weapon position
+void ResetWeaponPosition(void) {
+  for (INDEX i = 0; i < 3; i++) {
+    wpn_afViewPos[i] = 1.0f;
+    wpn_afViewRot[i] = 1.0f;
+  }
+  wpn_fViewFOV = 1.0f;
+};
 %}
 
 uses "Players/Player";
@@ -476,6 +492,15 @@ void CPlayerWeapons_Init(void) {
   _pShell->DeclareSymbol("persistent user FLOAT plr_tmSnoopingTime;",  &plr_tmSnoopingTime);
   _pShell->DeclareSymbol("persistent user FLOAT plr_tmSnoopingDelay;", &plr_tmSnoopingDelay);
 
+  // [Cecil] Weapon viewmodel customization
+  _pShell->DeclareSymbol("persistent user FLOAT wpn_afViewPos[3];", &wpn_afViewPos);
+  _pShell->DeclareSymbol("persistent user FLOAT wpn_afViewRot[3];", &wpn_afViewRot);
+  _pShell->DeclareSymbol("persistent user FLOAT wpn_fViewFOV;", &wpn_fViewFOV);
+  _pShell->DeclareSymbol("user void ResetWeaponPosition(void);", &ResetWeaponPosition);
+
+  _pShell->DeclareSymbol("persistent user INDEX wpn_bViewMirrored;", &wpn_bViewMirrored);
+  _pShell->DeclareSymbol("persistent user INDEX wpn_bPowerUpParticles;", &wpn_bPowerUpParticles);
+
   // precache base weapons
   CPlayerWeapons_Precache(0x03);
 }
@@ -638,6 +663,9 @@ properties:
   CEntity *penBullet;
   CPlacement3D plBullet;
   FLOAT3D vBulletDestination;
+
+  // [Cecil] Weapon mirroring
+  BOOL m_bLastWeaponMirrored;
 }
 
 components:
@@ -838,7 +866,71 @@ components:
 
 
 functions:
-   
+  // [Cecil] Constructor
+  void CPlayerWeapons(void) {
+    // Weapon mirroring
+    m_bLastWeaponMirrored = FALSE;
+  };
+
+  // [Cecil] Copy constructor
+  void Copy(CEntity &enOther, ULONG ulFlags) {
+    CRationalEntity::Copy(enOther, ulFlags);
+    CPlayerWeapons *penOther = (CPlayerWeapons *)&enOther;
+
+    m_bLastWeaponMirrored = penOther->m_bLastWeaponMirrored;
+  };
+
+  // [Cecil] Get mirroring state (rendering only)
+  BOOL MirrorState(void) {
+    return wpn_bViewMirrored;
+  };
+
+  // [Cecil] Reset last mirror state
+  void ResetMirrorState(void) {
+    m_bLastWeaponMirrored = MirrorState();
+  };
+
+  // [Cecil] Get weapon position for rendering
+  void RenderPos(FLOAT3D &vPos, FLOAT3D &vRot, FLOAT3D &vFire, FLOAT &fFOV) {
+    // Mirror the position
+    if (MirrorState()) {
+      FLOATmatrix3D mRot;
+      MakeRotationMatrix(mRot, vRot);
+
+      // Mirror the rotation
+      mRot(1, 2) *= -1.0f;
+      mRot(1, 3) *= -1.0f;
+      DecomposeRotationMatrix(vRot, mRot);
+
+      vPos(1) *= -1.0f;
+      vRot(3) *= -1.0f;
+      vFire(1) *= -1.0f;
+    }
+
+    // Customizable position
+    vPos(1) *= wpn_afViewPos[0];
+    vPos(2) *= wpn_afViewPos[1];
+    vPos(3) *= wpn_afViewPos[2];
+
+    vRot(1) *= wpn_afViewRot[0];
+    vRot(2) *= wpn_afViewRot[1];
+    vRot(3) *= wpn_afViewRot[2];
+
+    vFire(1) *= wpn_afViewPos[0];
+    vFire(2) *= wpn_afViewPos[1];
+    vFire(3) *= wpn_afViewPos[2];
+
+    fFOV = Clamp(fFOV * wpn_fViewFOV, 1.0f, 170.0f);
+  };
+
+  // [Cecil] Mirror the weapon
+  void ApplyMirroring(BOOL bMirror) {
+    if (bMirror) {
+      m_moWeapon.StretchModelRelative(FLOAT3D(-1, 1, 1));
+      m_moWeaponSecond.StretchModelRelative(FLOAT3D(-1, 1, 1));
+    }
+  };
+
  // add to prediction any entities that this entity depends on
   void AddDependentsToPrediction(void)
   {
@@ -900,6 +992,17 @@ functions:
   {
     _mrpModelRenderPrefs.SetRenderType( RT_TEXTURE|RT_SHADING_PHONG);
 
+    // [Cecil] Non-predicted weapon
+    CPlayerWeapons *pen = (CPlayerWeapons *)GetPredictionTail();
+
+    // [Cecil] Mirror the weapon
+    const BOOL bMirrorState = MirrorState();
+
+    if (pen->m_bLastWeaponMirrored != bMirrorState) {
+      pen->ApplyMirroring(TRUE);
+      pen->m_bLastWeaponMirrored = bMirrorState;
+    }
+
     // flare attachment
     ControlFlareAttachment();
 
@@ -909,29 +1012,26 @@ functions:
     // nuke and iron cannons have the same view settings
     INDEX iWeaponData = m_iCurrentWeapon;
 
+    // [Cecil] Customize weapon position
+    FLOAT3D vPos(wpn_fX[iWeaponData], wpn_fY[iWeaponData], wpn_fZ[iWeaponData]);
+    FLOAT3D vRot(wpn_fH[iWeaponData], wpn_fP[iWeaponData], wpn_fB[iWeaponData]);
+    FLOAT3D vDummy(0, 0, 0);
+    FLOAT fWeaponFOV = wpn_fFOV[iWeaponData];
+    RenderPos(vPos, vRot, vDummy, fWeaponFOV);
+
     // store FOV for Crosshair
     const FLOAT fFOV = ((CPerspectiveProjection3D &)prProjection).FOVL();
     CPlacement3D plView;
     plView = ((CPlayer&)*m_penPlayer).en_plViewpoint;
     plView.RelativeToAbsolute(m_penPlayer->GetPlacement());
 
-    // added: chainsaw shaking
-    CPlacement3D plWeapon;
+    // [Cecil] Use default placement and add chainsaw shaking
+    CPlacement3D plWeapon(vPos, vRot);
+
     if (m_iCurrentWeapon==WEAPON_CHAINSAW) {
       CPlayer *plPlayer = (CPlayer*)&*m_penPlayer; 
-      plWeapon = CPlacement3D ( FLOAT3D(wpn_fX[iWeaponData]+plPlayer->m_fChainsawShakeDX*0.35f,
-                                        wpn_fY[iWeaponData]+plPlayer->m_fChainsawShakeDY*0.35f,
-                                        wpn_fZ[iWeaponData]),
-                                ANGLE3D(AngleDeg(wpn_fH[iWeaponData]),
-                                        AngleDeg(wpn_fP[iWeaponData]),
-                                        AngleDeg(wpn_fB[iWeaponData])));
-    } else {
-      plWeapon = CPlacement3D ( FLOAT3D(wpn_fX[iWeaponData],
-                                        wpn_fY[iWeaponData],
-                                        wpn_fZ[iWeaponData]),
-                                ANGLE3D(AngleDeg(wpn_fH[iWeaponData]),
-                                        AngleDeg(wpn_fP[iWeaponData]),
-                                        AngleDeg(wpn_fB[iWeaponData])));
+      plWeapon.pl_PositionVector += FLOAT3D(plPlayer->m_fChainsawShakeDX*0.35f,
+                                            plPlayer->m_fChainsawShakeDY*0.35f, 0);
     }
 
     // make sure that weapon will be bright enough
@@ -956,8 +1056,9 @@ functions:
 
     UBYTE ubBlend = INVISIBILITY_ALPHA_LOCAL;
     FLOAT tmInvisibility = ((CPlayer *)&*m_penPlayer)->m_tmInvisibility;
-    //FLOAT tmSeriousDamage = ((CPlayer *)&*m_penPlayer)->m_tmSeriousDamage;
-    //FLOAT tmInvulnerability = ((CPlayer *)&*m_penPlayer)->m_tmInvulnerability;
+    // [Cecil] Uncommented powerup timers
+    FLOAT tmSeriousDamage = ((CPlayer *)&*m_penPlayer)->m_tmSeriousDamage;
+    FLOAT tmInvulnerability = ((CPlayer *)&*m_penPlayer)->m_tmInvulnerability;
     if (tmInvisibility>tmNow) {
       FLOAT fIntensity=0.0f;      
       if((tmInvisibility-tmNow)<3.0f)
@@ -979,9 +1080,7 @@ functions:
       prMirror.FrontClipDistanceL() = wpn_fClip[iWeaponData];
       prMirror.DepthBufferNearL() = 0.0f;
       prMirror.DepthBufferFarL() = 0.1f;
-      CPlacement3D plWeaponMirror( FLOAT3D(wpn_fX[iWeaponData], wpn_fY[iWeaponData], wpn_fZ[iWeaponData]),
-                                   ANGLE3D(AngleDeg(wpn_fH[iWeaponData]), AngleDeg(wpn_fP[iWeaponData]),
-                                           AngleDeg(wpn_fB[iWeaponData])));
+      CPlacement3D plWeaponMirror(vPos, vRot);
       if( iWeaponData==WEAPON_DOUBLECOLT /*|| iWeaponData==WEAPON_PIPEBOMB*/) {
         FLOATmatrix3D mRotation;
         MakeRotationMatrixFast(mRotation, plView.pl_OrientationAngle);
@@ -989,7 +1088,7 @@ functions:
         plWeaponMirror.pl_OrientationAngle(1) = -plWeaponMirror.pl_OrientationAngle(1);
         plWeaponMirror.pl_OrientationAngle(3) = -plWeaponMirror.pl_OrientationAngle(3);
       }
-      ((CPerspectiveProjection3D &)prMirror).FOVL() = AngleDeg(wpn_fFOV[iWeaponData]);
+      ((CPerspectiveProjection3D &)prMirror).FOVL() = fWeaponFOV;
       CAnyProjection3D apr;
       apr = prMirror;
       Stereo_AdjustProjection(*apr, iEye, 0.1f);
@@ -1009,6 +1108,29 @@ functions:
       
       m_moWeaponSecond.SetupModelRendering(rmMain);
       m_moWeaponSecond.RenderModel(rmMain);
+
+      // [Cecil] Display particles of active power-ups
+      if (wpn_bPowerUpParticles) {
+        if (tmSeriousDamage > tmNow && tmInvulnerability > tmNow) {
+          Particle_PrepareSystem(pdp, apr);
+          Particle_PrepareEntity(1, 0, 0, NULL);
+          Particles_ModelGlow2(&m_moWeaponSecond, plWeapon, Max(tmSeriousDamage, tmInvulnerability), PT_STAR08, 0.025f, 2, 0.01f, 0xFF00FF00);
+          Particle_EndSystem();
+
+        } else if (tmInvulnerability > tmNow) {
+          Particle_PrepareSystem(pdp, apr);
+          Particle_PrepareEntity(1, 0, 0, NULL);
+          Particles_ModelGlow2(&m_moWeaponSecond, plWeapon, tmInvulnerability, PT_STAR05, 0.025f, 2, 0.01f, 0x3333FF00);
+          Particle_EndSystem();
+
+        } else if (tmSeriousDamage > tmNow) {
+          Particle_PrepareSystem(pdp, apr);
+          Particle_PrepareEntity(1, 0, 0, NULL);
+          Particles_ModelGlow2(&m_moWeaponSecond, plWeapon, tmSeriousDamage, PT_STAR08, 0.025f, 2, 0.01f, 0xFF777700);
+          Particle_EndSystem();
+        }
+      }
+
       EndModelRenderingView();
     }
 
@@ -1021,7 +1143,7 @@ functions:
     prProjection.FrontClipDistanceL() = wpn_fClip[iWeaponData];
     prProjection.DepthBufferNearL() = 0.0f;
     prProjection.DepthBufferFarL() = 0.1f;
-    ((CPerspectiveProjection3D &)prProjection).FOVL() = AngleDeg(wpn_fFOV[iWeaponData]);
+    ((CPerspectiveProjection3D &)prProjection).FOVL() = fWeaponFOV;
 
     CAnyProjection3D apr;
     apr = prProjection;
@@ -1043,22 +1165,27 @@ functions:
     m_moWeapon.SetupModelRendering(rmMain);
     m_moWeapon.RenderModel(rmMain);
 
-    /*if (tmSeriousDamage>tmNow && tmInvulnerability>tmNow) {
-      Particle_PrepareSystem(pdp, apr);
-      Particle_PrepareEntity( 1, 0, 0, NULL);
-      Particles_ModelGlow2(&m_moWeapon, plWeapon, Max(tmSeriousDamage, tmInvulnerability),PT_STAR08, 0.025f, 2, 0.01f, 0xff00ff00);
-      Particle_EndSystem();
-    } else if (tmInvulnerability>tmNow) {
-      Particle_PrepareSystem(pdp, apr);
-      Particle_PrepareEntity( 1, 0, 0, NULL);
-      Particles_ModelGlow2(&m_moWeapon, plWeapon, tmInvulnerability, PT_STAR05, 0.025f, tmp_ai[1], 0.01f, 0x3333ff00);
-      Particle_EndSystem();
-    } else if (tmSeriousDamage>tmNow) {
-      Particle_PrepareSystem(pdp, apr);
-      Particle_PrepareEntity( 1, 0, 0, NULL);
-      Particles_ModelGlow2(&m_moWeapon, plWeapon, tmSeriousDamage, PT_STAR08, 0.025f, 2, 0.01f, 0xff777700);
-      Particle_EndSystem();
-    }*/
+    // [Cecil] Display particles of active power-ups
+    if (wpn_bPowerUpParticles) {
+      if (tmSeriousDamage > tmNow && tmInvulnerability > tmNow) {
+        Particle_PrepareSystem(pdp, apr);
+        Particle_PrepareEntity(1, 0, 0, NULL);
+        Particles_ModelGlow2(&m_moWeapon, plWeapon, Max(tmSeriousDamage, tmInvulnerability), PT_STAR08, 0.025f, 2, 0.01f, 0xFF00FF00);
+        Particle_EndSystem();
+
+      } else if (tmInvulnerability > tmNow) {
+        Particle_PrepareSystem(pdp, apr);
+        Particle_PrepareEntity(1, 0, 0, NULL);
+        Particles_ModelGlow2(&m_moWeapon, plWeapon, tmInvulnerability, PT_STAR05, 0.025f, 2, 0.01f, 0x3333FF00);
+        Particle_EndSystem();
+
+      } else if (tmSeriousDamage > tmNow) {
+        Particle_PrepareSystem(pdp, apr);
+        Particle_PrepareEntity(1, 0, 0, NULL);
+        Particles_ModelGlow2(&m_moWeapon, plWeapon, tmSeriousDamage, PT_STAR08, 0.025f, 2, 0.01f, 0xFF777700);
+        Particle_EndSystem();
+      }
+    }
 
     EndModelRenderingView();
 
@@ -1551,6 +1678,10 @@ functions:
 
   // Set weapon model for current weapon.
   void SetCurrentWeaponModel(void) {
+    // [Cecil] Restore stretch
+    m_moWeapon.StretchModel(FLOAT3D(1, 1, 1));
+    m_moWeaponSecond.StretchModel(FLOAT3D(1, 1, 1));
+
     // WARNING !!! ---> Order of attachment must be the same with order in RenderWeaponModel()
     switch (m_iCurrentWeapon) {
       case WEAPON_NONE:
@@ -1599,7 +1730,7 @@ functions:
         SetComponents(this, m_moWeaponSecond, MODEL_DS_HANDWITHAMMO, TEXTURE_HAND, 0, 0, 0);
         CModelObject &mo = m_moWeapon.GetAttachmentModel(DOUBLESHOTGUN_ATTACHMENT_BARRELS)->amo_moModelObject;
         AddAttachmentToModel(this, mo, DSHOTGUNBARRELS_ATTACHMENT_FLARE, MODEL_FLARE01, TEXTURE_FLARE01, 0, 0, 0);
-        m_moWeaponSecond.StretchModel(FLOAT3D(1,1,1));
+        m_moWeaponSecond.StretchModel(FLOAT3D(0, 0, 0)); // [Cecil] Hide the hand
         m_moWeapon.PlayAnim(DOUBLESHOTGUN_ANIM_WAIT1, 0);
         break; }
       case WEAPON_TOMMYGUN: {
@@ -1698,6 +1829,9 @@ functions:
 //        AddAttachmentToModel(this, m_moWeapon, CANNON_ATTACHMENT_LIGHT, MODEL_CN_LIGHT, TEXTURE_CANNON, TEX_REFL_LIGHTMETAL01, TEX_SPEC_MEDIUM, 0);
         break;
     }
+
+    // [Cecil] Mirror the weapon
+    ApplyMirroring(MirrorState());
   };
 
 
@@ -1707,6 +1841,10 @@ functions:
    */
   void RotateMinigun(void) {
     ANGLE aAngle = Lerp(m_aMiniGunLast, m_aMiniGun, _pTimer->GetLerpFactor());
+
+    // [Cecil] Mirrored rotation
+    aAngle *= (MirrorState() ? -1 : 1);
+
     // rotate minigun barrels
     CAttachmentModelObject *amo = m_moWeapon.GetAttachmentModel(MINIGUN_ATTACHMENT_BARRELS);
     amo->amo_plRelative.pl_OrientationAngle(3) = aAngle;
@@ -1801,15 +1939,20 @@ functions:
       plPos.pl_PositionVector = FLOAT3D( -wpn_fX[m_iCurrentWeapon], wpn_fY[m_iCurrentWeapon],
                                           wpn_fZ[m_iCurrentWeapon]);
     }
+
+    // [Cecil] Adjust render position
+    FLOAT fFOV = wpn_fFOV[m_iCurrentWeapon];
+    RenderPos(plPos.pl_PositionVector, plPos.pl_OrientationAngle, vPos, fFOV);
+
     // weapon offset
     if (!m_bMirrorFire) {
       plPos.RelativeToAbsoluteSmooth(CPlacement3D(vPos, ANGLE3D(0, 0, 0)));
     } else {
       plPos.RelativeToAbsoluteSmooth(CPlacement3D(vPos, ANGLE3D(0, 0, 0)));
     }
-    plPos.pl_PositionVector(1) *= SinFast(wpn_fFOV[m_iCurrentWeapon]/2) / SinFast(90.0f/2);
-    plPos.pl_PositionVector(2) *= SinFast(wpn_fFOV[m_iCurrentWeapon]/2) / SinFast(90.0f/2);
-    plPos.pl_PositionVector(3) *= SinFast(wpn_fFOV[m_iCurrentWeapon]/2) / SinFast(90.0f/2);
+    plPos.pl_PositionVector(1) *= SinFast(fFOV / 2) / SinFast(90.0f / 2);
+    plPos.pl_PositionVector(2) *= SinFast(fFOV / 2) / SinFast(90.0f / 2);
+    plPos.pl_PositionVector(3) *= SinFast(fFOV / 2) / SinFast(90.0f / 2);
 
     if (bResetZ) {
       plPos.pl_PositionVector(3) = 0.0f;
@@ -4392,6 +4535,10 @@ procedures:
       DecAmmo(m_iShells, 2);
       SetFlare(0, FLARE_ADD);
       PlayLightAnim(LIGHT_ANIM_COLT_SHOTGUN, 0);
+
+      // [Cecil] Show the hand
+      m_moWeaponSecond.StretchModel(FLOAT3D((MirrorState() ? -1 : 1), 1, 1));
+
       m_moWeapon.PlayAnim(GetSP()->sp_bCooperative ? DOUBLESHOTGUN_ANIM_FIRE : DOUBLESHOTGUN_ANIM_FIREFAST, 0);
       m_moWeaponSecond.PlayAnim(GetSP()->sp_bCooperative ? HANDWITHAMMO_ANIM_FIRE : HANDWITHAMMO_ANIM_FIREFAST, 0);
       // sound
@@ -4459,6 +4606,10 @@ procedures:
       autowait( m_moWeapon.GetAnimLength(
         (GetSP()->sp_bCooperative ? DOUBLESHOTGUN_ANIM_FIRE : DOUBLESHOTGUN_ANIM_FIREFAST)) -
         (GetSP()->sp_bCooperative ? 0.25f : 0.15f) );
+
+      // [Cecil] Hide the hand
+      m_moWeaponSecond.StretchModel(FLOAT3D(0, 0, 0));
+
       // no ammo -> change weapon
       if (m_iShells<=1) { SelectNewWeapon(); }
     } else {
@@ -4907,7 +5058,7 @@ procedures:
       autowait(m_moWeapon.GetAnimLength(ROCKETLAUNCHER_ANIM_FIRE)-0.05f);
 
       CModelObject *pmo = &(m_moWeapon.GetAttachmentModel(ROCKETLAUNCHER_ATTACHMENT_ROCKET1)->amo_moModelObject);
-      pmo->StretchModel(FLOAT3D(1, 1, 1));
+      pmo->StretchModel(FLOAT3D((MirrorState() ? -1 : 1), 1, 1)); // [Cecil] Mirrored rocket
 
       // no ammo -> change weapon
       if (m_iRockets<=0) { SelectNewWeapon(); }
@@ -5566,7 +5717,10 @@ procedures:
     // make sure we restore all rockets if we are holding the rocket launcher
     if (m_iCurrentWeapon==WEAPON_ROCKETLAUNCHER) {
       CModelObject *pmo = &(m_moWeapon.GetAttachmentModel(ROCKETLAUNCHER_ATTACHMENT_ROCKET1)->amo_moModelObject);
-      if (pmo) { pmo->StretchModel(FLOAT3D(1, 1, 1)); }
+      if (pmo) {
+        // [Cecil] Mirrored rocket
+        pmo->StretchModel(FLOAT3D((MirrorState() ? -1 : 1), 1, 1));
+      }
     }
     // kill all possible sounds, animations, etc
     ResetWeaponMovingOffset();
@@ -5599,6 +5753,9 @@ procedures:
     SetFlags(GetFlags()|ENF_CROSSESLEVELS|ENF_NOTIFYLEVELCHANGE);
     SetPhysicsFlags(EPF_MODEL_IMMATERIAL);
     SetCollisionFlags(ECF_IMMATERIAL);
+
+    // [Cecil] Remember last mirrored state
+    ResetMirrorState();
 
     // set weapon model for current weapon
     SetCurrentWeaponModel();
