@@ -175,6 +175,9 @@ static INDEX gam_bObserverViewOverlay = TRUE;
 static INDEX gam_bObserverViewBackground = TRUE;
 static FLOAT gam_fObserverViewSize = 0.25f;
 
+// [Cecil] Vertical screen division in two-player split-screen
+static INDEX gam_bVerticalSplitScreen = FALSE;
+
 // [Cecil] Axis values to add
 static struct SAddAxisValues {
   union {
@@ -1147,6 +1150,9 @@ void CGame::InitInternal( void)
   _pShell->DeclareSymbol("persistent user INDEX gam_bObserverViewBackground;", &gam_bObserverViewBackground);
   _pShell->DeclareSymbol("persistent user FLOAT gam_fObserverViewSize;", &gam_fObserverViewSize);
 
+  // [Cecil] Vertical screen division in two-player split-screen
+  _pShell->DeclareSymbol("persistent user INDEX gam_bVerticalSplitScreen;", &gam_bVerticalSplitScreen);
+
   // [Cecil] Axis values to add
   _pShell->DeclareSymbol("user FLOAT ctl_afAddTranslation[3];",  &ctl_aav.afTranslation);
   _pShell->DeclareSymbol("user FLOAT ctl_afAddRotation[3];",     &ctl_aav.afRotation);
@@ -2108,16 +2114,16 @@ static CDrawPort &AddDP(INDEX iDrawPort) {
 };
 
 // [Cecil] Divide into two drawports
-static void TwoDrawports(CDrawPort *pdpBase, INDEX iFirst, BOOL bVertically) {
-  if (bVertically) {
-    // Upper and lower halves of the screen
-    AddDP(iFirst + 0).InitCloned(pdpBase, 0.1666, 0.0, 0.6668, 0.5);
-    AddDP(iFirst + 1).InitCloned(pdpBase, 0.1666, 0.5, 0.6668, 0.5);
-
-  } else {
+static void TwoDrawports(CDrawPort *pdpBase, INDEX iFirst, BOOL bVerticalSplit) {
+  if (bVerticalSplit) {
     // Left and right halves of the screen
     AddDP(iFirst + 0).InitCloned(pdpBase, 0.0, 0.0, 0.5, 1.0);
     AddDP(iFirst + 1).InitCloned(pdpBase, 0.5, 0.0, 0.5, 1.0);
+
+  } else {
+    // Upper and lower halves of the screen
+    AddDP(iFirst + 0).InitCloned(pdpBase, 0.1666, 0.0, 0.6668, 0.5);
+    AddDP(iFirst + 1).InitCloned(pdpBase, 0.1666, 0.5, 0.6668, 0.5);
   }
 };
 
@@ -2186,7 +2192,7 @@ static void MakeSplitDrawports(CGame::SplitScreenCfg ssc, INDEX iCount, BOOL bOt
 
     case 2: {
       // Divide into two
-      TwoDrawports(&_dpMain, 0, !bDualHead);
+      TwoDrawports(&_dpMain, 0, gam_bVerticalSplitScreen || bDualHead);
     } break;
 
     case 3: {
@@ -2196,7 +2202,7 @@ static void MakeSplitDrawports(CGame::SplitScreenCfg ssc, INDEX iCount, BOOL bOt
 
         // Split the right part
         CDrawPort dpR(&_dpMain, 0.5, 0.0, 0.5, 1.0);
-        TwoDrawports(&dpR, 1, TRUE);
+        TwoDrawports(&dpR, 1, gam_bVerticalSplitScreen);
 
       } else {
         // Fill the top part with the first view
@@ -2204,7 +2210,7 @@ static void MakeSplitDrawports(CGame::SplitScreenCfg ssc, INDEX iCount, BOOL bOt
 
         // Split the lower part
         CDrawPort dpR(&_dpMain, 0.0, 0.5, 1.0, 0.5);
-        TwoDrawports(&dpR, 1, FALSE);
+        TwoDrawports(&dpR, 1, TRUE);
       }
     } break;
 
@@ -2215,8 +2221,8 @@ static void MakeSplitDrawports(CGame::SplitScreenCfg ssc, INDEX iCount, BOOL bOt
         CDrawPort dpR(&_dpMain, 0.5, 0.0, 0.5, 1.0);
 
         // Split both sides
-        TwoDrawports(&dpL, 0, TRUE);
-        TwoDrawports(&dpR, 2, TRUE);
+        TwoDrawports(&dpL, 0, gam_bVerticalSplitScreen);
+        TwoDrawports(&dpR, 2, gam_bVerticalSplitScreen);
 
       } else {
         // Split to two parts vertically
@@ -2224,8 +2230,8 @@ static void MakeSplitDrawports(CGame::SplitScreenCfg ssc, INDEX iCount, BOOL bOt
         CDrawPort dpDn(&_dpMain, 0.0, 0.5, 1.0, 0.5);
 
         // Split both sides
-        TwoDrawports(&dpUp, 0, FALSE);
-        TwoDrawports(&dpDn, 2, FALSE);
+        TwoDrawports(&dpUp, 0, TRUE);
+        TwoDrawports(&dpDn, 2, TRUE);
       }
     } break;
   }
