@@ -1114,19 +1114,19 @@ functions:
         if (tmSeriousDamage > tmNow && tmInvulnerability > tmNow) {
           Particle_PrepareSystem(pdp, apr);
           Particle_PrepareEntity(1, 0, 0, NULL);
-          Particles_ModelGlow2(&m_moWeaponSecond, plWeapon, Max(tmSeriousDamage, tmInvulnerability), PT_STAR08, 0.025f, 2, 0.01f, 0xFF00FF00);
+          Particles_ModelGlow2(&m_moWeaponSecond, plWeaponMirror, Max(tmSeriousDamage, tmInvulnerability), PT_STAR08, 0.025f, 2, 0.01f, 0xFF00FF00);
           Particle_EndSystem();
 
         } else if (tmInvulnerability > tmNow) {
           Particle_PrepareSystem(pdp, apr);
           Particle_PrepareEntity(1, 0, 0, NULL);
-          Particles_ModelGlow2(&m_moWeaponSecond, plWeapon, tmInvulnerability, PT_STAR05, 0.025f, 2, 0.01f, 0x3333FF00);
+          Particles_ModelGlow2(&m_moWeaponSecond, plWeaponMirror, tmInvulnerability, PT_STAR05, 0.025f, 2, 0.01f, 0x3333FF00);
           Particle_EndSystem();
 
         } else if (tmSeriousDamage > tmNow) {
           Particle_PrepareSystem(pdp, apr);
           Particle_PrepareEntity(1, 0, 0, NULL);
-          Particles_ModelGlow2(&m_moWeaponSecond, plWeapon, tmSeriousDamage, PT_STAR08, 0.025f, 2, 0.01f, 0xFF777700);
+          Particles_ModelGlow2(&m_moWeaponSecond, plWeaponMirror, tmSeriousDamage, PT_STAR08, 0.025f, 2, 0.01f, 0xFF777700);
           Particle_EndSystem();
         }
       }
