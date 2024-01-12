@@ -863,7 +863,8 @@ void CGame::GameHandleTimer(void)
 
     // check if any active control uses joystick
     BOOL bAnyJoy = _ctrlCommonControls.UsesJoystick();
-    for( INDEX iPlayer=0; iPlayer<4; iPlayer++) {
+    // [Cecil] Up to CORE_MAX_LOCAL_PLAYERS
+    for (INDEX iPlayer = 0; iPlayer < CORE_MAX_LOCAL_PLAYERS; iPlayer++) {
       if( gm_lpLocalPlayers[ iPlayer].lp_pplsPlayerSource != NULL) {
         INDEX iCurrentPlayer = gm_lpLocalPlayers[ iPlayer].lp_iPlayer;
         CControls &ctrls = gm_actrlControls[ iCurrentPlayer];
@@ -881,8 +882,8 @@ void CGame::GameHandleTimer(void)
     // if game is currently active, and not paused
     if (gm_bGameOn && !_pNetwork->IsPaused() && !_pNetwork->GetLocalPause())
     {
-      // for all possible local players
-      for( INDEX iPlayer=0; iPlayer<4; iPlayer++)
+      // [Cecil] Up to CORE_MAX_LOCAL_PLAYERS
+      for (INDEX iPlayer = 0; iPlayer < CORE_MAX_LOCAL_PLAYERS; iPlayer++)
       {
         // if this player exist
         if( gm_lpLocalPlayers[ iPlayer].lp_pplsPlayerSource != NULL)
@@ -918,8 +919,8 @@ void CGame::GameHandleTimer(void)
   // if DirectInput is disabled, and game is currently active
   else if (gm_bGameOn)
   {
-    // for all possible local players
-    for( INDEX iPlayer=0; iPlayer<4; iPlayer++)
+    // [Cecil] Up to CORE_MAX_LOCAL_PLAYERS
+    for (INDEX iPlayer = 0; iPlayer < CORE_MAX_LOCAL_PLAYERS; iPlayer++)
     { // if this player exist
       if( gm_lpLocalPlayers[iPlayer].lp_pplsPlayerSource != NULL)
       { 
@@ -966,6 +967,12 @@ void CGame::InitInternal( void)
       return;
     }
   }
+
+  // [Cecil] Hook new fields
+  GetGameAPI()->ctLocalPlayers = CORE_MAX_LOCAL_PLAYERS;
+  GetGameAPI()->aiMenuLocalPlayers = &gm_aiMenuLocalPlayers[0];
+  GetGameAPI()->aiStartLocalPlayers = &gm_aiStartLocalPlayers[0];
+  GetGameAPI()->aLocalPlayers = (UBYTE *)&gm_lpLocalPlayers[0];
 
   gam_strCustomLevel = ""; // filename of custom level chosen
   gam_strSessionName = LOCALIZE("Unnamed session"); // name of multiplayer network session
@@ -1019,9 +1026,11 @@ void CGame::InitInternal( void)
   gm_bMenuOn = FALSE;
   gm_bFirstLoading = FALSE;
   gm_aiMenuLocalPlayers[0] =  0;
-  gm_aiMenuLocalPlayers[1] = -1;
-  gm_aiMenuLocalPlayers[2] = -1;
-  gm_aiMenuLocalPlayers[3] = -1;
+
+  // [Cecil] Up to CORE_MAX_LOCAL_PLAYERS
+  for (INDEX iPlayer = 1; iPlayer < CORE_MAX_LOCAL_PLAYERS; iPlayer++) {
+    gm_aiMenuLocalPlayers[iPlayer] = -1;
+  }
 
   gm_MenuSplitScreenCfg = SSC_PLAY1;
 
@@ -1349,7 +1358,8 @@ BOOL CGame::JoinGame(CNetworkSession &session)
   // start the new session
   try {
     INDEX ctLocalPlayers = 0;
-    if (gm_StartSplitScreenCfg>=SSC_PLAY1 && gm_StartSplitScreenCfg<=SSC_PLAY4) {
+    // [Cecil] Up to amount of local players
+    if (gm_StartSplitScreenCfg >= SSC_PLAY1 && gm_StartSplitScreenCfg < SSC_PLAY1 + CORE_MAX_LOCAL_PLAYERS) {
       ctLocalPlayers = (gm_StartSplitScreenCfg-SSC_PLAY1)+1;
     }
     _pNetwork->JoinSession_t(session, ctLocalPlayers);
@@ -1554,8 +1564,8 @@ void CGame::StopGame(void)
   _pNetwork->StopGame();
   // stop the provider
   _pNetwork->StopProvider();
-  // for all four local players
-  for( INDEX iPlayer=0; iPlayer<4; iPlayer++)
+  // [Cecil] Up to CORE_MAX_LOCAL_PLAYERS
+  for (INDEX iPlayer = 0; iPlayer < CORE_MAX_LOCAL_PLAYERS; iPlayer++)
   {
     // mark that current player does not exist any more
     gm_lpLocalPlayers[ iPlayer].lp_bActive = FALSE;
@@ -1859,8 +1869,8 @@ void CGame::SavePlayersAndControls( void)
   // skip checking of players if game isn't on
   if( !gm_bGameOn) return;
 
-  // for each local player
-  for( INDEX i=0; i<4; i++) {
+  // [Cecil] Up to CORE_MAX_LOCAL_PLAYERS
+  for (INDEX i = 0; i < CORE_MAX_LOCAL_PLAYERS; i++) {
     CLocalPlayer &lp = gm_lpLocalPlayers[i];
     // if active
     if( lp.lp_bActive && lp.lp_pplsPlayerSource!=NULL && lp.lp_iPlayer>=0 && lp.lp_iPlayer<8) {
@@ -1879,25 +1889,20 @@ void CGame::SavePlayersAndControls( void)
   }
 }
 
-
+// [Cecil] NOTE: How to add local players to Game library from anywhere:
+// 1. Determine desired amount of local players (let's say it's stored in a constant called CT_PLAYERS)
+// 2. Set CGame::gm_StartSplitScreenCfg using 'GetGameAPI()->SetStartSplitCfg(CGame::SSC_PLAY1 + CT_PLAYERS - 1)'
+// 3. Set profile indices for each player in a loop using 'GetGameAPI()->SetStartPlayer(<player>, <profile index>)'
 void CGame::SetupLocalPlayers( void)
 {
-  // setup local players and their controls
-  gm_lpLocalPlayers[0].lp_iPlayer = gm_aiStartLocalPlayers[0];
-  gm_lpLocalPlayers[1].lp_iPlayer = gm_aiStartLocalPlayers[1];
-  gm_lpLocalPlayers[2].lp_iPlayer = gm_aiStartLocalPlayers[2];
-  gm_lpLocalPlayers[3].lp_iPlayer = gm_aiStartLocalPlayers[3];
-  if (gm_StartSplitScreenCfg < CGame::SSC_PLAY1) {
-    gm_lpLocalPlayers[0].lp_iPlayer = -1;
-  }
-  if (gm_StartSplitScreenCfg < CGame::SSC_PLAY2) {
-    gm_lpLocalPlayers[1].lp_iPlayer = -1;
-  }
-  if (gm_StartSplitScreenCfg < CGame::SSC_PLAY3) {
-    gm_lpLocalPlayers[2].lp_iPlayer = -1;
-  }
-  if (gm_StartSplitScreenCfg < CGame::SSC_PLAY4) {
-    gm_lpLocalPlayers[3].lp_iPlayer = -1;
+  // [Cecil] Setup local players and their controls up to CORE_MAX_LOCAL_PLAYERS
+  for (INDEX i = 0; i < CORE_MAX_LOCAL_PLAYERS; i++)
+  {
+    if (gm_StartSplitScreenCfg < CGame::SSC_PLAY1 + i) {
+      gm_lpLocalPlayers[i].lp_iPlayer = -1;
+    } else {
+      gm_lpLocalPlayers[i].lp_iPlayer = gm_aiStartLocalPlayers[i];
+    }
   }
 }
 
@@ -1905,7 +1910,8 @@ BOOL CGame::AddPlayers(void)
 {
   // add local player(s) into game
   try {
-    for(INDEX i=0; i<4; i++) {
+    // [Cecil] Up to CORE_MAX_LOCAL_PLAYERS
+    for (INDEX i = 0; i < CORE_MAX_LOCAL_PLAYERS; i++) {
       CLocalPlayer &lp = gm_lpLocalPlayers[i];
       INDEX iPlayer = lp.lp_iPlayer;
       if (iPlayer>=0) {
@@ -2339,8 +2345,8 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
     {
       CTSingleLock csTimer(&_pTimer->tm_csHooks, TRUE);
 
-      // Go through local players
-      for (INDEX iLocal = 0; iLocal < 4; iLocal++) {
+      // [Cecil] Go through local players up to CORE_MAX_LOCAL_PLAYERS
+      for (INDEX iLocal = 0; iLocal < CORE_MAX_LOCAL_PLAYERS; iLocal++) {
         CPlayerSource *ppls = gm_lpLocalPlayers[iLocal].lp_pplsPlayerSource;
 
         if (ppls == NULL) continue;

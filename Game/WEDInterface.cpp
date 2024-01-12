@@ -80,9 +80,12 @@ void CGame::QuickTest(const CTFileName &fnMapName,
   // quick start game with the world
   gm_strNetworkProvider = "Local";
   gm_aiStartLocalPlayers[0] = gm_iWEDSinglePlayer;
-  gm_aiStartLocalPlayers[1] = -1;
-  gm_aiStartLocalPlayers[2] = -1;
-  gm_aiStartLocalPlayers[3] = -1;
+
+  // [Cecil] Up to CORE_MAX_LOCAL_PLAYERS
+  for (INDEX iPlayer = 1; iPlayer < CORE_MAX_LOCAL_PLAYERS; iPlayer++) {
+    gm_aiStartLocalPlayers[iPlayer] = -1;
+  }
+
   gm_CurrentSplitScreenCfg = CGame::SSC_PLAY1;
 
   // set properties for a quick start session
