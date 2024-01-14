@@ -1,4 +1,4 @@
-/* Copyright (c) 2002-2012 Croteam Ltd. 
+/* Copyright (c) 2023-2024 Dreamy Cecil
 This program is free software; you can redistribute it and/or modify
 it under the terms of version 2 of the GNU General Public License as published by
 the Free Software Foundation
@@ -18,17 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <CoreLib/Core.h>
 #include <EnginePatches/Patches.h>
 
-#include "Game.h"
-
-// [Cecil] Include new features
-#include "Cecil/GameColors.h"
-#include "Cecil/GameThemes.h"
-
-// [Cecil] Include common header for Entities
-#if SE1_GAME != SS_TFE
-  #include <Entities/EntitiesAPI.h>
-  #include <Entities/Players/Player.h>
-#else
-  #include <EntitiesTFE/EntitiesAPI.h>
-  #include <EntitiesTFE/Players/Player.h>
-#endif
+// [Cecil] Include common header for the library itself
+#define ENTITIES_EXPORTS
+#include "EntitiesAPI.h"

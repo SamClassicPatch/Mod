@@ -12,23 +12,3 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
-
-// [Cecil] Include the core library and patches
-#define CORE_NO_GAME_HEADER
-#include <CoreLib/Core.h>
-#include <EnginePatches/Patches.h>
-
-#include "Game.h"
-
-// [Cecil] Include new features
-#include "Cecil/GameColors.h"
-#include "Cecil/GameThemes.h"
-
-// [Cecil] Include common header for Entities
-#if SE1_GAME != SS_TFE
-  #include <Entities/EntitiesAPI.h>
-  #include <Entities/Players/Player.h>
-#else
-  #include <EntitiesTFE/EntitiesAPI.h>
-  #include <EntitiesTFE/Players/Player.h>
-#endif

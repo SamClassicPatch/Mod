@@ -49,7 +49,15 @@ Debug/
 Entities/**/*.cpp
 Entities/**/*.h
 !Entities/Common/*
-!Entities/(LibMain).cpp
+!Entities/LibMain.cpp
 !Entities/EntitiesAPI.h
 !Entities/StdH.h
 !Entities/*.txt
+
+EntitiesTFE/**/*.cpp
+EntitiesTFE/**/*.h
+!EntitiesTFE/Common/*
+!EntitiesTFE/LibMain.cpp
+!EntitiesTFE/EntitiesAPI.h
+!EntitiesTFE/StdH.h
+!EntitiesTFE/*.txt

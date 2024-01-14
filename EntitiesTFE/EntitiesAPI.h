@@ -1,4 +1,4 @@
-/* Copyright (c) 2002-2012 Croteam Ltd. 
+/* Copyright (c) 2023-2024 Dreamy Cecil
 This program is free software; you can redistribute it and/or modify
 it under the terms of version 2 of the GNU General Public License as published by
 the Free Software Foundation
@@ -13,22 +13,26 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-// [Cecil] Include the core library and patches
-#define CORE_NO_GAME_HEADER
-#include <CoreLib/Core.h>
-#include <EnginePatches/Patches.h>
+// [Cecil] This header can be used to include all the necessary parts of the Entities library at once, either for exporting or importing
 
-#include "Game.h"
+#include <Game/SessionProperties.h>
 
-// [Cecil] Include new features
-#include "Cecil/GameColors.h"
-#include "Cecil/GameThemes.h"
+#ifndef ENTITIES_EXPORTS
+  // [Cecil] Link appropriate library
+  #ifdef NDEBUG
+    #pragma comment(lib, "Entities_Custom.lib")
+  #else
+    #pragma comment(lib, "Entities_CustomD.lib")
+  #endif
 
-// [Cecil] Include common header for Entities
-#if SE1_GAME != SS_TFE
-  #include <Entities/EntitiesAPI.h>
-  #include <Entities/Players/Player.h>
+  #define DECL_DLL __declspec(dllimport)
+
 #else
-  #include <EntitiesTFE/EntitiesAPI.h>
-  #include <EntitiesTFE/Players/Player.h>
+  #define DECL_DLL __declspec(dllexport)
 #endif
+
+#include "Global.h"
+#include "Common/Flags.h"
+#include "Common/Common.h"
+#include "Common/Particles.h"
+#include "Common/GameInterface.h"
