@@ -68,23 +68,6 @@ extern INDEX hud_bShowWeapon;
 
 extern const INDEX aiWeaponsRemap[19] = { 0,  1,  10,  2,  3,  4,  5,  6,  7,
                                           8,  9,  11, 13, 12, 14, 15, 16, 17, 18 };
-
-// [Cecil] Weapon viewmodel customization
-static FLOAT wpn_afViewPos[3] = { 1.0f, 1.0f, 1.0f };
-static FLOAT wpn_afViewRot[3] = { 1.0f, 1.0f, 1.0f };
-static FLOAT wpn_fViewFOV = 1.0f;
-
-static INDEX wpn_bViewMirrored = FALSE;
-static INDEX wpn_bPowerUpParticles = FALSE;
-
-// [Cecil] Reset weapon position
-void ResetWeaponPosition(void) {
-  for (INDEX i = 0; i < 3; i++) {
-    wpn_afViewPos[i] = 1.0f;
-    wpn_afViewRot[i] = 1.0f;
-  }
-  wpn_fViewFOV = 1.0f;
-};
 %}
 
 uses "Players/Player";
@@ -493,13 +476,8 @@ void CPlayerWeapons_Init(void) {
   _pShell->DeclareSymbol("persistent user FLOAT plr_tmSnoopingDelay;", &plr_tmSnoopingDelay);
 
   // [Cecil] Weapon viewmodel customization
-  _pShell->DeclareSymbol("persistent user FLOAT wpn_afViewPos[3];", &wpn_afViewPos);
-  _pShell->DeclareSymbol("persistent user FLOAT wpn_afViewRot[3];", &wpn_afViewRot);
-  _pShell->DeclareSymbol("persistent user FLOAT wpn_fViewFOV;", &wpn_fViewFOV);
-  _pShell->DeclareSymbol("user void ResetWeaponPosition(void);", &ResetWeaponPosition);
-
-  _pShell->DeclareSymbol("persistent user INDEX wpn_bViewMirrored;", &wpn_bViewMirrored);
-  _pShell->DeclareSymbol("persistent user INDEX wpn_bPowerUpParticles;", &wpn_bPowerUpParticles);
+  extern void DeclareWeaponCustomizationSymbols(void);
+  DeclareWeaponCustomizationSymbols();
 
   // precache base weapons
   CPlayerWeapons_Precache(0x03);
@@ -880,47 +858,9 @@ functions:
     m_bLastWeaponMirrored = penOther->m_bLastWeaponMirrored;
   };
 
-  // [Cecil] Get mirroring state (rendering only)
-  BOOL MirrorState(void) {
-    return wpn_bViewMirrored;
-  };
-
   // [Cecil] Reset last mirror state
   void ResetMirrorState(void) {
     m_bLastWeaponMirrored = MirrorState();
-  };
-
-  // [Cecil] Get weapon position for rendering
-  void RenderPos(FLOAT3D &vPos, FLOAT3D &vRot, FLOAT3D &vFire, FLOAT &fFOV) {
-    // Mirror the position
-    if (MirrorState()) {
-      FLOATmatrix3D mRot;
-      MakeRotationMatrix(mRot, vRot);
-
-      // Mirror the rotation
-      mRot(1, 2) *= -1.0f;
-      mRot(1, 3) *= -1.0f;
-      DecomposeRotationMatrix(vRot, mRot);
-
-      vPos(1) *= -1.0f;
-      vRot(3) *= -1.0f;
-      vFire(1) *= -1.0f;
-    }
-
-    // Customizable position
-    vPos(1) *= wpn_afViewPos[0];
-    vPos(2) *= wpn_afViewPos[1];
-    vPos(3) *= wpn_afViewPos[2];
-
-    vRot(1) *= wpn_afViewRot[0];
-    vRot(2) *= wpn_afViewRot[1];
-    vRot(3) *= wpn_afViewRot[2];
-
-    vFire(1) *= wpn_afViewPos[0];
-    vFire(2) *= wpn_afViewPos[1];
-    vFire(3) *= wpn_afViewPos[2];
-
-    fFOV = Clamp(fFOV * wpn_fViewFOV, 1.0f, 170.0f);
   };
 
   // [Cecil] Mirror the weapon
@@ -1088,6 +1028,7 @@ functions:
       prMirror.FrontClipDistanceL() = wpn_fClip[iWeaponData];
       prMirror.DepthBufferNearL() = 0.0f;
       prMirror.DepthBufferFarL() = 0.1f;
+      // [Cecil] Use default placement
       CPlacement3D plWeaponMirror(vPos, vRot);
       if( iWeaponData==WEAPON_DOUBLECOLT /*|| iWeaponData==WEAPON_PIPEBOMB*/) {
         FLOATmatrix3D mRotation;

@@ -13,6 +13,9 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+// [Cecil] Common logic
+#include <CommonEntities/Common.h>
+
 // common headers for flesh entity classes
 
 
@@ -55,9 +58,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //#define AMMO_NUKEBALLS   6
 #define AMMO_IRONBALLS     7
 #define AMMO_SNIPERBULLETS 8
-
-#define BLOOD_SPILL_RED RGBAToColor(250,20,20,255)
-#define BLOOD_SPILL_GREEN RGBAToColor(0,250,0,255)
 
 // Ammo mana Value
 #define AV_SHELLS         INDEX(70)
@@ -335,34 +335,3 @@ void ResetCompatibilityValue(Type &prop, Type valCheck, Type valResetTo)
     WarningMessage("[Classics Patch] This value cannot be used due to being added for compatibility reasons (e.g. Revolution map conversions).");
   }
 };
-
-// [Cecil] Custom blood theme
-struct BloodTheme {
-  enum Type {
-    E_AUTO      = 0, // Based on the seasonal event
-    E_COLOR     = 1, // Simple coloring
-    E_FORCED    = 2, // Color override
-
-    // Custom models and different colors
-    E_HIPPIE    = 3,
-    E_PARTY     = 4,
-    E_CHRISTMAS = 5,
-  };
-
-  Type eType;
-  COLOR colForced;
-
-  // Constructor
-  BloodTheme(Type eSetType, COLOR colSet = 0xFFFFFFFF) :
-    eType(eSetType), colForced(colSet)
-  {
-    // This shouldn't be a real type
-    ASSERT(eSetType != E_AUTO);
-  };
-
-  // Get dynamic blood color
-  COLOR GetColor(INDEX iRandom = 0, UBYTE ubFactor = 0xFF, UBYTE ubAlpha = 0xFF) const;
-};
-
-// [Cecil] Get current blood theme
-BloodTheme GetBloodTheme(void);

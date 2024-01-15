@@ -436,10 +436,6 @@ static FLOAT ctl_fAxisStrafingModifier = 1.0f;
 // [Cecil] Spawn invulnerability indicator (0 - none, 1 - HUD, 2 - HUD & sound)
 INDEX plr_iSpawnInvulIndicator = 2;
 
-// [Cecil] Custom blood themes
-INDEX gam_iCustomBloodColor = 0xFF0000FF;
-INDEX gam_iCustomBloodTheme = BloodTheme::E_AUTO;
-
 // !=NULL if some player wants to call computer
 DECL_DLL extern class CPlayer *cmp_ppenPlayer = NULL;
 // !=NULL for rendering computer on secondary display in dualhead
@@ -859,8 +855,8 @@ void CPlayer_OnInitClass(void)
   _pShell->DeclareSymbol("persistent user INDEX plr_iSpawnInvulIndicator;", &plr_iSpawnInvulIndicator);
 
   // [Cecil] Custom blood themes
-  _pShell->DeclareSymbol("persistent user INDEX gam_iCustomBloodColor;", &gam_iCustomBloodColor);
-  _pShell->DeclareSymbol("persistent user INDEX gam_iCustomBloodTheme;", &gam_iCustomBloodTheme);
+  extern void DeclareCustomBloodSymbols(void);
+  DeclareCustomBloodSymbols();
 
   // call player weapons persistant variable initialization
   extern void CPlayerWeapons_Init(void);
