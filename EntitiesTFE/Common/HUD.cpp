@@ -77,6 +77,7 @@ static CPlayerWeapons *_penWeapons;
 static CDrawPort *_pDP;
 static PIX   _pixDPWidth, _pixDPHeight;
 static FLOAT _fResolutionScaling;
+static FLOAT _fWideAdjustment; // [Cecil] Aspect ratio multiplier (4:3 = 1.0)
 static FLOAT _fCustomScaling;
 static ULONG _ulAlphaHUD;
 static COLOR _colHUD;
@@ -575,11 +576,16 @@ extern void DrawHUD( const CPlayer *penPlayerCurrent, CDrawPort *pdpCurrent, BOO
   _pDP        = pdpCurrent;
   _pixDPWidth   = _pDP->GetWidth();
   _pixDPHeight  = _pDP->GetHeight();
-  _fCustomScaling     = hud_fScaling;
   _fResolutionScaling = (FLOAT)_pixDPWidth /640.0f;
   _colHUD     = C_GREEN;
   _ulAlphaHUD = NormFloatToByte(hud_fOpacity);
   _tmNow = _pTimer->CurrentTick();
+
+  // [Cecil] Calculate wide adjustment dynamically (to replace static CDrawPort::dp_fWideAdjustment)
+  _fWideAdjustment = ((FLOAT)_pixDPHeight / (FLOAT)_pixDPWidth) * (4.0f / 3.0f);
+
+  // [Cecil] Adjust scaling based on aspect ratio
+  _fCustomScaling = hud_fScaling * _fWideAdjustment;
 
   // set HUD colorization;
   COLOR colMax = _colHUD;
@@ -734,8 +740,10 @@ extern void DrawHUD( const CPlayer *penPlayerCurrent, CDrawPort *pdpCurrent, BOO
     }
   }
 
+  // [Cecil] Readjust scaling based on aspect ratio
+  _fCustomScaling = hud_fScaling * _fWideAdjustment;
+
   // if weapon change is in progress
-  _fCustomScaling = hud_fScaling;
   hud_tmWeaponsOnScreen = Clamp( hud_tmWeaponsOnScreen, 0.0f, 10.0f);   
   if( (_tmNow - _penWeapons->m_tmWeaponChangeRequired) < hud_tmWeaponsOnScreen) {
     // determine number of weapons that player has

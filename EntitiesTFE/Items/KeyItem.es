@@ -54,26 +54,26 @@ event EKey {
 const char *GetKeyName(enum KeyItemType kit)
 {
   switch(kit) {
-  case KIT_ANKHWOOD :       return TRANS("Wooden ankh"); break;
-  case KIT_ANKHROCK:        return TRANS("Stone ankh"); break;
+  case KIT_ANKHWOOD :       return LOCALIZE("Wooden ankh"); break;
+  case KIT_ANKHROCK:        return LOCALIZE("Stone ankh"); break;
   case KIT_ANKHGOLD :
-  case KIT_ANKHGOLDDUMMY :  return TRANS("Gold ankh"); break;
-  case KIT_AMONGOLD :       return TRANS("Gold Amon statue"); break;
-  case KIT_ELEMENTEARTH  :  return TRANS("Earth element"); break;
-  case KIT_ELEMENTWATER  :  return TRANS("Water element"); break;
-  case KIT_ELEMENTAIR    :  return TRANS("Air element"); break;
-  case KIT_ELEMENTFIRE   :  return TRANS("Fire element"); break;
-  case KIT_RAKEY         :  return TRANS("Ra key"); break;
-  case KIT_MOONKEY       :  return TRANS("Moon key"); break;
-  case KIT_EYEOFRA       :  return TRANS("Eye of Ra"); break;
+  case KIT_ANKHGOLDDUMMY :  return LOCALIZE("Gold ankh"); break;
+  case KIT_AMONGOLD :       return LOCALIZE("Gold Amon statue"); break;
+  case KIT_ELEMENTEARTH  :  return LOCALIZE("Earth element"); break;
+  case KIT_ELEMENTWATER  :  return LOCALIZE("Water element"); break;
+  case KIT_ELEMENTAIR    :  return LOCALIZE("Air element"); break;
+  case KIT_ELEMENTFIRE   :  return LOCALIZE("Fire element"); break;
+  case KIT_RAKEY         :  return LOCALIZE("Ra key"); break;
+  case KIT_MOONKEY       :  return LOCALIZE("Moon key"); break;
+  case KIT_EYEOFRA       :  return LOCALIZE("Eye of Ra"); break;
   case KIT_SCARAB        :
-  case KIT_SCARABDUMMY   :  return TRANS("Scarab"); break;
-  case KIT_COBRA         :  return TRANS("Cobra"); break;
-  case KIT_HEART         :  return TRANS("Gold Heart"); break;
-  case KIT_FEATHER       :  return TRANS("Feather of Truth"); break;
+  case KIT_SCARABDUMMY   :  return LOCALIZE("Scarab"); break;
+  case KIT_COBRA         :  return LOCALIZE("Cobra"); break;
+  case KIT_HEART         :  return LOCALIZE("Gold Heart"); break;
+  case KIT_FEATHER       :  return LOCALIZE("Feather of Truth"); break;
   case KIT_SPHINX1       :
-  case KIT_SPHINX2       :  return TRANS("Gold Sphinx"); break;
-  default: return TRANS("unknown item"); break;
+  case KIT_SPHINX2       :  return LOCALIZE("Gold Sphinx"); break;
+  default: return LOCALIZE("unknown item"); break;
   };
 }
 

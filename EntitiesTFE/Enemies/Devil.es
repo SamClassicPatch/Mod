@@ -251,7 +251,7 @@ functions:
   virtual CTString GetPlayerKillDescription(const CTString &strPlayerName, const EDeath &eDeath)
   {
     CTString str;
-    str.PrintF(TRANS("Ugh Zan killed %s"), strPlayerName);
+    str.PrintF(LOCALIZE("Ugh Zan killed %s"), strPlayerName);
     return str;
   }
 
@@ -2287,7 +2287,7 @@ procedures:
     try {
       m_aoLightAnimation.SetData_t(CTFILENAME("Animations\\BasicEffects.ani"));
     } catch (char *strError) {
-      WarningMessage(TRANS("Cannot load Animations\\BasicEffects.ani: %s"), strError);
+      WarningMessage(LOCALIZE("Cannot load Animations\\BasicEffects.ani: %s"), strError);
     }
     PlayLightAnim(LIGHT_ANIM_NONE, 0);
 

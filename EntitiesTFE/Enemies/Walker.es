@@ -99,7 +99,7 @@ functions:
   virtual CTString GetPlayerKillDescription(const CTString &strPlayerName, const EDeath &eDeath)
   {
     CTString str;
-    str.PrintF(TRANS("A Biomech blew %s away"), strPlayerName);
+    str.PrintF(LOCALIZE("A Biomech blew %s away"), strPlayerName);
     return str;
   }
 
@@ -431,6 +431,9 @@ procedures:
       PlaySound(m_soFire2, SOUND_SOLDIER_FIRE_LASER, SOF_3D);
     }
     autowait(0.6f);
+
+    // [Cecil] Stop making fuss
+    RemoveFromFuss();
 
     return EEnd();
   };

@@ -16,8 +16,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 502
 %{
 #include "StdH.h"
-#define BLOOD_SPILL_RED RGBAToColor(250,20,20,255)
-#define BLOOD_SPILL_GREEN RGBAToColor(0,250,0,255)
 %}
 
 uses "Effects/BasicEffects";

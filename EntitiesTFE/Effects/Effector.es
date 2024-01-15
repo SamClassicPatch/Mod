@@ -333,7 +333,7 @@ functions:
       try {
         m_aoLightAnimation.SetData_t(CTFILENAME("Animations\\Effector.ani"));
       } catch (char *strError) {
-        WarningMessage(TRANS("Cannot load Animations\\Effector.ani: %s"), strError);
+        WarningMessage(LOCALIZE("Cannot load Animations\\Effector.ani: %s"), strError);
       }
       // play light animation
       if (m_aoLightAnimation.GetData()!=NULL) {

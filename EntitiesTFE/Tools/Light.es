@@ -436,7 +436,7 @@ procedures:
     try {
       m_aoLightAnimation.SetData_t(m_fnmLightAnimation);
     } catch (char *strError) {
-      WarningMessage(TRANS("Cannot load '%s': %s"), (CTString&)m_fnmLightAnimation, strError);
+      WarningMessage(LOCALIZE("Cannot load '%s': %s"), (CTString&)m_fnmLightAnimation, strError);
       m_fnmLightAnimation = "";
     }
     if (m_aoLightAnimation.GetData()!=NULL) {
@@ -448,7 +448,7 @@ procedures:
     try {
       m_aoAmbientLightAnimation.SetData_t(m_fnmAmbientLightAnimation);
     } catch (char *strError) {
-      WarningMessage(TRANS("Cannot load '%s': %s"), (CTString&)m_fnmAmbientLightAnimation, strError);
+      WarningMessage(LOCALIZE("Cannot load '%s': %s"), (CTString&)m_fnmAmbientLightAnimation, strError);
       m_fnmAmbientLightAnimation = "";
     }
     if (m_aoAmbientLightAnimation.GetData()!=NULL) {

@@ -608,6 +608,9 @@ void CPlayer_Precache(void)
   pdec->PrecacheTexture(TEXTURE_FLESH_LOLLY); 
   pdec->PrecacheTexture(TEXTURE_FLESH_ORANGE); 
 
+  // [Cecil] Flesh texture for coloring
+  pdec->PrecacheTexture(TEXTURE_FLESH);
+
   pdec->PrecacheClass(CLASS_BASIC_EFFECT, BET_BLOODSPILL);
   pdec->PrecacheClass(CLASS_BASIC_EFFECT, BET_BLOODSTAIN);
   pdec->PrecacheClass(CLASS_BASIC_EFFECT, BET_BLOODSTAINGROW);
@@ -743,6 +746,10 @@ void CPlayer_OnInitClass(void)
   // player appearance interface
   _pShell->DeclareSymbol("INDEX SetPlayerAppearance(INDEX, INDEX, INDEX, INDEX);", &SetPlayerAppearance);
 
+  // [Cecil] Custom blood themes
+  extern void DeclareCustomBloodSymbols(void);
+  DeclareCustomBloodSymbols();
+
   // call player weapons persistant variable initialization
   extern void CPlayerWeapons_Init(void);
   CPlayerWeapons_Init();
@@ -762,15 +769,15 @@ void CPlayer_OnEndClass(void)
 
 CTString GetDifficultyString(void)
 {
-  if (GetSP()->sp_bMental) { return TRANS("Mental"); }
+  if (GetSP()->sp_bMental) { return LOCALIZE("Mental"); }
 
   switch (GetSP()->sp_gdGameDifficulty) {
-  case CSessionProperties::GD_TOURIST:  return TRANS("Tourist");
-  case CSessionProperties::GD_EASY:     return TRANS("Easy");
+  case CSessionProperties::GD_TOURIST:  return LOCALIZE("Tourist");
+  case CSessionProperties::GD_EASY:     return LOCALIZE("Easy");
   default:
-  case CSessionProperties::GD_NORMAL:   return TRANS("Normal");
-  case CSessionProperties::GD_HARD:     return TRANS("Hard");
-  case CSessionProperties::GD_EXTREME:  return TRANS("Serious");
+  case CSessionProperties::GD_NORMAL:   return LOCALIZE("Normal");
+  case CSessionProperties::GD_HARD:     return LOCALIZE("Hard");
+  case CSessionProperties::GD_EXTREME:  return LOCALIZE("Serious");
   }
 }
 // armor & health constants getters
@@ -859,39 +866,39 @@ void PrintPlayerDeathMessage(CPlayer *ppl, const EDeath &eDeath)
         CTString strKillerName = ((CPlayer*)penKiller)->GetPlayerName();
 
         if(eDeath.eLastDamage.dmtType==DMT_TELEPORT) {
-          CPrintF(TRANS("%s telefragged %s\n"), strKillerName, strMyName);
+          CPrintF(LOCALIZE("%s telefragged %s\n"), strKillerName, strMyName);
         } else if(eDeath.eLastDamage.dmtType==DMT_CLOSERANGE) {
-          CPrintF(TRANS("%s cut %s into pieces\n"), strKillerName, strMyName);
+          CPrintF(LOCALIZE("%s cut %s into pieces\n"), strKillerName, strMyName);
         } else if(eDeath.eLastDamage.dmtType==DMT_BULLET) {
-          CPrintF(TRANS("%s poured lead into %s\n"), strKillerName, strMyName);
+          CPrintF(LOCALIZE("%s poured lead into %s\n"), strKillerName, strMyName);
         } else if(eDeath.eLastDamage.dmtType==DMT_PROJECTILE || eDeath.eLastDamage.dmtType==DMT_EXPLOSION) {
-          CPrintF(TRANS("%s blew %s away\n"), strKillerName, strMyName);
+          CPrintF(LOCALIZE("%s blew %s away\n"), strKillerName, strMyName);
         } else if(eDeath.eLastDamage.dmtType==DMT_CANNONBALL) {
-          CPrintF(TRANS("%s smashed %s with a cannon\n"), strKillerName, strMyName);
+          CPrintF(LOCALIZE("%s smashed %s with a cannon\n"), strKillerName, strMyName);
         } else if(eDeath.eLastDamage.dmtType==DMT_CANNONBALL_EXPLOSION) {
-          CPrintF(TRANS("%s nuked %s\n"), strKillerName, strMyName);
+          CPrintF(LOCALIZE("%s nuked %s\n"), strKillerName, strMyName);
         } else {
-          CPrintF(TRANS("%s killed %s\n"), strKillerName, strMyName);
+          CPrintF(LOCALIZE("%s killed %s\n"), strKillerName, strMyName);
         }
       } else {
         // make message from damage type
         switch(eDeath.eLastDamage.dmtType) {
-        case DMT_DROWNING:  CPrintF(TRANS("%s drowned\n"), strMyName); break;
-        case DMT_BURNING:   CPrintF(TRANS("%s burst into flames\n"), strMyName); break;
-        case DMT_SPIKESTAB: CPrintF(TRANS("%s fell into a spike-hole\n"), strMyName); break;
-        case DMT_FREEZING:  CPrintF(TRANS("%s has frozen\n"), strMyName); break;
-        case DMT_ACID:      CPrintF(TRANS("%s dissolved\n"), strMyName); break;
+        case DMT_DROWNING:  CPrintF(LOCALIZE("%s drowned\n"), strMyName); break;
+        case DMT_BURNING:   CPrintF(LOCALIZE("%s burst into flames\n"), strMyName); break;
+        case DMT_SPIKESTAB: CPrintF(LOCALIZE("%s fell into a spike-hole\n"), strMyName); break;
+        case DMT_FREEZING:  CPrintF(LOCALIZE("%s has frozen\n"), strMyName); break;
+        case DMT_ACID:      CPrintF(LOCALIZE("%s dissolved\n"), strMyName); break;
         case DMT_PROJECTILE:
         case DMT_EXPLOSION:
-          CPrintF(TRANS("%s blew himself away\n"), strMyName); break;
-        default:            CPrintF(TRANS("%s has committed suicide\n"), strMyName);
+          CPrintF(LOCALIZE("%s blew himself away\n"), strMyName); break;
+        default:            CPrintF(LOCALIZE("%s has committed suicide\n"), strMyName);
         }
       }
     // if killed by an enemy
     } else if (IsDerivedFromClass(penKiller, "Enemy Base")) {
       // check for telefrag first
       if(eDeath.eLastDamage.dmtType==DMT_TELEPORT) {
-        CPrintF(TRANS("%s was telefragged\n"), strMyName);
+        CPrintF(LOCALIZE("%s was telefragged\n"), strMyName);
         return;
       }
       // describe how this enemy killed player
@@ -901,17 +908,17 @@ void PrintPlayerDeathMessage(CPlayer *ppl, const EDeath &eDeath)
     } else {
       // make message from damage type
       switch(eDeath.eLastDamage.dmtType) {
-      case DMT_SPIKESTAB: CPrintF(TRANS("%s was pierced\n"), strMyName); break;
-      case DMT_BRUSH:     CPrintF(TRANS("%s was squashed\n"), strMyName); break;
-      case DMT_ABYSS:     CPrintF(TRANS("%s went over the edge\n"), strMyName); break;
-      case DMT_IMPACT:    CPrintF(TRANS("%s swashed\n"), strMyName); break;
-      case DMT_HEAT:      CPrintF(TRANS("%s stood in the sun for too long\n"), strMyName); break;
-      default:            CPrintF(TRANS("%s passed away\n"), strMyName);
+      case DMT_SPIKESTAB: CPrintF(LOCALIZE("%s was pierced\n"), strMyName); break;
+      case DMT_BRUSH:     CPrintF(LOCALIZE("%s was squashed\n"), strMyName); break;
+      case DMT_ABYSS:     CPrintF(LOCALIZE("%s went over the edge\n"), strMyName); break;
+      case DMT_IMPACT:    CPrintF(LOCALIZE("%s swashed\n"), strMyName); break;
+      case DMT_HEAT:      CPrintF(LOCALIZE("%s stood in the sun for too long\n"), strMyName); break;
+      default:            CPrintF(LOCALIZE("%s passed away\n"), strMyName);
       }
     }
   // if no entity pointer (shouldn't happen)
   } else {
-    CPrintF(TRANS("%s is missing in action\n"), strMyName);
+    CPrintF(LOCALIZE("%s is missing in action\n"), strMyName);
   }
 }
 
@@ -1129,6 +1136,8 @@ components:
 225 texture TEXTURE_FLESH_LOLLY  "Models\\Effects\\Debris\\Fruits\\LollyPop.tex",
 226 texture TEXTURE_FLESH_ORANGE "Models\\Effects\\Debris\\Fruits\\Orange.tex",
 
+// [Cecil] Flesh texture for coloring
+510 texture TEXTURE_FLESH "TexturesPatch\\Blood\\Flesh.tex",
 
 functions:
 
@@ -1442,7 +1451,7 @@ functions:
   // get short one-line statistics - used for savegame descriptions and similar
   void GetShortStats(CTString &strStats)
   {
-    strStats.PrintF( TRANS("%s %s Score: %d Kills: %d/%d"), 
+    strStats.PrintF( LOCALIZE("%s %s Score: %d Kills: %d/%d"), 
                      GetDifficultyString(), TimeToString(GetStatsInGameTimeLevel()), 
                      m_psLevelStats.ps_iScore, m_psLevelStats.ps_iKills, m_psLevelTotal.ps_iKills);
   }
@@ -1459,7 +1468,7 @@ functions:
     const INDEX ctPlayers = SetAllPlayersStats(bFragMatch?5:3); // sort by frags or by score
 
     // get time elapsed since the game start
-    strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%s", TRANS("TIME"), TimeToString(_pNetwork->GetGameTime())));
+    strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%s", LOCALIZE("TIME"), TimeToString(_pNetwork->GetGameTime())));
     strStats+="\n";
 
     // find maximum frags/score that one player has
@@ -1475,25 +1484,25 @@ functions:
     const CSessionProperties &sp = *GetSP();
     if (sp.sp_iTimeLimit>0) {
       FLOAT fTimeLeft = ClampDn(sp.sp_iTimeLimit*60.0f - _pNetwork->GetGameTime(), 0.0f);
-      strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%s", TRANS("TIME LEFT"), TimeToString(fTimeLeft)));
+      strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%s", LOCALIZE("TIME LEFT"), TimeToString(fTimeLeft)));
       strStats+="\n";
     }
     if (bFragMatch && sp.sp_iFragLimit>0) {
       INDEX iFragsLeft = ClampDn(sp.sp_iFragLimit-iMaxFrags, INDEX(0));
-      strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%d", TRANS("FRAGS LEFT"), iFragsLeft));
+      strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%d", LOCALIZE("FRAGS LEFT"), iFragsLeft));
       strStats+="\n";
     }
     if (!bFragMatch && sp.sp_iScoreLimit>0) {
       INDEX iScoreLeft = ClampDn(sp.sp_iScoreLimit-iMaxScore, INDEX(0));
-      strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%d", TRANS("SCORE LEFT"), iScoreLeft));
+      strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%d", LOCALIZE("SCORE LEFT"), iScoreLeft));
       strStats+="\n";
     }
     strStats += "\n";
 
-    CTString strRank = TRANS("NO.");
-    CTString strFrag = bFragMatch ? TRANS("FRAGS"):TRANS("SCORE");
-    CTString strPing = TRANS("PING");
-    CTString strName = TRANS("PLAYER");
+    CTString strRank = LOCALIZE("NO.");
+    CTString strFrag = bFragMatch ? LOCALIZE("FRAGS"):LOCALIZE("SCORE");
+    CTString strPing = LOCALIZE("PING");
+    CTString strName = LOCALIZE("PLAYER");
     INDEX ctRankChars = Max(strRank.Length(), INDEX(3)) ;
     INDEX ctFragChars = Max(strFrag.Length(), INDEX(7)) ;
     INDEX ctPingChars = Max(strPing.Length(), INDEX(5)) ;
@@ -1526,7 +1535,7 @@ functions:
   void GetDetailStatsCoop(CTString &strStats)
   {
     // first put in your full stats
-    strStats += "^b"+CenterString(TRANS("YOUR STATS"))+"^r\n";
+    strStats += "^b"+CenterString(LOCALIZE("YOUR STATS"))+"^r\n";
     strStats+="\n";
     GetDetailStatsSP(strStats, 1);
 
@@ -1556,33 +1565,33 @@ functions:
 
     // add squad stats
     strStats+="\n";
-    strStats += "^b"+CenterString(TRANS("SQUAD TOTAL"))+"^r\n";
+    strStats += "^b"+CenterString(LOCALIZE("SQUAD TOTAL"))+"^r\n";
     strStats+="\n";
     strStats+=CTString(0, "^cFFFFFF%s^r", TranslateConst(en_pwoWorld->GetName(), 0));
     strStats+="\n";
-    strStats+=AlignString(CTString(0, "  %s:\n%d", TRANS("SCORE"), psSquadLevel.ps_iScore));
+    strStats+=AlignString(CTString(0, "  %s:\n%d", LOCALIZE("SCORE"), psSquadLevel.ps_iScore));
     strStats+="\n";
-    strStats+=AlignString(CTString(0, "  %s:\n%d", TRANS("DEATHS"), psSquadLevel.ps_iDeaths));
+    strStats+=AlignString(CTString(0, "  %s:\n%d", LOCALIZE("DEATHS"), psSquadLevel.ps_iDeaths));
     strStats+="\n";
-    strStats+=AlignString(CTString(0, "  %s:\n%d/%d", TRANS("KILLS"), psSquadLevel.ps_iKills, m_psLevelTotal.ps_iKills));
+    strStats+=AlignString(CTString(0, "  %s:\n%d/%d", LOCALIZE("KILLS"), psSquadLevel.ps_iKills, m_psLevelTotal.ps_iKills));
     strStats+="\n";
-    strStats+=AlignString(CTString(0, "  %s:\n%d/%d", TRANS("SECRETS"), psSquadLevel.ps_iSecrets, m_psLevelTotal.ps_iSecrets));
+    strStats+=AlignString(CTString(0, "  %s:\n%d/%d", LOCALIZE("SECRETS"), psSquadLevel.ps_iSecrets, m_psLevelTotal.ps_iSecrets));
     strStats+="\n";
     strStats+="\n";
-    strStats+=CTString("^cFFFFFF")+TRANS("TOTAL")+"^r\n";
-    strStats+=AlignString(CTString(0, "  %s:\n%d", TRANS("SCORE"), psSquadGame.ps_iScore));
+    strStats+=CTString("^cFFFFFF")+LOCALIZE("TOTAL")+"^r\n";
+    strStats+=AlignString(CTString(0, "  %s:\n%d", LOCALIZE("SCORE"), psSquadGame.ps_iScore));
     strStats+="\n";
-    strStats+=AlignString(CTString(0, "  %s:\n%d", TRANS("DEATHS"), psSquadGame.ps_iDeaths));
+    strStats+=AlignString(CTString(0, "  %s:\n%d", LOCALIZE("DEATHS"), psSquadGame.ps_iDeaths));
     strStats+="\n";
-    strStats+=AlignString(CTString(0, "  %s:\n%d/%d", TRANS("KILLS"), psSquadGame.ps_iKills, m_psGameTotal.ps_iKills));
+    strStats+=AlignString(CTString(0, "  %s:\n%d/%d", LOCALIZE("KILLS"), psSquadGame.ps_iKills, m_psGameTotal.ps_iKills));
     strStats+="\n";
-    strStats+=AlignString(CTString(0, "  %s:\n%d/%d", TRANS("SECRETS"), psSquadGame.ps_iSecrets, m_psGameTotal.ps_iSecrets));
+    strStats+=AlignString(CTString(0, "  %s:\n%d/%d", LOCALIZE("SECRETS"), psSquadGame.ps_iSecrets, m_psGameTotal.ps_iSecrets));
     strStats+="\n";
     strStats+="\n";
 
 
     strStats+="\n";
-    strStats += "^b"+CenterString(TRANS("OTHER PLAYERS"))+"^r\n";
+    strStats += "^b"+CenterString(LOCALIZE("OTHER PLAYERS"))+"^r\n";
     strStats+="\n";
 
     // for each player
@@ -1606,30 +1615,30 @@ functions:
     if (iCoopType<=1) {
       if (m_bEndOfGame) {
         if (GetWorld()->wo_fnmFileName==plr_strLastLevel) {
-          strStats+=CTString(TRANS("^f4YOU HAVE FINISHED THE LIMITED EDITION!^F\n"))+
-            TRANS("8 more levels are available in\nthe full version of\n'Serious Sam: The First Encounter'!\n\n");
+          strStats+=CTString(LOCALIZE("^f4YOU HAVE FINISHED THE LIMITED EDITION!^F\n"))+
+            LOCALIZE("8 more levels are available in\nthe full version of\n'Serious Sam: The First Encounter'!\n\n");
         } else if (GetSP()->sp_gdGameDifficulty==CSessionProperties::GD_EXTREME) {
-          strStats+=TRANS("^f4SERIOUS GAME FINISHED,\nMENTAL MODE IS NOW ENABLED!^F\n\n");
+          strStats+=LOCALIZE("^f4SERIOUS GAME FINISHED,\nMENTAL MODE IS NOW ENABLED!^F\n\n");
         } else if (GetSP()->sp_bMental) {
-          strStats+=TRANS("^f4YOU HAVE MASTERED THE GAME!^F\n\n");
+          strStats+=LOCALIZE("^f4YOU HAVE MASTERED THE GAME!^F\n\n");
         }
       }
     }
 
     if (iCoopType<=1) {
       // report total score info
-      strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%d", TRANS("TOTAL SCORE"), m_psGameStats.ps_iScore));
+      strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%d", LOCALIZE("TOTAL SCORE"), m_psGameStats.ps_iScore));
       strStats+="\n";
-      strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%s", TRANS("DIFFICULTY"), GetDifficultyString()));
+      strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%s", LOCALIZE("DIFFICULTY"), GetDifficultyString()));
       strStats+="\n";
-      strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%s", TRANS("STARTED"), GetStatsRealWorldStarted()));
+      strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%s", LOCALIZE("STARTED"), GetStatsRealWorldStarted()));
       strStats+="\n";
-      strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%s", TRANS("PLAYING TIME"), TimeToString(GetStatsRealWorldTime())));
+      strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%s", LOCALIZE("PLAYING TIME"), TimeToString(GetStatsRealWorldTime())));
       strStats+="\n";
       if( m_psGameStats.ps_iScore<=plr_iHiScore) {
-        strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%d", TRANS("HI-SCORE"), plr_iHiScore));
+        strStats+=AlignString(CTString(0, "^cFFFFFF%s:^r\n%d", LOCALIZE("HI-SCORE"), plr_iHiScore));
       } else {
-        strStats+=TRANS("YOU BEAT THE HI-SCORE!");
+        strStats+=LOCALIZE("YOU BEAT THE HI-SCORE!");
       }
       strStats+="\n\n";
     }
@@ -1639,46 +1648,46 @@ functions:
     strStats+="\n";
     if (iCoopType<=1) {
       if( m_bEndOfLevel) {
-        strStats+=AlignString(CTString(0, "  %s:\n%s", TRANS("ESTIMATED TIME"), TimeToString(m_tmEstTime)));
+        strStats+=AlignString(CTString(0, "  %s:\n%s", LOCALIZE("ESTIMATED TIME"), TimeToString(m_tmEstTime)));
         strStats+="\n";
-        strStats+=AlignString(CTString(0, "  %s:\n%d", TRANS("TIME BONUS"), m_iTimeScore));
+        strStats+=AlignString(CTString(0, "  %s:\n%d", LOCALIZE("TIME BONUS"), m_iTimeScore));
         strStats+="\n";
         strStats+="\n";
       }
 //    } else {
-//      strStats+=CTString("^cFFFFFF")+TRANS("THIS LEVEL")+"^r\n";
+//      strStats+=CTString("^cFFFFFF")+LOCALIZE("THIS LEVEL")+"^r\n";
     }
-    strStats+=AlignString(CTString(0, "  %s:\n%d", TRANS("SCORE"), m_psLevelStats.ps_iScore));
+    strStats+=AlignString(CTString(0, "  %s:\n%d", LOCALIZE("SCORE"), m_psLevelStats.ps_iScore));
     strStats+="\n";
-    strStats+=AlignString(CTString(0, "  %s:\n%d/%d", TRANS("KILLS"), m_psLevelStats.ps_iKills, m_psLevelTotal.ps_iKills));
+    strStats+=AlignString(CTString(0, "  %s:\n%d/%d", LOCALIZE("KILLS"), m_psLevelStats.ps_iKills, m_psLevelTotal.ps_iKills));
     strStats+="\n";
     if (iCoopType>=1) {
-      strStats+=AlignString(CTString(0, "  %s:\n%d", TRANS("DEATHS"), m_psLevelStats.ps_iDeaths, m_psLevelTotal.ps_iDeaths));
+      strStats+=AlignString(CTString(0, "  %s:\n%d", LOCALIZE("DEATHS"), m_psLevelStats.ps_iDeaths, m_psLevelTotal.ps_iDeaths));
       strStats+="\n";
     }
-    strStats+=AlignString(CTString(0, "  %s:\n%d/%d", TRANS("SECRETS"), m_psLevelStats.ps_iSecrets, m_psLevelTotal.ps_iSecrets));
+    strStats+=AlignString(CTString(0, "  %s:\n%d/%d", LOCALIZE("SECRETS"), m_psLevelStats.ps_iSecrets, m_psLevelTotal.ps_iSecrets));
     strStats+="\n";
     if (iCoopType<=1) {
-      strStats+=AlignString(CTString(0, "  %s:\n%s", TRANS("TIME"), TimeToString(GetStatsInGameTimeLevel())));
+      strStats+=AlignString(CTString(0, "  %s:\n%s", LOCALIZE("TIME"), TimeToString(GetStatsInGameTimeLevel())));
       strStats+="\n";
     }
     strStats+="\n";
 
     // report total game statistics
-    strStats+=CTString("^cFFFFFF")+TRANS("TOTAL")+"^r";
+    strStats+=CTString("^cFFFFFF")+LOCALIZE("TOTAL")+"^r";
     strStats+="\n";
-    strStats+=AlignString(CTString(0, "  %s:\n%d", TRANS("SCORE"), m_psGameStats.ps_iScore));
+    strStats+=AlignString(CTString(0, "  %s:\n%d", LOCALIZE("SCORE"), m_psGameStats.ps_iScore));
     strStats+="\n";
-    strStats+=AlignString(CTString(0, "  %s:\n%d/%d", TRANS("KILLS"), m_psGameStats.ps_iKills, m_psGameTotal.ps_iKills));
+    strStats+=AlignString(CTString(0, "  %s:\n%d/%d", LOCALIZE("KILLS"), m_psGameStats.ps_iKills, m_psGameTotal.ps_iKills));
     strStats+="\n";
     if (iCoopType>=1) {
-      strStats+=AlignString(CTString(0, "  %s:\n%d", TRANS("DEATHS"), m_psGameStats.ps_iDeaths, m_psGameTotal.ps_iDeaths));
+      strStats+=AlignString(CTString(0, "  %s:\n%d", LOCALIZE("DEATHS"), m_psGameStats.ps_iDeaths, m_psGameTotal.ps_iDeaths));
       strStats+="\n";
     }
-    strStats+=AlignString(CTString(0, "  %s:\n%d/%d", TRANS("SECRETS"), m_psGameStats.ps_iSecrets, m_psGameTotal.ps_iSecrets));
+    strStats+=AlignString(CTString(0, "  %s:\n%d/%d", LOCALIZE("SECRETS"), m_psGameStats.ps_iSecrets, m_psGameTotal.ps_iSecrets));
     strStats+="\n";
     if (iCoopType<=1) {
-      strStats+=AlignString(CTString(0, "  %s:\n%s", TRANS("GAME TIME"), TimeToString(GetStatsInGameTimeGame())));
+      strStats+=AlignString(CTString(0, "  %s:\n%s", LOCALIZE("GAME TIME"), TimeToString(GetStatsInGameTimeGame())));
       strStats+="\n";
     }
     strStats+="\n";
@@ -1686,7 +1695,7 @@ functions:
     // set per level outputs
     if (iCoopType<=1) {
       if(m_strLevelStats!="") {
-        strStats += CTString("^cFFFFFF")+TRANS("Per level statistics") +"^r\n\n" + m_strLevelStats;
+        strStats += CTString("^cFFFFFF")+LOCALIZE("Per level statistics") +"^r\n\n" + m_strLevelStats;
       }
     }
   }
@@ -2123,8 +2132,21 @@ functions:
       pdp->SetTextScaling( fScale);
       pdp->SetTextAspect( 1.0f);
       CTString strMsg;
-      strMsg.PrintF(TRANS("%s connected"), GetPlayerName());
-      pdp->PutTextCXY( strMsg, pixDPWidth*0.5f, pixDPHeight*0.5f, C_GREEN|CT_OPAQUE);
+      strMsg.PrintF(LOCALIZE("%s connected"), GetPlayerName());
+
+      // [Cecil] Pick color based on the Advanced HUD theme
+      static CSymbolPtr pHudTheme("ahud_iTheme");
+      COLOR colMessage = C_GREEN; // Default TFE
+
+      if (pHudTheme.Exists()) {
+        switch (pHudTheme.GetIndex()) {
+          case 1: colMessage = 0x6097CC00; break; // Warped (SE_COL_BLUE_NEUTRAL_LT)
+          case 2: colMessage = 0x6097CC00; break; // TSE (SE_COL_BLUE_NEUTRAL_LT)
+          case 3: colMessage = 0xCC936100; break; // SSR
+        }
+      }
+
+      pdp->PutTextCXY( strMsg, pixDPWidth*0.5f, pixDPHeight*0.5f, colMessage|CT_OPAQUE);
     }
   }
 
@@ -2180,14 +2202,23 @@ functions:
     // determine and cache main drawport, size and relative scale
     PIX pixDPWidth  = pdp->GetWidth();
     PIX pixDPHeight = pdp->GetHeight();
-    FLOAT fScale = (FLOAT)pixDPWidth/640.0f;
+    FLOAT fScale = HEIGHT_SCALING(pdp);
+
+    // [Cecil] Determine vertical screen edge offset
+    static CSymbolPtr piScreenEdge("ahud_iScreenEdgeY");
+    PIX pixScreenEdge = 0;
+
+    if (piScreenEdge.Exists()) {
+      pixScreenEdge = ClampDn(piScreenEdge.GetIndex(), (INDEX)0) * fScale;
+    }
 
     // print center message
     if (_pTimer->CurrentTick()<m_tmCenterMessageEnd) {
       pdp->SetFont( _pfdDisplayFont);
       pdp->SetTextScaling( fScale);
       pdp->SetTextAspect( 1.0f);
-      pdp->PutTextCXY( m_strCenterMessage, pixDPWidth*0.5f, pixDPHeight*0.85f, C_WHITE|0xDD);
+      // [Cecil] Apply screen edge offset
+      pdp->PutTextCXY( m_strCenterMessage, pixDPWidth*0.5f, pixDPHeight*0.85f - pixScreenEdge, C_WHITE|0xDD);
     // print picked item
     } else if (_pTimer->CurrentTick()<m_tmLastPicked+PICKEDREPORT_TIME) {
       pdp->SetFont( _pfdDisplayFont);
@@ -2199,11 +2230,13 @@ functions:
       } else {
         strPicked.PrintF("%s +%d", m_strPickedName, int(m_fPickedAmmount));
       }
-      pdp->PutTextCXY( strPicked, pixDPWidth*0.5f, pixDPHeight*0.82f, C_WHITE|0xDD);
+      // [Cecil] Apply screen edge offset
+      pdp->PutTextCXY( strPicked, pixDPWidth*0.5f, pixDPHeight*0.82f - pixScreenEdge, C_WHITE|0xDD);
       if (!GetSP()->sp_bCooperative && !GetSP()->sp_bUseFrags && m_fPickedMana>=1) {
         CTString strValue;
-        strValue.PrintF("%s +%d", TRANS("Value"), INDEX(m_fPickedMana));
-        pdp->PutTextCXY( strValue, pixDPWidth*0.5f, pixDPHeight*0.85f, C_WHITE|0xDD);
+        strValue.PrintF("%s +%d", LOCALIZE("Value"), INDEX(m_fPickedMana));
+        // [Cecil] Apply screen edge offset
+        pdp->PutTextCXY( strValue, pixDPWidth*0.5f, pixDPHeight*0.85f - pixScreenEdge, C_WHITE|0xDD);
       }
     }
 
@@ -2212,7 +2245,21 @@ functions:
       pdp->SetTextScaling( fScale);
       pdp->SetTextAspect( 1.0f);
       UBYTE ubA = int(sin(_pTimer->CurrentTick()*10.0f)*127+128);
-      pdp->PutTextCXY( TRANS("Analyzing..."), pixDPWidth*0.5f, pixDPHeight*0.2f, C_GREEN|ubA);
+
+      // [Cecil] Pick color based on the Advanced HUD theme
+      static CSymbolPtr pHudTheme("ahud_iTheme");
+      COLOR colMessage = C_GREEN; // Default TFE
+
+      if (pHudTheme.Exists()) {
+        switch (pHudTheme.GetIndex()) {
+          case 1: colMessage = 0x6097CC00; break; // Warped (SE_COL_BLUE_NEUTRAL_LT)
+          case 2: colMessage = 0x6097CC00; break; // TSE (SE_COL_BLUE_NEUTRAL_LT)
+          case 3: colMessage = 0xCC936100; break; // SSR
+        }
+      }
+
+      // [Cecil] Apply screen edge offset
+      pdp->PutTextCXY( LOCALIZE("Analyzing..."), pixDPWidth*0.5f, pixDPHeight*0.2f + pixScreenEdge, colMessage|ubA);
     }
   }
 
@@ -2274,7 +2321,16 @@ functions:
       pdp->SetFont( _pfdDisplayFont);
       pdp->SetTextScaling( fScale);
       pdp->SetTextAspect( 1.0f);
-      pdp->PutTextCXY( m_strCenterMessage, pixDPWidth*0.5f, pixDPHeight*0.85f, C_WHITE|0xDD);
+
+      // [Cecil] Determine vertical screen edge offset and apply it
+      static CSymbolPtr piScreenEdge("ahud_iScreenEdgeY");
+      PIX pixScreenEdge = 0;
+
+      if (piScreenEdge.Exists()) {
+        pixScreenEdge = ClampDn(piScreenEdge.GetIndex(), (INDEX)0) * fScale;
+      }
+
+      pdp->PutTextCXY( m_strCenterMessage, pixDPWidth*0.5f, pixDPHeight*0.85f - pixScreenEdge, C_WHITE|0xDD);
     }
   }
 
@@ -2861,8 +2917,45 @@ functions:
         default: { ulFleshModel = MODEL_FLESH_ORANGE;  ulFleshTexture = TEXTURE_FLESH_ORANGE;  break; }
         }
       }
+      // [Cecil] Get spawned debris
+      CDebris *penDebris = (CDebris *)(CEntity *)
       Debris_Spawn( this, this, ulFleshModel, ulFleshTexture, 0, 0, 0, IRnd()%4, 0.5f,
                     FLOAT3D(FRnd()*0.6f+0.2f, FRnd()*0.6f+0.2f, FRnd()*0.6f+0.2f));
+
+      // [Cecil] Replace with custom debris
+      const BloodTheme blood = GetBloodTheme();
+      COLOR colFlesh = blood.GetColor(rand(), 0xFF, 0xFF);
+
+      penDebris->SetCustomModel();
+      ULONG ulCustomModel = MODEL_FLESH;
+      ULONG ulCustomTexture = TEXTURE_FLESH;
+
+      // Use original textures if red and green colors aren't bright enough
+      UBYTE ubR, ubG, ubB;
+      ColorToRGB(colFlesh, ubR, ubG, ubB);
+
+      // Adjust brightness based on the appropriate color channel
+      if (ubR > 31 && ubG < 16 && ubB < 16) {
+        ulCustomTexture = TEXTURE_FLESH_RED;
+        colFlesh = RGBAToColor(ubR, ubR, ubR, colFlesh & 0xFF);
+
+      } else if (ubR < 16 && ubG > 31 && ubB < 16) {
+        ulCustomTexture = TEXTURE_FLESH_GREEN;
+        colFlesh = RGBAToColor(ubG, ubG, ubG, colFlesh & 0xFF);
+      }
+
+      if (blood.eType == BloodTheme::E_HIPPIE) {
+        switch (rand() % 5) {
+          case 1:  ulCustomModel = MODEL_FLESH_APPLE;  ulCustomTexture = TEXTURE_FLESH_APPLE;  break;
+          case 2:  ulCustomModel = MODEL_FLESH_BANANA; ulCustomTexture = TEXTURE_FLESH_BANANA; break;
+          case 3:  ulCustomModel = MODEL_FLESH_BURGER; ulCustomTexture = TEXTURE_FLESH_BURGER; break;
+          case 4:  ulCustomModel = MODEL_FLESH_LOLLY;  ulCustomTexture = TEXTURE_FLESH_LOLLY;  break;
+          default: ulCustomModel = MODEL_FLESH_ORANGE; ulCustomTexture = TEXTURE_FLESH_ORANGE; break;
+        }
+      }
+
+      SetComponents(this, penDebris->m_moCustomDebris, ulCustomModel, ulCustomTexture, 0, 0, 0);
+      penDebris->SetCustomColor(colFlesh);
     }
 
     // leave a stain beneath
@@ -2921,7 +3014,7 @@ functions:
       if( ceil(fHealthNew) > ceil(fHealthOld)) {
         // receive it
         SetHealth(fHealthNew);
-        ItemPicked( TRANS("Health"), ((EHealth&)ee).fHealth);
+        ItemPicked( LOCALIZE("Health"), ((EHealth&)ee).fHealth);
         m_iMana += (INDEX)(((EHealth&)ee).fHealth);
         m_fPickedMana   += ((EHealth&)ee).fHealth;
         return TRUE;
@@ -2943,7 +3036,7 @@ functions:
       if( ceil(fArmorNew) > ceil(fArmorOld)) {
         // receive it
         m_fArmor = fArmorNew;
-        ItemPicked( TRANS("Armor"), ((EArmor&)ee).fArmor);
+        ItemPicked( LOCALIZE("Armor"), ((EArmor&)ee).fArmor);
         m_iMana += (INDEX)(((EArmor&)ee).fArmor);
         m_fPickedMana   += ((EArmor&)ee).fArmor;
         return TRUE;
@@ -2954,7 +3047,7 @@ functions:
     else if (ee.ee_slEvent == EVENTCODE_EMessageItem) {
       EMessageItem &eMI = (EMessageItem &)ee;
       ReceiveComputerMessage(eMI.fnmMessage, CMF_ANALYZE);
-      ItemPicked(TRANS("Ancient papyrus"), 0);
+      ItemPicked(LOCALIZE("Ancient papyrus"), 0);
       return TRUE;
     }
 
@@ -2993,7 +3086,7 @@ functions:
         ItemPicked(strKey, 0);
         // if in cooperative
         if (GetSP()->sp_bCooperative && !GetSP()->sp_bSinglePlayer) {
-          CPrintF(TRANS("^cFFFFFF%s - %s^r\n"), GetPlayerName(), strKey);
+          CPrintF(LOCALIZE("^cFFFFFF%s - %s^r\n"), GetPlayerName(), strKey);
         }
         return TRUE;
       }
@@ -3259,7 +3352,7 @@ functions:
 
       if (!m_bComputerInvoked && GetSP()->sp_bSinglePlayer) {
         PrintCenterMessage(this, this, 
-          TRANS("Press USE to read the message!"), 5.0f, MSS_NONE);
+          LOCALIZE("Press USE to read the message!"), 5.0f, MSS_NONE);
       }
     }
 
@@ -3307,14 +3400,14 @@ functions:
     // if the name has changed
     if (pcOrg.GetName()!=pcNew.GetName()) {
       // report that
-      CPrintF(TRANS("%s is now known as %s\n"), 
+      CPrintF(LOCALIZE("%s is now known as %s\n"), 
         pcOrg.GetNameForPrinting(), pcNew.GetNameForPrinting());
     }
 
     // if the team has changed
     if (pcOrg.GetTeam()!=pcNew.GetTeam()) {
       // report that
-      CPrintF(TRANS("%s switched to team %s\n"), 
+      CPrintF(LOCALIZE("%s switched to team %s\n"), 
         pcNew.GetNameForPrinting(), pcNew.GetTeamForPrinting());
     }
 
@@ -3328,16 +3421,20 @@ functions:
       // if succeeded
       if (bSuccess) {
         // report that
-        CPrintF(TRANS("%s now appears as %s\n"), 
+        CPrintF(LOCALIZE("%s now appears as %s\n"), 
           pcNew.GetNameForPrinting(), strNewLook);
       // if failed
       } else {
         // report that
-        CPrintF(TRANS("Cannot change appearance for %s: setting '%s' is unavailable\n"), 
+        CPrintF(LOCALIZE("Cannot change appearance for %s: setting '%s' is unavailable\n"), 
           pcNew.GetNameForPrinting(), (const char*)ppsNew->GetModelFilename());
       }
-      // attach weapon to new appearance
-      GetPlayerAnimator()->SyncWeapon();
+
+      // [Cecil] Only if animator exists (if called before full player initialization)
+      if (m_penAnimator != NULL) {
+        // attach weapon to new appearance
+        GetPlayerAnimator()->SyncWeapon();
+      }
     }
 
     BOOL b3RDPersonOld = ppsOrg->ps_ulFlags&PSF_PREFER3RDPERSON;
@@ -3507,6 +3604,19 @@ functions:
       vTranslation(3) *= 1.35f;
     //en_fDeceleration *= 0.8f;
     }
+
+  #if CLASSICSPATCH_GAMEPLAY_EXT
+    // [Cecil] Movement speed multiplier
+    if (CoreGEX().fMoveSpeed != 1.0f) {
+      vTranslation(1) *= CoreGEX().fMoveSpeed;
+      vTranslation(3) *= CoreGEX().fMoveSpeed;
+    }
+
+    // [Cecil] Jump height multiplier
+    if (CoreGEX().fJumpHeight != 1.0f) {
+      vTranslation(2) *= CoreGEX().fJumpHeight;
+    }
+  #endif
 
     CContentType &ctUp = GetWorld()->wo_actContentTypes[en_iUpContent];
     CContentType &ctDn = GetWorld()->wo_actContentTypes[en_iDnContent];
@@ -3929,21 +4039,21 @@ functions:
             }
 
             // initiate respawn
-            CPrintF(TRANS("%s is riding the gun again\n"), GetPlayerName());
+            CPrintF(LOCALIZE("%s is riding the gun again\n"), GetPlayerName());
             SendEvent(EEnd());
 
             // report number of credits left
             if (GetSP()->sp_ctCredits>0) {
               if (GetSP()->sp_ctCreditsLeft==0) {
-                CPrintF(TRANS("  no more credits left!\n"));
+                CPrintF(LOCALIZE("  no more credits left!\n"));
               } else {
-                CPrintF(TRANS("  %d credits left\n"), GetSP()->sp_ctCreditsLeft);
+                CPrintF(LOCALIZE("  %d credits left\n"), GetSP()->sp_ctCreditsLeft);
               }
             }
           // if no more credits left
           } else {
             // report that you cannot respawn
-            CPrintF(TRANS("%s rests in peace - out of credits\n"), GetPlayerName());
+            CPrintF(LOCALIZE("%s rests in peace - out of credits\n"), GetPlayerName());
           }
         }
       }
@@ -4654,7 +4764,7 @@ functions:
 
     // record stats for this level and add to global table
     CTString strStats;
-    strStats.PrintF(TRANS("%s\n  Time:   %s\n  Score: %9d\n  Kills:   %03d/%03d\n  Secrets:   %02d/%02d\n"), 
+    strStats.PrintF(LOCALIZE("%s\n  Time:   %s\n  Score: %9d\n  Kills:   %03d/%03d\n  Secrets:   %02d/%02d\n"), 
         TranslateConst(en_pwoWorld->GetName(), 0), TimeToString(tmLevelTime), 
         m_psLevelStats.ps_iScore,
         m_psLevelStats.ps_iKills, m_psLevelTotal.ps_iKills,
@@ -4883,11 +4993,11 @@ procedures:
         // if killed by a player
         if (pplKillerPlayer!=NULL) {
           // print how much that player gained
-          CPrintF(TRANS("  %s: +%d points\n"), pplKillerPlayer->GetPlayerName(), m_iMana);
+          CPrintF(LOCALIZE("  %s: +%d points\n"), pplKillerPlayer->GetPlayerName(), m_iMana);
         // if it was a suicide, or an accident
         } else {
           // print how much you lost
-          CPrintF(TRANS("  %s: -%d points\n"), GetPlayerName(), m_iMana);
+          CPrintF(LOCALIZE("  %s: -%d points\n"), GetPlayerName(), m_iMana);
         }
       }
 
@@ -5767,6 +5877,13 @@ procedures:
     en_tmMaxHoldBreath = 60.0f;
     en_fDensity = 1000.0f;    // same density as water - to be able to dive freely
 
+  #if CLASSICSPATCH_GAMEPLAY_EXT
+    // [Cecil] Infinite air control time
+    if (CoreGEX().bUnlimitedAirControl) {
+      en_tmMaxJumpControl = 1e6;
+    }
+  #endif
+
     ModelChangeNotify();
 
     // spawn weapons
@@ -5795,7 +5912,7 @@ procedures:
     try {
       m_aoLightAnimation.SetData_t(CTFILENAME("Animations\\BasicEffects.ani"));
     } catch (char *strError) {
-      WarningMessage(TRANS("Cannot load Animations\\BasicEffects.ani: %s"), strError);
+      WarningMessage(LOCALIZE("Cannot load Animations\\BasicEffects.ani: %s"), strError);
     }
     PlayLightAnim(LIGHT_ANIM_NONE, 0);
 
@@ -5924,7 +6041,7 @@ procedures:
       // if any found
       if (penNextPlayer!=NULL) {
         // transfer keys to that player
-        CPrintF(TRANS("%s leaving, all keys transfered to %s\n"), 
+        CPrintF(LOCALIZE("%s leaving, all keys transfered to %s\n"), 
           (const char*)m_strName, (const char*)penNextPlayer->GetPlayerName());
         penNextPlayer->m_ulKeys |= m_ulKeys;
       }

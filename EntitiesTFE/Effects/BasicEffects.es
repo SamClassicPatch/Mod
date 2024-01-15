@@ -195,6 +195,16 @@ void CBasicEffect_OnPrecache(CDLLEntityClass *pdec, INDEX iUser)
     pdec->PrecacheTexture(TEXTURE_BLOOD_FLOWER1);
     pdec->PrecacheTexture(TEXTURE_BLOOD_FLOWER2);
     pdec->PrecacheTexture(TEXTURE_BLOOD_FLOWER3);
+
+    // [Cecil] Blood textures for coloring
+    pdec->PrecacheTexture(TEX_BRIGHT_BLOOD_EXPLODE);
+    pdec->PrecacheTexture(TEX_BRIGHT_BLOOD_STAIN1);
+    pdec->PrecacheTexture(TEX_BRIGHT_BLOOD_STAIN2);
+    pdec->PrecacheTexture(TEX_BRIGHT_BLOOD_STAIN3);
+    pdec->PrecacheTexture(TEX_BRIGHT_BLOOD_STAIN4);
+    pdec->PrecacheTexture(TEX_BRIGHT_BLOOD_SPILL1);
+    pdec->PrecacheTexture(TEX_BRIGHT_BLOOD_SPILL2);
+    pdec->PrecacheTexture(TEX_BRIGHT_BLOOD_SPILL3);
     break;
   case BET_TELEPORT:
     pdec->PrecacheModel(MODEL_TELEPORT_EFFECT);
@@ -241,6 +251,11 @@ properties:
 
 {
   CLightSource m_lsLightSource;
+
+  // [Cecil] Client-side effect coloring
+  BOOL m_bUseCustomColor;
+  COLOR m_colOldColor;
+  UBYTE m_ubNewAlpha;
 }
 
 components:
@@ -318,7 +333,33 @@ components:
 // ********** Water shockwave texture **********
  100 texture TEXTURE_WATER_WAVE          "Models\\Effects\\ShockWave01\\Textures\\WaterWave.tex",
 
+// [Cecil] Blood textures for coloring
+150 texture TEX_BRIGHT_BLOOD_EXPLODE "TexturesPatch\\Blood\\Explode.tex",
+151 texture TEX_BRIGHT_BLOOD_STAIN1  "TexturesPatch\\Blood\\Stain1.tex",
+152 texture TEX_BRIGHT_BLOOD_STAIN2  "TexturesPatch\\Blood\\Stain2.tex",
+153 texture TEX_BRIGHT_BLOOD_STAIN3  "TexturesPatch\\Blood\\Stain3.tex",
+154 texture TEX_BRIGHT_BLOOD_STAIN4  "TexturesPatch\\Blood\\Stain4.tex",
+155 texture TEX_BRIGHT_BLOOD_SPILL1  "TexturesPatch\\Blood\\Spill1.tex",
+156 texture TEX_BRIGHT_BLOOD_SPILL2  "TexturesPatch\\Blood\\Spill2.tex",
+157 texture TEX_BRIGHT_BLOOD_SPILL3  "TexturesPatch\\Blood\\Spill3.tex",
+
 functions:
+  // [Cecil] Constructor
+  void CBasicEffect(void) {
+    m_bUseCustomColor = FALSE;
+    m_colOldColor = 0xFFFFFFFF;
+    m_ubNewAlpha = 0xFF;
+  };
+
+  // [Cecil] Set custom model color
+  void SetCustomColor(COLOR col) {
+    m_colOldColor = GetModelColor();
+
+    SetModelColor(col);
+    m_ubNewAlpha = col & 0xFF;
+
+    m_bUseCustomColor = TRUE;
+  };
 
   // dump sync data to text file
   export void DumpSync_t(CTStream &strm, INDEX iExtensiveSyncCheck)  // throw char *
@@ -355,7 +396,7 @@ functions:
       try {
         m_aoLightAnimation.SetData_t(CTFILENAME("Animations\\BasicEffects.ani"));
       } catch (char *strError) {
-        WarningMessage(TRANS("Cannot load Animations\\BasicEffects.ani: %s"), strError);
+        WarningMessage(LOCALIZE("Cannot load Animations\\BasicEffects.ani: %s"), strError);
       }
       // play light animation
       if (m_aoLightAnimation.GetData()!=NULL) {
@@ -435,13 +476,21 @@ functions:
       FLOAT m_fTimeRemain = m_fFadeStartTime + m_fFadeTime - _pTimer->CurrentTick();
       if (m_fTimeRemain < 0.0f) { m_fTimeRemain = 0.0f; }
       COLOR col = GetModelColor() & ~CT_AMASK;
-      col |= (ULONG)(m_fFadeStartAlpha* m_fTimeRemain/m_fFadeTime *255.0f);
+
+      // [Cecil] Multiply by client-side alpha value
+      if (m_bUseCustomColor) {
+        col |= ULONG(NormByteToFloat(m_ubNewAlpha) * m_fTimeRemain/m_fFadeTime * 255.0f);
+      } else {
+        col |= ULONG(m_fFadeStartAlpha * m_fTimeRemain/m_fFadeTime * 255.0f);
+      }
       SetModelColor(col);
+
     } else if (m_fFadeInSpeed>0) {
       TIME tmAge = _pTimer->GetLerpedCurrentTick()-m_tmSpawn;
       COLOR col = GetModelColor() ;
+      // [Cecil] Multiply by client-side alpha value
       col = (col &~CT_AMASK) |
-        (ULONG)((255)*Clamp(tmAge*m_fFadeInSpeed/m_fWaitTime, 0.0f, 1.0f));
+        (ULONG)(m_ubNewAlpha * Clamp(tmAge*m_fFadeInSpeed/m_fWaitTime, (TIME)0.0, (TIME)1.0));
       SetModelColor(col);
     }
 
@@ -975,6 +1024,23 @@ functions:
       if( iBloodType==2) { SetModelColor( RGBAToColor( 250,20,20,255)); }
       else               { SetModelColor( RGBAToColor( 0,250,0,255)); }
     }
+
+    // [Cecil] Replace with custom colors and textures
+    const BloodTheme blood = GetBloodTheme();
+
+    if (blood.eType == BloodTheme::E_HIPPIE) {
+      SetModelMainTexture(TEXTURE_BLOOD_FLOWER1 + rand() % 3);
+
+    // New textures for complex types
+    } else if (blood.eType != BloodTheme::E_COLOR) {
+      SetModelMainTexture(TEX_BRIGHT_BLOOD_EXPLODE);
+
+    } else {
+      SetModelMainTexture(TEXTURE_BLOOD_EXPLODE);
+    }
+
+    SetCustomColor(blood.GetColor(rand(), 0xFF, 0xFF));
+
     //RandomBanking();
     m_soEffect.Set3DParameters(7.5f, 5.0f, 1.0f, 1.0f);
     PlaySound(m_soEffect, SOUND_BULLET_FLESH, SOF_3D);
@@ -1014,6 +1080,22 @@ functions:
       else               { SetModelColor( RGBAToColor( 0,250,0,255)); }
     }
 
+    // [Cecil] Replace with custom colors and textures
+    const BloodTheme blood = GetBloodTheme();
+
+    if (blood.eType == BloodTheme::E_HIPPIE) {
+      SetModelMainTexture(TEXTURE_BLOOD_FLOWER1 + rand() % 3);
+
+    // New textures for complex types
+    } else if (blood.eType != BloodTheme::E_COLOR) {
+      SetModelMainTexture(TEX_BRIGHT_BLOOD_STAIN1 + rand() % 4);
+
+    } else {
+      SetModelMainTexture(TEXTURE_BLOOD_STAIN1 + rand() % 4);
+    }
+
+    SetCustomColor(blood.GetColor(rand(), 0xFF, 0xFF));
+
     SetNormalAndDirection();
     m_fWaitTime = 12.0f + FRnd()*3.0f;
     m_fFadeTime = 3.0f;
@@ -1047,6 +1129,23 @@ functions:
       if( iBloodType==2) { SetModelColor( RGBAToColor( 250,20,20,255)); }
       else               { SetModelColor( RGBAToColor( 0,250,0,255)); }
     }
+
+    // [Cecil] Replace with custom colors and textures
+    const BloodTheme blood = GetBloodTheme();
+
+    if (blood.eType == BloodTheme::E_HIPPIE) {
+      SetModelMainTexture(TEXTURE_BLOOD_FLOWER1 + rand() % 3);
+
+    // New textures for complex types
+    } else if (blood.eType != BloodTheme::E_COLOR) {
+      SetModelMainTexture(TEX_BRIGHT_BLOOD_STAIN4);
+
+    } else {
+      SetModelMainTexture(TEXTURE_BLOOD_STAIN4);
+    }
+
+    SetCustomColor(blood.GetColor(rand(), 0xFF, 0xFF));
+
     SetNormalAndDirection();
     m_bLightSource = FALSE;
     m_fDepthSortOffset = -0.1f;
@@ -1087,6 +1186,24 @@ functions:
       default: { SetModelMainTexture(TEXTURE_BLOOD_STAIN4);   break; }
       }
     }
+
+    // [Cecil] Replace with custom colors and textures
+    const BloodTheme blood = GetBloodTheme();
+
+    if (blood.eType == BloodTheme::E_HIPPIE) {
+      SetModelMainTexture(TEXTURE_BLOOD_FLOWER1 + rand() % 3);
+      SetCustomColor(0xFFFFFFFF);
+
+    // New textures for complex types
+    } else if (blood.eType != BloodTheme::E_COLOR) {
+      SetModelMainTexture(TEX_BRIGHT_BLOOD_STAIN1 + rand() % 4);
+      SetCustomColor(blood.GetColor(rand(), 0xFF, 0xFF));
+
+    } else {
+      SetModelMainTexture(TEXTURE_BLOOD_STAIN1 + rand() % 4);
+      SetCustomColor(0x00FA00FF); // Green
+    }
+
     SetNormalAndDirection();
     m_fWaitTime = 15.0f + FRnd()*2.0f;
     m_fFadeTime = 2.0f;
@@ -1128,6 +1245,29 @@ functions:
       }
       else               { SetModelColor( RGBAToColor( 0,250,0,255)); }
     }
+
+    // [Cecil] Replace with custom colors and textures
+    const BloodTheme blood = GetBloodTheme();
+    COLOR colCustom = blood.GetColor(rand(), 0xFF, 0xFF);
+
+    if (blood.eType == BloodTheme::E_HIPPIE) {
+      SetModelMainTexture(TEXTURE_BLOOD_FLOWER1 + rand() % 3);
+
+    // New textures for complex types
+    } else if (blood.eType != BloodTheme::E_COLOR) {
+      SetModelMainTexture(TEX_BRIGHT_BLOOD_SPILL1 + rand() % 3);
+
+    } else {
+      SetModelMainTexture(TEXTURE_BLOOD_SPILL1 + rand() % 3);
+
+      // Only override red color
+      if (colBloodSpillColor != BLOOD_SPILL_RED) {
+        colCustom = colBloodSpillColor;
+      }
+    }
+
+    SetCustomColor(colCustom);
+
     SetNormalAndDirection();
     m_fWaitTime = 15.0f + FRnd()*2.0f;
     m_fFadeTime = 2.0f;
@@ -1226,7 +1366,14 @@ procedures:
     // fading
     if (m_fFadeTime>0.0f) {
       m_fFadeStartTime  = _pTimer->CurrentTick();
-      m_fFadeStartAlpha = ((GetModelColor()&CT_AMASK)>>CT_ASHIFT) / 255.0f;
+
+      // [Cecil] Use old alpha
+      if (m_bUseCustomColor) {
+        m_fFadeStartAlpha = ((m_colOldColor & CT_AMASK) >> CT_ASHIFT) / 255.0f;
+      } else {
+        m_fFadeStartAlpha = ((GetModelColor() & CT_AMASK) >> CT_ASHIFT) / 255.0f;
+      }
+
       m_bFade = TRUE;
       autowait(m_fFadeTime);
       m_bFade = FALSE;

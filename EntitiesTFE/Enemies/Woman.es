@@ -64,9 +64,9 @@ functions:
   {
     CTString str;
     if (eDeath.eLastDamage.dmtType==DMT_CLOSERANGE) {
-      str.PrintF(TRANS("%s was beaten by a Scythian Harpy"), strPlayerName);
+      str.PrintF(LOCALIZE("%s was beaten by a Scythian Harpy"), strPlayerName);
     } else {
-      str.PrintF(TRANS("A Scythian Harpy got %s spellbound"), strPlayerName);
+      str.PrintF(LOCALIZE("A Scythian Harpy got %s spellbound"), strPlayerName);
     }
     return str;
   }

@@ -18,6 +18,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //#include "Weapons/Flame.h"
 #include "Effects/Debris.h"
 #include <Game/PlayerSettings.h>
+
+// [Cecil] Common logic
+#include <CommonEntities/Common.inl>
+
 #include "Models/Player/SeriousSam/Player.h"
 #include "Models/Player/SeriousSam/Body.h"
 #include "Models/Player/SeriousSam/Head.h"
@@ -244,7 +248,7 @@ CEntityPointer SpawnReminder(CEntity *penOwner, FLOAT fWaitTime, INDEX iValue) {
     penReminder = penOwner->GetWorld()->CreateEntity_t
       (penOwner->GetPlacement(), CTFILENAME("Classes\\Reminder.ecl"));
   } catch (char *strError) {
-    FatalError(TRANS("Cannot create reminder entity class: %s"), strError);
+    FatalError(LOCALIZE("Cannot create reminder entity class: %s"), strError);
   }
   EReminderInit eri;
   eri.penOwner = penOwner;
@@ -285,7 +289,7 @@ CEntityPointer SpawnFlame(CEntity *penOwner, CEntity *penAttach, const FLOAT3D &
     CPlacement3D plFlame(vPos, ANGLE3D(0, 0, 0));
     penFlame = penAttach->GetWorld()->CreateEntity_t(plFlame, CTFILENAME("Classes\\Flame.ecl"));
   } catch (char *strError) {
-    FatalError(TRANS("Cannot create flame entity class: %s"), strError);
+    FatalError(LOCALIZE("Cannot create flame entity class: %s"), strError);
   }
   penFlame->Initialize(ef);
 
@@ -563,7 +567,7 @@ CTString GetNonEmptyLine_t(CTStream &strm)
 {
   FOREVER {
    if(strm.AtEOF()) {
-     ThrowF_t(TRANS("Unexpected end of file"));
+     ThrowF_t(LOCALIZE("Unexpected end of file"));
    }
    CTString str;
    _ctLines++;
@@ -583,7 +587,7 @@ void FixupFileName_t(CTString &strFnm)
 {
   strFnm.TrimSpacesLeft();
   if (!strFnm.RemovePrefix(CTString("TF") +"NM ")) {  // must not directly have ids in code
-    ThrowF_t(TRANS("Expected %s%s before filename"), "TF", "NM");
+    ThrowF_t(LOCALIZE("Expected %s%s before filename"), "TF", "NM");
   }
 }
 
@@ -594,7 +598,7 @@ void SkipBlock_t(CTStream &strm)
   // expect to begin with an open bracket
   strLine = GetNonEmptyLine_t(strm);
   if (strLine!="{") {
-    ThrowF_t(TRANS("Expected '{'"));
+    ThrowF_t(LOCALIZE("Expected '{'"));
   }
   // start at level one
   INDEX ctLevel = 1;
@@ -617,7 +621,7 @@ void ParseAMC_t(CModelObject *pmo, CTStream &strm, BOOL bPreview)
   // expect to begin with an open bracket
   strLine = GetNonEmptyLine_t(strm);
   if (strLine!="{") {
-    ThrowF_t(TRANS("Expected '{'"));
+    ThrowF_t(LOCALIZE("Expected '{'"));
   }
 
   // repeat
@@ -672,11 +676,11 @@ void ParseAMC_t(CModelObject *pmo, CTStream &strm, BOOL bPreview)
       INDEX iAnim = -1;
       strLine.ScanF("%d", &iAnim);
       if (iAnim<0) {
-        ThrowF_t(TRANS("Invalid animation number"));
+        ThrowF_t(LOCALIZE("Invalid animation number"));
       }
       // check it
       if (iAnim>=pmo->GetAnimsCt()) {
-        ThrowF_t(TRANS("Animation %d does not exist in that model"), iAnim);
+        ThrowF_t(LOCALIZE("Animation %d does not exist in that model"), iAnim);
       };
       // set it
       pmo->PlayAnim(iAnim, AOF_LOOPING);
@@ -711,19 +715,19 @@ void ParseAMC_t(CModelObject *pmo, CTStream &strm, BOOL bPreview)
       INDEX iAtt = -1;
       strLine.ScanF("%d", &iAtt);
       if (iAtt<0) {
-        ThrowF_t(TRANS("Invalid attachment number"));
+        ThrowF_t(LOCALIZE("Invalid attachment number"));
       }
       // create attachment
       CModelData *pmd = (CModelData*)pmo->GetData();
       if (iAtt>=pmd->md_aampAttachedPosition.Count()) {
-        ThrowF_t(TRANS("Attachment %d does not exist in that model"), iAtt);
+        ThrowF_t(LOCALIZE("Attachment %d does not exist in that model"), iAtt);
       };
       CAttachmentModelObject *pamo = pmo->AddAttachmentModel(iAtt);
       
       // recursively parse it
       ParseAMC_t(&pamo->amo_moModelObject, strm, bPreview);
     } else {
-      ThrowF_t(TRANS("Expected texture or attachment"));
+      ThrowF_t(LOCALIZE("Expected texture or attachment"));
     }
   }
 }
@@ -743,7 +747,7 @@ BOOL SetPlayerAppearance_internal(CModelObject *pmo, const CTFileName &fnmAMC, C
     // read the name
     CTString strLine = GetNonEmptyLine_t(strm);
     if (!strLine.RemovePrefix("Name: ")) {
-      ThrowF_t(TRANS("Expected name"));
+      ThrowF_t(LOCALIZE("Expected name"));
     }
     strName = strLine;
     strName.TrimSpacesLeft();
@@ -755,7 +759,7 @@ BOOL SetPlayerAppearance_internal(CModelObject *pmo, const CTFileName &fnmAMC, C
   // if anything failed
   } catch (char *strError) {
     // report error
-    CPrintF(TRANS("Cannot load player model:\n%s (%d) : %s\n"), 
+    CPrintF(LOCALIZE("Cannot load player model:\n%s (%d) : %s\n"), 
       (const char*)_strFile, _ctLines, strError);
     return FALSE;
   }
@@ -778,7 +782,7 @@ BOOL SetPlayerAppearance(CModelObject *pmo, CPlayerCharacter *ppc, CTString &str
     // set default appearance
     BOOL bSucceeded = SetPlayerAppearance_internal(pmo, fnmDefault, strName, bPreview);
     if (!bSucceeded) {
-      FatalError(TRANS("Cannot load default player model!"));
+      FatalError(LOCALIZE("Cannot load default player model!"));
     }
     return FALSE;
   }
@@ -1062,7 +1066,7 @@ CEntity *FixupCausedToPlayer(CEntity *penThis, CEntity *penCaused, BOOL bWarning
   }
 
   if (bWarning && (ent_bReportBrokenChains || GetSP()->sp_bQuickTest)) {
-    CPrintF(TRANS("WARNING: Triggering chain broken, entity: %s-%s(%s)\n"), 
+    CPrintF(LOCALIZE("WARNING: Triggering chain broken, entity: %s-%s(%s)\n"), 
       (const char*)penThis->GetName(),
       (const char*)penThis->GetDescription(),
       (const char*)penThis->GetClass()->GetName());

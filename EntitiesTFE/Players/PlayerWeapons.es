@@ -425,6 +425,10 @@ void CPlayerWeapons_Init(void) {
   _pShell->DeclareSymbol("persistent user FLOAT plr_tmSnoopingTime;",  &plr_tmSnoopingTime);
   _pShell->DeclareSymbol("persistent user FLOAT plr_tmSnoopingDelay;", &plr_tmSnoopingDelay);
 
+  // [Cecil] Weapon viewmodel customization
+  extern void DeclareWeaponCustomizationSymbols(void);
+  DeclareWeaponCustomizationSymbols();
+
   // precache base weapons
   CPlayerWeapons_Precache(0x03);
 }
@@ -568,6 +572,9 @@ properties:
   CEntity *penBullet;
   CPlacement3D plBullet;
   FLOAT3D vBulletDestination;
+
+  // [Cecil] Weapon mirroring
+  BOOL m_bLastWeaponMirrored;
 }
 
 components:
@@ -741,6 +748,32 @@ components:
 
 
 functions:
+  // [Cecil] Constructor
+  void CPlayerWeapons(void) {
+    // Weapon mirroring
+    m_bLastWeaponMirrored = FALSE;
+  };
+
+  // [Cecil] Copy constructor
+  void Copy(CEntity &enOther, ULONG ulFlags) {
+    CRationalEntity::Copy(enOther, ulFlags);
+    CPlayerWeapons *penOther = (CPlayerWeapons *)&enOther;
+
+    m_bLastWeaponMirrored = penOther->m_bLastWeaponMirrored;
+  };
+
+  // [Cecil] Reset last mirror state
+  void ResetMirrorState(void) {
+    m_bLastWeaponMirrored = MirrorState();
+  };
+
+  // [Cecil] Mirror the weapon
+  void ApplyMirroring(BOOL bMirror) {
+    if (bMirror) {
+      m_moWeapon.StretchModelRelative(FLOAT3D(-1, 1, 1));
+      m_moWeaponSecond.StretchModelRelative(FLOAT3D(-1, 1, 1));
+    }
+  };
    
  // add to prediction any entities that this entity depends on
   void AddDependentsToPrediction(void)
@@ -794,6 +827,17 @@ functions:
   {
     _mrpModelRenderPrefs.SetRenderType( RT_TEXTURE|RT_SHADING_PHONG);
 
+    // [Cecil] Non-predicted weapon
+    CPlayerWeapons *pen = (CPlayerWeapons *)GetPredictionTail();
+
+    // [Cecil] Mirror the weapon
+    const BOOL bMirrorState = MirrorState();
+
+    if (pen->m_bLastWeaponMirrored != bMirrorState) {
+      pen->ApplyMirroring(TRUE);
+      pen->m_bLastWeaponMirrored = bMirrorState;
+    }
+
     // flare attachment
     ControlFlareAttachment();
 
@@ -804,15 +848,21 @@ functions:
     INDEX iWeaponData = m_iCurrentWeapon;
 //    if( iWeaponData==WEAPON_NUKECANNON) { iWeaponData = WEAPON_IRONCANNON; }
 
+    // [Cecil] Customize weapon position
+    FLOAT3D vPos(wpn_fX[iWeaponData], wpn_fY[iWeaponData], wpn_fZ[iWeaponData]);
+    FLOAT3D vRot(wpn_fH[iWeaponData], wpn_fP[iWeaponData], wpn_fB[iWeaponData]);
+    FLOAT3D vDummy(0, 0, 0);
+    FLOAT fWeaponFOV = wpn_fFOV[iWeaponData];
+    RenderPos(vPos, vRot, vDummy, fWeaponFOV);
+
     // store FOV for Crosshair
     const FLOAT fFOV = ((CPerspectiveProjection3D &)prProjection).FOVL();
     CPlacement3D plView;
     plView = ((CPlayer&)*m_penPlayer).en_plViewpoint;
     plView.RelativeToAbsolute(m_penPlayer->GetPlacement());
 
-    CPlacement3D plWeapon( FLOAT3D(wpn_fX[iWeaponData], wpn_fY[iWeaponData], wpn_fZ[iWeaponData]),
-                           ANGLE3D(AngleDeg(wpn_fH[iWeaponData]), AngleDeg(wpn_fP[iWeaponData]),
-                                   AngleDeg(wpn_fB[iWeaponData])));
+    // [Cecil] Use default placement
+    CPlacement3D plWeapon(vPos, vRot);
 
     // make sure that weapon will be bright enough
     UBYTE ubLR,ubLG,ubLB, ubAR,ubAG,ubAB;
@@ -846,9 +896,8 @@ functions:
       prMirror.FrontClipDistanceL() = wpn_fClip[iWeaponData];
       prMirror.DepthBufferNearL() = 0.0f;
       prMirror.DepthBufferFarL() = 0.1f;
-      CPlacement3D plWeaponMirror( FLOAT3D(wpn_fX[iWeaponData], wpn_fY[iWeaponData], wpn_fZ[iWeaponData]),
-                                   ANGLE3D(AngleDeg(wpn_fH[iWeaponData]), AngleDeg(wpn_fP[iWeaponData]),
-                                           AngleDeg(wpn_fB[iWeaponData])));
+      // [Cecil] Use default placement
+      CPlacement3D plWeaponMirror(vPos, vRot);
       if( iWeaponData==WEAPON_DOUBLECOLT /*|| iWeaponData==WEAPON_PIPEBOMB*/) {
         FLOATmatrix3D mRotation;
         MakeRotationMatrixFast(mRotation, plView.pl_OrientationAngle);
@@ -1091,7 +1140,7 @@ functions:
           if( enSwitch.m_bUseable) {
             // show switch message
             if( enSwitch.m_strMessage!="") { m_strLastTarget = enSwitch.m_strMessage; }
-            else { m_strLastTarget = TRANS("Use"); }
+            else { m_strLastTarget = LOCALIZE("Use"); }
             m_tmLastTarget = tmNow+0.5f;
           }
         }
@@ -1104,7 +1153,7 @@ functions:
           CPlayer &pl = (CPlayer&)*m_penPlayer;
           if( !pl.HasMessage(fnmMessage)) {
             // show analyse message
-            m_strLastTarget = TRANS("Analyze");
+            m_strLastTarget = LOCALIZE("Analyze");
             m_tmLastTarget  = tmNow+0.5f;
           }
         }
@@ -1234,6 +1283,19 @@ functions:
       pdp->SetTextAspect( 1.0f);
       // do faded printout
       ULONG ulA = (FLOAT)ulAlpha * Clamp( 2*tmDelta, 0.0f, 1.0f);
+
+      // [Cecil] Pick color based on the Advanced HUD theme
+      static CSymbolPtr pHudTheme("ahud_iTheme");
+      COLOR colMessage = C_GREEN; // Default TFE
+
+      if (pHudTheme.Exists()) {
+        switch (pHudTheme.GetIndex()) {
+          case 1: colMessage = 0x5C7A9900; break; // Warped (SE_COL_BLUE_NEUTRAL)
+          case 2: colMessage = 0x5C7A9900; break; // TSE (SE_COL_BLUE_NEUTRAL)
+          case 3: colMessage = 0xAD896900; break; // SSR
+        }
+      }
+
       pdp->PutTextC( m_strLastTarget, slDPWidth*0.5f, slDPHeight*0.75f, C_lGREEN|ulA);
     }
 
@@ -1376,6 +1438,10 @@ functions:
 
   // Set weapon model for current weapon.
   void SetCurrentWeaponModel(void) {
+    // [Cecil] Restore stretch
+    m_moWeapon.StretchModel(FLOAT3D(1, 1, 1));
+    m_moWeaponSecond.StretchModel(FLOAT3D(1, 1, 1));
+
     // WARNING !!! ---> Order of attachment must be the same with order in RenderWeaponModel()
     switch (m_iCurrentWeapon) {
       case WEAPON_NONE:
@@ -1424,7 +1490,7 @@ functions:
         SetComponents(this, m_moWeaponSecond, MODEL_DS_HANDWITHAMMO, TEXTURE_HAND, 0, 0, 0);
         CModelObject &mo = m_moWeapon.GetAttachmentModel(DOUBLESHOTGUN_ATTACHMENT_BARRELS)->amo_moModelObject;
         AddAttachmentToModel(this, mo, DSHOTGUNBARRELS_ATTACHMENT_FLARE, MODEL_FLARE01, TEXTURE_FLARE01, 0, 0, 0);
-        m_moWeaponSecond.StretchModel(FLOAT3D(1,1,1));
+        m_moWeaponSecond.StretchModel(FLOAT3D(0, 0, 0)); // [Cecil] Hide the hand
         m_moWeapon.PlayAnim(DOUBLESHOTGUN_ANIM_WAIT1, 0);
         break; }
       case WEAPON_TOMMYGUN: {
@@ -1509,6 +1575,9 @@ functions:
 //        AddAttachmentToModel(this, m_moWeapon, CANNON_ATTACHMENT_LIGHT, MODEL_CN_LIGHT, TEXTURE_CANNON, TEX_REFL_LIGHTMETAL01, TEX_SPEC_MEDIUM, 0);
         break;
     }
+
+    // [Cecil] Mirror the weapon
+    ApplyMirroring(MirrorState());
   };
 
 
@@ -1518,6 +1587,10 @@ functions:
    */
   void RotateMinigun(void) {
     ANGLE aAngle = Lerp(m_aMiniGunLast, m_aMiniGun, _pTimer->GetLerpFactor());
+
+    // [Cecil] Mirrored rotation
+    aAngle *= (MirrorState() ? -1 : 1);
+
     // rotate minigun barrels
     CAttachmentModelObject *amo = m_moWeapon.GetAttachmentModel(MINIGUN_ATTACHMENT_BARRELS);
     amo->amo_plRelative.pl_OrientationAngle(3) = aAngle;
@@ -2256,31 +2329,31 @@ functions:
     CTFileName fnmMsg;
     switch (wit) {
       case WIT_COLT:            
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Shofield .45 w/ TMAR"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Shofield .45 w/ TMAR"), 0);
         fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\colt.txt"); 
         break;
       case WIT_SINGLESHOTGUN:   
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("12 Gauge Pump Action Shotgun"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("12 Gauge Pump Action Shotgun"), 0);
         fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\singleshotgun.txt"); 
         break;
       case WIT_DOUBLESHOTGUN:   
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Double Barrel Coach Gun"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Double Barrel Coach Gun"), 0);
         fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\doubleshotgun.txt"); 
         break;
       case WIT_TOMMYGUN:        
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("M1-A2 Tommygun"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("M1-A2 Tommygun"), 0);
         fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\tommygun.txt"); 
         break;
       case WIT_MINIGUN:         
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("XM214-A Minigun"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("XM214-A Minigun"), 0);
         fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\minigun.txt"); 
         break;
       case WIT_ROCKETLAUNCHER:  
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("XPML21 Rocket Launcher"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("XPML21 Rocket Launcher"), 0);
         fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\rocketlauncher.txt"); 
         break;
       case WIT_GRENADELAUNCHER: 
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("MKIII Grenade Launcher"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("MKIII Grenade Launcher"), 0);
         fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\grenadelauncher.txt"); 
         break;
 //      case WIT_PIPEBOMB:        
@@ -2290,14 +2363,14 @@ functions:
 //        fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\flamer.txt"); 
 //        break;
       case WIT_LASER:           
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("XL2 Lasergun"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("XL2 Lasergun"), 0);
         fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\laser.txt"); 
         break;
 //      case WIT_GHOSTBUSTER:     
 //        fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\ghostbuster.txt"); 
 //        break;
       case WIT_CANNON:          
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("SBC Cannon"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("SBC Cannon"), 0);
         fnmMsg = CTFILENAME("Data\\Messages\\Weapons\\cannon.txt"); 
         break;
       default:
@@ -2358,61 +2431,61 @@ functions:
       case AIT_SHELLS:
         if (m_iShells>=m_iMaxShells) { m_iShells = m_iMaxShells; return FALSE; }
         m_iShells += Eai.iQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Shells"), Eai.iQuantity);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Shells"), Eai.iQuantity);
         AddManaToPlayer(Eai.iQuantity*AV_SHELLS*MANA_AMMO);
         break;
       // bullets
       case AIT_BULLETS:
         if (m_iBullets>=m_iMaxBullets) { m_iBullets = m_iMaxBullets; return FALSE; }
         m_iBullets += Eai.iQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Bullets"), Eai.iQuantity);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Bullets"), Eai.iQuantity);
         AddManaToPlayer(Eai.iQuantity*AV_BULLETS *MANA_AMMO);
         break;
       // rockets
       case AIT_ROCKETS:
         if (m_iRockets>=m_iMaxRockets) { m_iRockets = m_iMaxRockets; return FALSE; }
         m_iRockets += Eai.iQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Rockets"), Eai.iQuantity);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Rockets"), Eai.iQuantity);
         AddManaToPlayer(Eai.iQuantity*AV_ROCKETS *MANA_AMMO);
         break;
       // grenades
       case AIT_GRENADES:
         if (m_iGrenades>=m_iMaxGrenades) { m_iGrenades = m_iMaxGrenades; return FALSE; }
         m_iGrenades += Eai.iQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Grenades"), Eai.iQuantity);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Grenades"), Eai.iQuantity);
         AddManaToPlayer(Eai.iQuantity*AV_GRENADES *MANA_AMMO);
         break;
       // electicity
       case AIT_ELECTRICITY:
         if (m_iElectricity>=m_iMaxElectricity) { m_iElectricity = m_iMaxElectricity; return FALSE; }
         m_iElectricity += Eai.iQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Cells"), Eai.iQuantity);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Cells"), Eai.iQuantity);
         AddManaToPlayer(Eai.iQuantity*AV_ELECTRICITY *MANA_AMMO);
         break;
 /*      // cannon balls
       case AIT_NUKEBALL:
         if (m_iNukeBalls>=m_iMaxNukeBalls) { m_iNukeBalls = m_iMaxNukeBalls; return FALSE; }
         m_iNukeBalls+= Eai.iQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Nuke ball"), Eai.iQuantity);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Nuke ball"), Eai.iQuantity);
         AddManaToPlayer(Eai.iQuantity*AV_NUKEBALLS *MANA_AMMO);
         break;*/
       case AIT_IRONBALLS:
         if (m_iIronBalls>=m_iMaxIronBalls) { m_iIronBalls = m_iMaxIronBalls; return FALSE; }
         m_iIronBalls+= Eai.iQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Cannonballs"), Eai.iQuantity);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Cannonballs"), Eai.iQuantity);
         AddManaToPlayer(Eai.iQuantity*AV_IRONBALLS *MANA_AMMO);
         break;
 /*      case AIT_NAPALM:
         if (m_iNapalm>=m_iMaxNapalm) { m_iNapalm = m_iMaxNapalm; return FALSE; }
         m_iNapalm+= Eai.iQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Napalm"), Eai.iQuantity);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Napalm"), Eai.iQuantity);
         AddManaToPlayer(Eai.iQuantity*AV_NAPALM*MANA_AMMO);
         break;*/
       case AIT_BACKPACK:
         m_iShells  += 20*GetSP()->sp_fAmmoQuantity;
         m_iBullets += 200*GetSP()->sp_fAmmoQuantity;
         m_iRockets += 5*GetSP()->sp_fAmmoQuantity;
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("Ammo pack"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("Ammo pack"), 0);
         AddManaToPlayer(100000000.0f *MANA_AMMO); // adjust mana value!!!!
         break;
       case AIT_SERIOUSPACK:
@@ -2424,7 +2497,7 @@ functions:
         m_iIronBalls += MAX_IRONBALLS*GetSP()->sp_fAmmoQuantity;
 //      m_iNukeBalls += MAX_NUKEBALLS*GetSP()->sp_fAmmoQuantity;
         
-        ((CPlayer&)*m_penPlayer).ItemPicked(TRANS("All Ammo"), 0);
+        ((CPlayer&)*m_penPlayer).ItemPicked(LOCALIZE("All Ammo"), 0);
         AddManaToPlayer(100000000.0f *MANA_AMMO); // adjust mana value!!!!
         break;
       // error
@@ -2472,14 +2545,14 @@ functions:
 
       // preapare message string
       CTString strMessage;
-      if( eapi.iShells != 0)        { strMessage.PrintF("%s %d %s,", strMessage, eapi.iShells, TRANS("Shells")); }
-      if( eapi.iBullets != 0)       { strMessage.PrintF("%s %d %s,", strMessage, eapi.iBullets, TRANS("Bullets")); }
-      if( eapi.iRockets != 0)       { strMessage.PrintF("%s %d %s,", strMessage, eapi.iRockets, TRANS("Rockets")); }
-      if( eapi.iGrenades != 0)      { strMessage.PrintF("%s %d %s,", strMessage, eapi.iGrenades, TRANS("Grenades")); }
-//      if( eapi.iNapalm != 0)        { strMessage.PrintF("%s %d %s,", strMessage, eapi.iNapalm, TRANS("Napalm")); }
-      if( eapi.iElectricity != 0)   { strMessage.PrintF("%s %d %s,", strMessage, eapi.iElectricity, TRANS("Cells")); }
-      if( eapi.iIronBalls != 0)     { strMessage.PrintF("%s %d %s,", strMessage, eapi.iIronBalls, TRANS("Cannonballs")); }
-//      if( eapi.iNukeBalls != 0) { strMessage.PrintF("%s %d %s,", strMessage, eapi.iNukeBalls, TRANS("Nuke balls")); }
+      if( eapi.iShells != 0)        { strMessage.PrintF("%s %d %s,", strMessage, eapi.iShells, LOCALIZE("Shells")); }
+      if( eapi.iBullets != 0)       { strMessage.PrintF("%s %d %s,", strMessage, eapi.iBullets, LOCALIZE("Bullets")); }
+      if( eapi.iRockets != 0)       { strMessage.PrintF("%s %d %s,", strMessage, eapi.iRockets, LOCALIZE("Rockets")); }
+      if( eapi.iGrenades != 0)      { strMessage.PrintF("%s %d %s,", strMessage, eapi.iGrenades, LOCALIZE("Grenades")); }
+//      if( eapi.iNapalm != 0)        { strMessage.PrintF("%s %d %s,", strMessage, eapi.iNapalm, LOCALIZE("Napalm")); }
+      if( eapi.iElectricity != 0)   { strMessage.PrintF("%s %d %s,", strMessage, eapi.iElectricity, LOCALIZE("Cells")); }
+      if( eapi.iIronBalls != 0)     { strMessage.PrintF("%s %d %s,", strMessage, eapi.iIronBalls, LOCALIZE("Cannonballs")); }
+//      if( eapi.iNukeBalls != 0) { strMessage.PrintF("%s %d %s,", strMessage, eapi.iNukeBalls, LOCALIZE("Nuke balls")); }
 
       INDEX iLen = strlen(strMessage);
       if( iLen>0 && strMessage[iLen-1]==',')
@@ -3800,6 +3873,10 @@ procedures:
       DecAmmo(m_iShells, 2);
       SetFlare(0, FLARE_ADD);
       PlayLightAnim(LIGHT_ANIM_COLT_SHOTGUN, 0);
+
+      // [Cecil] Show the hand
+      m_moWeaponSecond.StretchModel(FLOAT3D((MirrorState() ? -1 : 1), 1, 1));
+
       m_moWeapon.PlayAnim(GetSP()->sp_bCooperative ? DOUBLESHOTGUN_ANIM_FIRE : DOUBLESHOTGUN_ANIM_FIREFAST, 0);
       m_moWeaponSecond.PlayAnim(GetSP()->sp_bCooperative ? HANDWITHAMMO_ANIM_FIRE : HANDWITHAMMO_ANIM_FIREFAST, 0);
       // sound
@@ -3867,6 +3944,10 @@ procedures:
       autowait( m_moWeapon.GetAnimLength(
         (GetSP()->sp_bCooperative ? DOUBLESHOTGUN_ANIM_FIRE : DOUBLESHOTGUN_ANIM_FIREFAST)) -
         (GetSP()->sp_bCooperative ? 0.25f : 0.15f) );
+
+      // [Cecil] Hide the hand
+      m_moWeaponSecond.StretchModel(FLOAT3D(0, 0, 0));
+
       // no ammo -> change weapon
       if (m_iShells<=1) { SelectNewWeapon(); }
     } else {
@@ -4227,7 +4308,7 @@ procedures:
       autowait(m_moWeapon.GetAnimLength(ROCKETLAUNCHER_ANIM_FIRE)-0.05f);
 
       CModelObject *pmo = &(m_moWeapon.GetAttachmentModel(ROCKETLAUNCHER_ATTACHMENT_ROCKET1)->amo_moModelObject);
-      pmo->StretchModel(FLOAT3D(1, 1, 1));
+      pmo->StretchModel(FLOAT3D((MirrorState() ? -1 : 1), 1, 1)); // [Cecil] Mirrored rocket
 
       // no ammo -> change weapon
       if (m_iRockets<=0) { SelectNewWeapon(); }
@@ -4819,6 +4900,9 @@ procedures:
     SetFlags(GetFlags()|ENF_CROSSESLEVELS|ENF_NOTIFYLEVELCHANGE);
     SetPhysicsFlags(EPF_MODEL_IMMATERIAL);
     SetCollisionFlags(ECF_IMMATERIAL);
+
+    // [Cecil] Remember last mirrored state
+    ResetMirrorState();
 
     // set weapon model for current weapon
     SetCurrentWeaponModel();
