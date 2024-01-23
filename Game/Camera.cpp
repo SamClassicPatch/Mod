@@ -48,7 +48,7 @@ static INDEX cam_bZoomOut          = FALSE;
 static INDEX cam_bZoomDefault      = FALSE;
 static INDEX cam_bResetToPlayer    = FALSE;
 static INDEX cam_bSnapshot         = FALSE;
-static INDEX cam_fSpeed            = 1.0f;
+static FLOAT cam_fSpeed            = 1.0f;
 
 // camera functions
 void CAM_Init(void)
@@ -67,7 +67,7 @@ void CAM_Init(void)
   _pShell->DeclareSymbol("user INDEX cam_bZoomDefault;",      &cam_bZoomDefault);
   _pShell->DeclareSymbol("user INDEX cam_bSnapshot;",         &cam_bSnapshot);
   _pShell->DeclareSymbol("user INDEX cam_bResetToPlayer;",    &cam_bResetToPlayer);
-  _pShell->DeclareSymbol("user INDEX cam_fSpeed;",            &cam_fSpeed);
+  _pShell->DeclareSymbol("user FLOAT cam_fSpeed;",            &cam_fSpeed);
 }
 
 BOOL CAM_IsOn(void)
@@ -77,6 +77,12 @@ BOOL CAM_IsOn(void)
 
 void ReadPos(CCameraPos &cp)
 {
+  // [Cecil] Finish reading positions
+  if (_strScript.AtEOF()) {
+    CAM_Stop();
+    return;
+  }
+
   try {
     CTString strLine;
     _strScript.GetLine_t(strLine);
@@ -117,7 +123,9 @@ void SetSpeed(FLOAT fSpeed)
 void CAM_Start(const CTFileName &fnmDemo)
 {
   _bCameraOn = FALSE;
-  CTFileName fnmScript = fnmDemo.NoExt()+".ini";
+  // [Cecil] Simple text file with a suffix
+  CTFileName fnmScript = fnmDemo.NoExt() + "_CAM.txt";
+
   if( cam_bRecord) {
     try {
       _strScript.Create_t(fnmScript);
@@ -157,28 +165,28 @@ void CAM_Render(CEntity *pen, CDrawPort *pdp)
       SetSpeed(1.0f);
       _fStartTime = _pTimer->CurrentTick();
     }
+
+    // [Cecil] Refactored camera movement
     FLOATmatrix3D m;
     MakeRotationMatrixFast(m, _cp.cp_aRot);
-    FLOAT3D vX, vY, vZ;
-    vX(1) = m(1,1); vX(2) = m(2,1); vX(3) = m(3,1);
-    vY(1) = m(1,2); vY(2) = m(2,2); vY(3) = m(3,2);
-    vZ(1) = m(1,3); vZ(2) = m(2,3); vZ(3) = m(3,3);
 
-    _cp.cp_aRot(1)-=_pInput->GetAxisValue(MOUSE_X_AXIS)*0.5f;
-    _cp.cp_aRot(2)-=_pInput->GetAxisValue(MOUSE_Y_AXIS)*0.5f;
-    
-    if( cam_bMoveForward)      { _cp.cp_vPos -= vZ *cam_fSpeed; };
-    if( cam_bMoveBackward)     { _cp.cp_vPos += vZ *cam_fSpeed; };
-    if( cam_bMoveLeft)         { _cp.cp_vPos -= vX *cam_fSpeed; };
-    if( cam_bMoveRight)        { _cp.cp_vPos += vX *cam_fSpeed; };
-    if( cam_bMoveUp)           { _cp.cp_vPos += vY *cam_fSpeed; };
-    if( cam_bMoveDown)         { _cp.cp_vPos -= vY *cam_fSpeed; };
-    if( cam_bTurnBankingLeft)  { _cp.cp_aRot(3) += 10.0f; };
-    if( cam_bTurnBankingRight) { _cp.cp_aRot(3) -= 10.0f; };
-    if( cam_bZoomIn)           { _cp.cp_aFOV -= 1.0f; };
-    if( cam_bZoomOut)          { _cp.cp_aFOV += 1.0f; };
-    if( cam_bZoomDefault)      { _cp.cp_aFOV  = 90.0f; };
-    Clamp( _cp.cp_aFOV, 10.0f, 150.0f);
+    FLOAT3D vMoveDir(
+      cam_bMoveRight    - cam_bMoveLeft,
+      cam_bMoveUp       - cam_bMoveDown,
+      cam_bMoveBackward - cam_bMoveForward
+    );
+
+    _cp.cp_vPos += vMoveDir * cam_fSpeed * m;
+
+    _cp.cp_aRot(1) -= _pInput->GetAxisValue(MOUSE_X_AXIS) * 0.5f;
+    _cp.cp_aRot(2) += _pInput->GetAxisValue(MOUSE_Y_AXIS) * 0.5f;
+    _cp.cp_aRot(3) += Sgn(cam_bTurnBankingLeft - cam_bTurnBankingRight) * 10.0f;
+
+    if (cam_bZoomDefault) {
+      _cp.cp_aFOV = 90.0f;
+    } else {
+      _cp.cp_aFOV = Clamp(_cp.cp_aFOV + FLOAT(cam_bZoomOut - cam_bZoomIn), 10.0f, 150.0f);
+    }
 
     if( cam_bResetToPlayer) {
       _cp.cp_vPos = pen->GetPlacement().pl_PositionVector;

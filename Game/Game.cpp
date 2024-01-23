@@ -1293,16 +1293,8 @@ BOOL CGame::NewGame(const CTString &strSessionName, const CTFileName &fnWorld,
 
   // start the new session
   try {
-    if( dem_bPlay) {
-      gm_aiStartLocalPlayers[0] = -2;
-
-      CTFileName fnmDemo = CTString("Temp\\Play.dem");
-      if( dem_bPlayByName) {
-        fnmDemo = fnWorld;
-      }
-      CAM_Start(fnmDemo);
-      _pNetwork->StartDemoPlay_t(fnmDemo);
-    } else {
+    // [Cecil] Moved CAM functionality to CGame::StartDemoPlay()
+    {
       BOOL bWaitAllPlayers = sp.sp_bWaitAllPlayers && _pNetwork->IsNetworkEnabled();
       _pNetwork->StartPeerToPeer_t( strSessionName, fnWorld, 
       #if SE1_GAME != SS_REV
@@ -1452,6 +1444,7 @@ BOOL CGame::StartDemoPlay(const CTFileName &fnDemo)
 
   // start the new session
   try {
+    CAM_Start(fnDemo); // [Cecil] Start CAM here
     _pNetwork->StartDemoPlay_t( fnDemo);
     CPrintF(LOCALIZE("Started playing demo: %s\n"), fnDemo);
   } catch (char *strError) {
