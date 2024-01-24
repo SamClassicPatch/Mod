@@ -1179,7 +1179,7 @@ void CGame::InitInternal( void)
   extern INDEX con_iBigFont;
   _pShell->DeclareSymbol("persistent user INDEX con_iBigFont;", &con_iBigFont);
 
-  CAM_Init();
+  ICamera::Init();
 
   // load persistent symbols
   if (!_bDedicatedServer) {
@@ -1444,7 +1444,7 @@ BOOL CGame::StartDemoPlay(const CTFileName &fnDemo)
 
   // start the new session
   try {
-    CAM_Start(fnDemo); // [Cecil] Start CAM here
+    ICamera::Start(fnDemo); // [Cecil] Start CAM here
     _pNetwork->StartDemoPlay_t( fnDemo);
     CPrintF(LOCALIZE("Started playing demo: %s\n"), fnDemo);
   } catch (char *strError) {
@@ -1548,7 +1548,7 @@ void CGame::StopGame(void)
     return;
   }
   // stop eventual camera
-  CAM_Stop();
+  ICamera::Stop();
   // disable direct input
 //  _pInput->DisableInput();
   // and game
@@ -2414,7 +2414,7 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
         penViewer = penViewer->GetPredictor();
       }
 
-      if (!CAM_IsOn()) {
+      if (!ICamera::IsOn()) {
         _bPlayerViewRendered = TRUE;
 
         // Render it
@@ -2425,7 +2425,7 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
       #endif
 
       } else {
-        CAM_Render(penViewer, pdp);
+        ICamera::Render(penViewer, pdp);
       }
 
       pdp->Unlock();
@@ -2948,9 +2948,9 @@ void CGame::MenuPostRenderMenu(const char *strMenuName)
 // [Cecil] Rev: Dummy method definitions for compatibility
 #if SE1_GAME == SS_REV
 
-BOOL CGame::IsObservingOn(void) { return CAM_IsOn(); };
-void CGame::StartObserving(void) { CAM_Start(CTString("")); };
-void CGame::StopObserving(void) { CAM_Stop(); };
+BOOL CGame::IsObservingOn(void) { return ICamera::IsOn(); };
+void CGame::StartObserving(void) { ICamera::Start(CTString("")); };
+void CGame::StopObserving(void) { ICamera::Stop(); };
 
 void CGame::SetSurvivalSession(CSessionProperties &sp, INDEX ctMaxPlayers) {};
 void CGame::SetSurvivalProperties(CSessionProperties &sp) {};

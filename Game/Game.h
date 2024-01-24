@@ -243,9 +243,9 @@ public:
 
 #if SE1_GAME == SS_REV
   // [Cecil] Rev: Fly-over observing in games & demos using enhanced CAM_*() methods
-  virtual BOOL IsObservingOn(void); // Calls CAM_IsOn()
-  virtual void StartObserving(void); // Calls CAM_Start()
-  virtual void StopObserving(void); // Calls CAM_Stop()
+  virtual BOOL IsObservingOn(void);
+  virtual void StartObserving(void);
+  virtual void StopObserving(void);
 #endif
 
   virtual void LoadPlayersAndControls(void);
