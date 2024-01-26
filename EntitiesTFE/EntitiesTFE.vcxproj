@@ -298,6 +298,8 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\CommonEntities\Common\EmanatingParticles.cpp" />
+    <ClCompile Include="..\CommonEntities\Common\Particles.cpp" />
     <ClCompile Include="AI\NavigationMarker.cpp" />
     <ClCompile Include="AI\Reminder.cpp" />
     <ClCompile Include="AI\Watcher.cpp" />
@@ -312,7 +314,6 @@
     <ClCompile Include="Brushes\WorldBase.cpp" />
     <ClCompile Include="Common\Common.cpp" />
     <ClCompile Include="Common\HUD.cpp" />
-    <ClCompile Include="Common\Particles.cpp" />
     <ClCompile Include="Common\PathFinding.cpp" />
     <ClCompile Include="Effects\BasicEffects.cpp" />
     <ClCompile Include="Effects\BlendController.cpp" />
@@ -525,11 +526,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\CommonEntities\Common\EmanatingParticles.h" />
+    <ClInclude Include="..\CommonEntities\Common\Particles.h" />
     <ClInclude Include="Common\Common.h" />
-    <ClInclude Include="Common\EmanatingParticles.h" />
     <ClInclude Include="Common\Flags.h" />
     <ClInclude Include="Common\GameInterface.h" />
-    <ClInclude Include="Common\Particles.h" />
     <ClInclude Include="Common\PathFinding.h" />
     <ClInclude Include="Common\WeaponPositions.h" />
     <ClInclude Include="EntitiesAPI.h" />

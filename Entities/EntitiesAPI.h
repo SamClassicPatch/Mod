@@ -34,6 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Global.h"
 #include "Common/Flags.h"
 #include "Common/Common.h"
-#include "Common/Particles.h"
-#include "Common/EmanatingParticles.h"
+#include <CommonEntities/Common/Particles.h>
+#include <CommonEntities/Common/EmanatingParticles.h>
 #include "Common/GameInterface.h"

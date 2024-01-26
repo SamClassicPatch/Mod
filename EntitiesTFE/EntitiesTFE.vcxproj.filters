@@ -66,9 +66,6 @@
     <ClCompile Include="Common\HUD.cpp">
       <Filter>Source Files\Common sources</Filter>
     </ClCompile>
-    <ClCompile Include="Common\Particles.cpp">
-      <Filter>Source Files\Common sources</Filter>
-    </ClCompile>
     <ClCompile Include="Common\PathFinding.cpp">
       <Filter>Source Files\Common sources</Filter>
     </ClCompile>
@@ -429,6 +426,12 @@
     <ClCompile Include="LibMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\CommonEntities\Common\Particles.cpp">
+      <Filter>Source Files\Common sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommonEntities\Common\EmanatingParticles.cpp">
+      <Filter>Source Files\Common sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h">
@@ -440,16 +443,10 @@
     <ClInclude Include="Common\GameInterface.h">
       <Filter>Header Files\Common headers</Filter>
     </ClInclude>
-    <ClInclude Include="Common\Particles.h">
-      <Filter>Header Files\Common headers</Filter>
-    </ClInclude>
     <ClInclude Include="Common\PathFinding.h">
       <Filter>Header Files\Common headers</Filter>
     </ClInclude>
     <ClInclude Include="Common\WeaponPositions.h">
-      <Filter>Header Files\Common headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\EmanatingParticles.h">
       <Filter>Header Files\Common headers</Filter>
     </ClInclude>
     <ClInclude Include="StdH.h">
@@ -457,6 +454,12 @@
     </ClInclude>
     <ClInclude Include="EntitiesAPI.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonEntities\Common\Particles.h">
+      <Filter>Header Files\Common headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonEntities\Common\EmanatingParticles.h">
+      <Filter>Header Files\Common headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

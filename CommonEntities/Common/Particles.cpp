@@ -13,12 +13,17 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+// [Cecil] NOTE: These source file defines methods from TSE 1.07 but also some from TFE 1.05 for compatibility
+
 #include "StdH.h"
 #include "Effects/BloodSpray.h"
 #include "Players/PlayerWeapons.h"
 #include "Effects/WorldSettingsController.h"
 #include "Tools/BackgroundViewer.h"
+
+#if SE1_GAME != SS_TFE
 #include "Environment/EnvironmentParticlesHolder.h"
+#endif
 
 static CTextureObject _toRomboidTrail;
 static CTextureObject _toBombTrail;
@@ -195,8 +200,6 @@ void InitParticles(void)
     _toLavaTrailGradient.SetData_t(CTFILENAME("Textures\\Effects\\Particles\\LavaTrailGradient.tex"));
     _toLavaTrailSmoke.SetData_t(CTFILENAME("Textures\\Effects\\Particles\\LavaTrailSmoke.tex"));
     _toFlamethrowerTrail01.SetData_t(CTFILENAME("Textures\\Effects\\Particles\\FlameThrower01.tex"));
-    _toFlamethrowerTrail02.SetData_t(CTFILENAME("TexturesMP\\Effects\\Particles\\FlameThrower02.tex"));
-    _toFire.SetData_t(CTFILENAME("TexturesMP\\Effects\\Particles\\Fire.tex"));
     _toBoubble01.SetData_t(CTFILENAME("Models\\Items\\Particles\\Boubble01.tex"));
     _toBoubble02.SetData_t(CTFILENAME("Models\\Items\\Particles\\Boubble02.tex"));
     _toBoubble03.SetData_t(CTFILENAME("Models\\Items\\Particles\\Boubble03.tex"));
@@ -226,7 +229,6 @@ void InitParticles(void)
     _toBeastProjectileSprayTexture.SetData_t(CTFILENAME("Textures\\Effects\\Particles\\BeastProjectileSpill.tex"));
     _toLavaEruptingTexture.SetData_t(CTFILENAME("Textures\\Effects\\Particles\\LavaErupting.tex"));
     _toWoodSprayTexture.SetData_t(CTFILENAME("Textures\\Effects\\Particles\\WoodSpill01.tex"));
-    _toTreeSprayTexture.SetData_t(CTFILENAME("TexturesMP\\Effects\\Particles\\TreeSpill01.tex"));
     _toLavaBombTrailSmoke.SetData_t(CTFILENAME("Textures\\Effects\\Particles\\LavaBomb.tex"));
     _toLavaBombTrailGradient.SetData_t(CTFILENAME("Textures\\Effects\\Particles\\LavaBombGradient.tex"));
     _toBeastDebrisTrailGradient.SetData_t(CTFILENAME("Textures\\Effects\\Particles\\BeastDebrisTrailGradient.tex"));
@@ -246,6 +248,21 @@ void InitParticles(void)
     _toPlayerParticles.SetData_t(CTFILENAME("Textures\\Effects\\Particles\\PlayerParticles.tex"));
     _toWaterfallFoam.SetData_t(CTFILENAME("Textures\\Effects\\Particles\\WaterfallFoam.tex"));
     _toMetalSprayTexture.SetData_t(CTFILENAME("Textures\\Effects\\Particles\\MetalSpill.tex"));
+
+    ((CTextureData*)_toLavaTrailGradient              .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
+    ((CTextureData*)_toLavaBombTrailGradient          .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
+    ((CTextureData*)_toBeastDebrisTrailGradient       .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
+    ((CTextureData*)_toBeastProjectileTrailGradient   .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
+    ((CTextureData*)_toBeastBigProjectileTrailGradient.GetData())->Force(TEX_STATIC|TEX_CONSTANT);
+    ((CTextureData*)_toWaterfallGradient              .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
+    ((CTextureData*)_toSandFlowGradient               .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
+    ((CTextureData*)_toWaterFlowGradient              .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
+    ((CTextureData*)_toLavaFlowGradient               .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
+
+  #if SE1_GAME != SS_TFE
+    _toFlamethrowerTrail02.SetData_t(CTFILENAME("TexturesMP\\Effects\\Particles\\FlameThrower02.tex"));
+    _toFire.SetData_t(CTFILENAME("TexturesMP\\Effects\\Particles\\Fire.tex"));
+    _toTreeSprayTexture.SetData_t(CTFILENAME("TexturesMP\\Effects\\Particles\\TreeSpill01.tex"));
     _toBulletGrass.SetData_t(CTFILENAME("TexturesMP\\Effects\\Particles\\BulletSprayGrass.tex"));
     _toBulletWood.SetData_t(CTFILENAME("TexturesMP\\Effects\\Particles\\BulletSprayWood.tex"));
     _toBulletSnow.SetData_t(CTFILENAME("TexturesMP\\Effects\\Particles\\BulletSpraySnow.tex"));
@@ -276,21 +293,11 @@ void InitParticles(void)
     _toSEStar01.SetData_t(CTFILENAME("TexturesMP\\Effects\\Particles\\Star01.tex"));
     _toMeteorTrail.SetData_t(CTFILENAME("TexturesMP\\Effects\\Particles\\MeteorTrail.tex"));
 
-    
-    ((CTextureData*)_toLavaTrailGradient              .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
-    ((CTextureData*)_toLavaBombTrailGradient          .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
-    ((CTextureData*)_toBeastDebrisTrailGradient       .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
-    ((CTextureData*)_toBeastProjectileTrailGradient   .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
-    ((CTextureData*)_toBeastBigProjectileTrailGradient.GetData())->Force(TEX_STATIC|TEX_CONSTANT);
-    ((CTextureData*)_toWaterfallGradient              .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
-    ((CTextureData*)_toSandFlowGradient               .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
-    ((CTextureData*)_toWaterFlowGradient              .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
-    ((CTextureData*)_toLavaFlowGradient               .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
-    ((CTextureData*)_toFlameThrowerGradient           .GetData())->Force(TEX_STATIC|TEX_CONSTANT);    
-    ((CTextureData*)_toFlameThrowerStartGradient      .GetData())->Force(TEX_STATIC|TEX_CONSTANT);    
-    ((CTextureData*)_toExplosionDebrisGradient        .GetData())->Force(TEX_STATIC|TEX_CONSTANT);    
-    ((CTextureData*)_toChimneySmokeGradient           .GetData())->Force(TEX_STATIC|TEX_CONSTANT); 
-    ((CTextureData*)_toWaterfallGradient2             .GetData())->Force(TEX_STATIC|TEX_CONSTANT); 
+    ((CTextureData*)_toFlameThrowerGradient           .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
+    ((CTextureData*)_toFlameThrowerStartGradient      .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
+    ((CTextureData*)_toExplosionDebrisGradient        .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
+    ((CTextureData*)_toChimneySmokeGradient           .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
+    ((CTextureData*)_toWaterfallGradient2             .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
     ((CTextureData*)_toAfterBurnerGradient            .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
     ((CTextureData*)_toAfterBurnerGradientBlue        .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
     ((CTextureData*)_toAfterBurnerGradientMeteor      .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
@@ -298,6 +305,7 @@ void InitParticles(void)
     ((CTextureData*)_toSummonerDisappearGradient      .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
     ((CTextureData*)_toSummonerStaffGradient          .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
     ((CTextureData*)_toFireworks01Gradient            .GetData())->Force(TEX_STATIC|TEX_CONSTANT);
+  #endif
   }
   catch(char *strError)
   {
@@ -452,6 +460,40 @@ void SetupParticleTextureWithAddAlpha(enum ParticleTexture ptTexture)
   Particle_SetTexturePart( 512, 512, 0, 0);
 }
 
+#if SE1_GAME == SS_TFE
+
+// [Cecil] TFE version
+void Particles_ViewerLocal(CEntity *penView)
+{
+  ASSERT(penView!=NULL);
+
+  // obtain world settings controller
+  CWorldSettingsController *pwsc = NULL;
+  // obtain bcg viewer
+  CBackgroundViewer *penBcgViewer = (CBackgroundViewer *) penView->GetWorld()->GetBackgroundViewer();
+  if( penBcgViewer != NULL)
+  {
+    // obtain world settings controller 
+    pwsc = (CWorldSettingsController *) &*penBcgViewer->m_penWorldSettingsController;
+  }
+
+  // ***** Storm appearing effects
+  // if world settings controller is valid
+  if( (pwsc != NULL) && (pwsc->m_tmStormStart != -1))
+  {
+    FLOAT fStormFactor = pwsc->GetStormFactor();
+    if( fStormFactor != 0.0f)
+    {
+      FLOATaabbox3D boxRainMap;
+      CTextureData *ptdRainMap;
+      pwsc->GetHeightMapData( ptdRainMap, boxRainMap);
+      Particles_Rain( penView, 1.25f, 32, fStormFactor, ptdRainMap, boxRainMap);
+    }
+  }
+}
+
+#else
+
 void Particles_ViewerLocal(CEntity *penView)
 {
   ASSERT(penView!=NULL);
@@ -580,6 +622,8 @@ void Particles_ViewerLocal(CEntity *penView)
     Particle_Flush();
   }*/
 }
+
+#endif
 
 // different particle effects
 #define ROMBOID_TRAIL_POSITIONS 16
@@ -1618,6 +1662,41 @@ INDEX Particles_Regeneration(CEntity *pen, FLOAT tmStart, FLOAT tmStop, FLOAT fY
   return ctRendered;
 }
 
+#if SE1_GAME == SS_TFE
+
+// [Cecil] TFE version
+#define SECONDS_PER_PARTICLE 0.01f
+void Particles_FlameThrower(const CPlacement3D &plEnd, const CPlacement3D &plStart,
+                            FLOAT fEndElapsed, FLOAT fStartElapsed)
+{
+  Particle_PrepareTexture( &_toFlamethrowerTrail01, PBT_ADD);
+  Particle_SetTexturePart( 512, 512, 0, 0);
+
+  const FLOAT3D &vStart = plStart.pl_PositionVector;
+  const FLOAT3D &vEnd = plEnd.pl_PositionVector;
+  FLOAT3D vDelta = (vEnd-vStart)/(fEndElapsed-fStartElapsed);
+  FLOAT fSeconds = _pTimer->GetLerpedCurrentTick();
+
+  for(FLOAT fTime = ceil(fStartElapsed/SECONDS_PER_PARTICLE)*SECONDS_PER_PARTICLE;
+      fTime<fEndElapsed; fTime+=SECONDS_PER_PARTICLE)
+  {
+    FLOAT fAngle = (fSeconds+fTime)*90.0f;
+    FLOAT fSize = 1.5*fTime+0.01;
+    FLOAT fRise = (fTime*fTime);
+    UBYTE ub = 96;
+    if( fTime>0.75f) ub = 0;
+    else if( fTime>0.5f) ub = (-4*fTime+3)*96;
+
+    ASSERT(fTime>=0.0f);
+    ASSERT(fSize>=0.0f);
+    FLOAT3D vPos = vStart+vDelta*(fTime-fStartElapsed)+FLOAT3D(0.0f, fRise, 0.0f);
+    Particle_RenderSquare( vPos, fSize, fAngle, RGBToColor(ub,ub,ub)|0xFF);
+  }
+  // all done
+  Particle_Flush();
+}
+
+#else
 
 #define FLAME_LIFETIME 1.0f
 #define FLAME_INTERTIME 0.1f
@@ -1789,6 +1868,7 @@ void Particles_FlameThrowerStart(const CPlacement3D &plPipe, FLOAT fStartTime, F
   Particle_Flush();
 }
 
+#endif
 
 void Particles_ShooterFlame(const CPlacement3D &plEnd, const CPlacement3D &plStart,
                             FLOAT fEndElapsed, FLOAT fStartElapsed)
@@ -1963,6 +2043,11 @@ void Particles_Spiral( CEntity *pen, FLOAT fSize, FLOAT fHeight,
   Particle_Flush();
 }
 
+// [Cecil] TFE version
+void Particles_Emanate(CEntity *pen, FLOAT fSize, FLOAT fHeight, ParticleTexture ptTexture, INDEX ctParticles) {
+  Particles_Emanate(pen, fSize, fHeight, ptTexture, ctParticles, 7.0f);
+};
+
 #define EMANATE_FADE_IN 0.2f
 #define EMANATE_FADE_OUT 0.6f
 #define EMANATE_TOTAL_TIME 1.0f
@@ -2045,6 +2130,12 @@ void Particles_WaterfallFoam(CEntity *pen, FLOAT fSizeX, FLOAT fSizeY, FLOAT fSi
   // all done
   Particle_Flush();
 }
+
+// [Cecil] TFE version
+void Particles_EmanatePlane(CEntity *pen, FLOAT fSizeX, FLOAT fSizeY, FLOAT fSizeZ, FLOAT fParticleSize,
+                            FLOAT fAway, FLOAT fSpeed, ParticleTexture ptTexture, INDEX ctParticles) {
+  Particles_EmanatePlane(pen, fSizeX, fSizeY, fSizeZ, fParticleSize, fAway, fSpeed, ptTexture, ctParticles, 7.0f);
+};
 
 void Particles_EmanatePlane(CEntity *pen, FLOAT fSizeX, FLOAT fSizeY, FLOAT fSizeZ, 
                             FLOAT fParticleSize, FLOAT fAway, FLOAT fSpeed, 
@@ -2530,6 +2621,8 @@ void Particles_Ghostbuster(const FLOAT3D &vSrc, const FLOAT3D &vDst, INDEX ctRay
   // all done
   Particle_Flush();
 }
+
+#if SE1_GAME != SS_TFE
 
 // growth - one for each drawport
 
@@ -3063,6 +3156,7 @@ void Particles_Growth(CEntity *pen, CTextureData *ptdGrowthMap, FLOATaabbox3D &b
   acgParticles.PopAll();  
 }*/
 
+#endif
 
 #define RAIN_SOURCE_HEIGHT 16.0f
 #define RAIN_SPEED 16.0f
@@ -3152,6 +3246,57 @@ void Particles_Rain(CEntity *pen, FLOAT fGridSize, INDEX ctGrids, FLOAT fFactor,
   Particle_Flush();
 }
 
+#if SE1_GAME == SS_TFE
+
+// [Cecil] TFE version
+#define SNOW_SOURCE_HEIGHT 16.0f
+#define SNOW_SPEED 1.0f
+#define SNOW_DROP_TIME (SNOW_SOURCE_HEIGHT/SNOW_SPEED)
+
+void Particles_Snow( CEntity *pen, FLOAT fGridSize, INDEX ctGrids)
+{
+  FLOAT3D vPos = pen->GetLerpedPlacement().pl_PositionVector;
+
+  vPos(1) -= fGridSize*ctGrids/2;
+  vPos(3) -= fGridSize*ctGrids/2;
+
+  SnapFloat( vPos(1), fGridSize);
+  SnapFloat( vPos(2), fGridSize);
+  SnapFloat( vPos(3), fGridSize);  
+  FLOAT fNow = _pTimer->GetLerpedCurrentTick();
+  
+  Particle_PrepareTexture(&_toSnowdrop, PBT_BLEND);
+  Particle_SetTexturePart( 512, 512, 0, 0);
+
+  for( INDEX iZ=0; iZ<ctGrids; iZ++)
+  {
+    INDEX iRndZ = (ULONG(vPos(3)+iZ)) % CT_MAX_PARTICLES_TABLE;
+    FLOAT fZ = vPos(3) + (iZ+afStarsPositions[iRndZ][3])*fGridSize;
+    for( INDEX iX=0; iX<ctGrids; iX++)
+    {
+      INDEX iRndX = (ULONG(vPos(1)+iX)) % CT_MAX_PARTICLES_TABLE;
+      FLOAT fX = vPos(1) + (iX+afStarsPositions[iRndX][1])*fGridSize;
+      FLOAT fT0 = afStarsPositions[(INDEX(2+Abs(fX)+Abs(fZ))*262147) % CT_MAX_PARTICLES_TABLE][2];
+      FLOAT fT = (fNow*(1+0.1f*afStarsPositions[iRndZ][2])+fT0);
+      fX+=afStarsPositions[int(fT)% CT_MAX_PARTICLES_TABLE][2];
+      fZ+=afStarsPositions[int(fT)% CT_MAX_PARTICLES_TABLE][1];
+      // get fraction part
+      fT /= SNOW_DROP_TIME;
+      FLOAT fFade = (fT-int(fT))*SNOW_DROP_TIME;
+      // stretch to falling time
+      FLOAT fY = vPos(2)+SNOW_SOURCE_HEIGHT-SNOW_SPEED*fFade;
+      UBYTE ubR = 128+afStarsPositions[(INDEX)fT0*CT_MAX_PARTICLES_TABLE][2]*64;
+      COLOR colDrop = RGBToColor(ubR, ubR, ubR)|CT_OPAQUE;
+      FLOAT3D vRender = FLOAT3D( fX, fY, fZ);
+      FLOAT fSize = 1.75f+afStarsPositions[(INDEX)fT0*CT_MAX_PARTICLES_TABLE][1];
+      Particle_RenderSquare( vRender, 0.1f, 0, colDrop);
+    }
+  }
+  // all done
+  Particle_Flush();
+}
+
+#else
 
 #define SNOW_SPEED 2.0f
 #define YGRID_SIZE 16.0f
@@ -3260,6 +3405,8 @@ void Particles_Snow(CEntity *pen, FLOAT fGridSize, INDEX ctGrids, FLOAT fFactor,
   // all done
   Particle_Flush();
 }
+
+#endif
 
 #define LIGHTNING_SPEED 2000000.0f
 #define LIGHTNING_LIFE_TIME 0.4f
@@ -3528,6 +3675,12 @@ void Particles_LavaFlow( CEntity *pen, FLOAT fStretchAll, FLOAT fSize, FLOAT fHe
 #define BULLET_SMOKE_TOTAL_TIME 1.5f
 #define BULLET_SMOKE_FADEOUT_LEN (BULLET_SMOKE_TOTAL_TIME-BULLET_SMOKE_FADEOUT_START)
 
+// [Cecil] TFE version
+void Particles_BulletSpray(CEntity *pen, FLOAT3D vGDir, EffectParticlesType eptType, FLOAT tmSpawn, FLOAT3D vDirection) {
+  FLOAT3D vEntity  = pen->GetLerpedPlacement().pl_PositionVector;
+  Particles_BulletSpray(pen->en_ulID, vEntity, vGDir, eptType, tmSpawn, vDirection, 1.0f);
+};
+
 void Particles_BulletSpray(INDEX iRndBase, FLOAT3D vSource, FLOAT3D vGDir, enum EffectParticlesType eptType,
                            FLOAT tmSpawn, FLOAT3D vDirection, FLOAT fStretch)
 {
@@ -3585,6 +3738,8 @@ void Particles_BulletSpray(INDEX iRndBase, FLOAT3D vSource, FLOAT3D vGDir, enum 
       fSpeedStart = 0.75f;
       break;
     }
+
+  #if SE1_GAME != SS_TFE
     case EPT_BULLET_GRASS:
     {
       colSmoke = 0xFFE8C000;
@@ -3609,6 +3764,8 @@ void Particles_BulletSpray(INDEX iRndBase, FLOAT3D vSource, FLOAT3D vGDir, enum 
       fSpeedStart = 1.25f;
       break;
     }
+  #endif
+
     default:
     {
       colSmoke = C_WHITE;
@@ -4246,6 +4403,13 @@ void Particles_Appearing(CEntity *pen, TIME tmStart)
 #define BLOOD_SPRAY_FADE_IN_END 0.1f
 #define BLOOD_SPRAY_FADE_OUT_START 0.2f
 
+// [Cecil] TFE version
+void Particles_BloodSpray(SprayParticlesType sptType, CEntity *penSpray, FLOAT3D vGDir, FLOAT fGA,
+                          FLOATaabbox3D boxOwner, FLOAT3D vSpilDirection, FLOAT tmStarted, FLOAT fDamagePower) {
+  FLOAT3D vWoundPos = penSpray->GetLerpedPlacement().pl_PositionVector;
+  Particles_BloodSpray(sptType, vWoundPos, vGDir, fGA, boxOwner, vSpilDirection, tmStarted, fDamagePower, 0xFFFFFFFF);
+};
+
 // spray some blood from shot place
 void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOAT3D vGDir, FLOAT fGA,
                           FLOATaabbox3D boxOwner, FLOAT3D vSpilDirection, FLOAT tmStarted, FLOAT fDamagePower,
@@ -4268,7 +4432,9 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
   switch(sptType) {
     case SPT_BLOOD:
     case SPT_SLIME:
+  #if SE1_GAME != SS_TFE
     case SPT_GOO:
+  #endif
     {
       // [Cecil] Transparent
       if (blood.GetColor(0, 0xFF, 0xFF) & 0xFF == 0) return;
@@ -4298,6 +4464,8 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
       fDamagePower*=3.0f;
       break;
     }
+
+  #if SE1_GAME != SS_TFE
     case SPT_COLOREDSTONE:
     {
       Particle_PrepareTexture( &_toStonesSprayTexture, PBT_BLEND);
@@ -4305,13 +4473,22 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
       fGA*=2.0f;
       break;
     }
+  #endif
+
     case SPT_WOOD:
     {
       Particle_PrepareTexture( &_toWoodSprayTexture, PBT_BLEND);
+
+    #if SE1_GAME == SS_TFE
+      fDamagePower*=5.0f;
+    #else
       fDamagePower*=6.0f;
       fGA*=3.0f;
+    #endif
       break;
     }
+
+  #if SE1_GAME != SS_TFE
     case SPT_TREE01:
     {
       ctSprays*=1;
@@ -4322,6 +4499,8 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
       fGA*=4.0f;
       break;
     }
+  #endif
+
     case SPT_SMALL_LAVA_STONES:
     {
       Particle_PrepareTexture( &_toLavaSprayTexture, PBT_BLEND);
@@ -4345,6 +4524,8 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
       Particle_PrepareTexture( &_toMetalSprayTexture, PBT_BLEND);
       break;
     }
+
+  #if SE1_GAME != SS_TFE
     case SPT_AIRSPOUTS:
     {
       Particle_PrepareTexture( &_toAirSprayTexture, PBT_BLEND);
@@ -4360,6 +4541,8 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
     {
       return;
     }
+  #endif
+
     default: ASSERT(FALSE);
       return;
     }
@@ -4409,6 +4592,13 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
     FLOAT fMipSizeAffector = Clamp( fMipFactor/4.0f, 0.05f, 1.0f);
     fSize *= fMipSizeAffector*fDamagePower*fEnemySizeModifier;
 
+  #if SE1_GAME == SS_TFE
+    FLOAT3D vRandomAngle = FLOAT3D(
+      afStarsPositions[ iSpray][0]*1.75f,
+      (afStarsPositions[ iSpray][1]+1.0f)*1.0f,
+      afStarsPositions[ iSpray][2]*1.75f);
+
+  #else
     INDEX iRnd=(iSpray+INDEX(tmStarted*123.456))%CT_MAX_PARTICLES_TABLE;
     FLOAT3D vRandomAngle = FLOAT3D(
       afStarsPositions[ iRnd][0]*1.75f,
@@ -4416,6 +4606,8 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
       afStarsPositions[ iRnd][2]*1.75f);
     FLOAT fSpilPower=vSpilDirection.Length();
     vRandomAngle=vRandomAngle.Normalize()*fSpilPower;
+  #endif
+
     fSpeedModifier+=afStarsPositions[ iSpray+ctSprays][0]*0.5f;
 
     FLOAT fSpeed = BLOOD_SPRAY_SPEED_MIN+(BLOOD_SPRAY_TOTAL_TIME-fT)/BLOOD_SPRAY_TOTAL_TIME;
@@ -4448,6 +4640,8 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
       }
       break;
     }
+
+  #if SE1_GAME != SS_TFE
     case SPT_GOO:
     {
       UBYTE ubRndCol = UBYTE( 128+afStarsPositions[ int(iSpray+tmStarted*10)%CT_MAX_PARTICLES_TABLE][0]*64);
@@ -4461,6 +4655,8 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
       }
       break;
     }
+  #endif
+
     case SPT_BONES:
     {
       UBYTE ubRndH = UBYTE( 8+afStarsPositions[ int(iSpray+tmStarted*10)%CT_MAX_PARTICLES_TABLE][0]*16);
@@ -4500,6 +4696,8 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
       fRotation = fT*200.0f;
       break;
     }
+
+  #if SE1_GAME != SS_TFE
     case SPT_COLOREDSTONE:
     {
       UBYTE ubH,ubS,ubV;
@@ -4512,6 +4710,8 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
       fRotation = fT*50.0f;
       break;
     }
+  #endif
+
     case SPT_WOOD:
     {
       UBYTE ubRndH = UBYTE( 16+afStarsPositions[ int(iSpray+tmStarted*10)%CT_MAX_PARTICLES_TABLE][0]*16);
@@ -4522,6 +4722,8 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
       fRotation = fT*300.0f;
       break;
     }
+
+  #if SE1_GAME != SS_TFE
     case SPT_TREE01:
     {
       UBYTE ubRndH = UBYTE( 16+afStarsPositions[ int(iSpray+tmStarted*10)%CT_MAX_PARTICLES_TABLE][0]*16);
@@ -4531,6 +4733,8 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
       fSize*=0.2f;
       break;
     }
+  #endif
+
     case SPT_LAVA_STONES:
     case SPT_SMALL_LAVA_STONES:
     {
@@ -4558,11 +4762,15 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
       fRotation = fT*200.0f;
       break;
     }
+
+  #if SE1_GAME != SS_TFE
     case SPT_AIRSPOUTS:
     {
       col = C_WHITE|(ubAlpha>>1);
       break;
     }
+  #endif
+
     }
     Particle_RenderSquare( vPos, 0.25f*fSize*fSizeModifier, fRotation, MulColors(col,colMultiply));
   }
