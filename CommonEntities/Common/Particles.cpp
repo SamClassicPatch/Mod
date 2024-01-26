@@ -122,21 +122,6 @@ static CTextureObject _toSummonerStaffGradient;
 static CTextureObject _toMeteorTrail;
 static CTextureObject _toFireworks01Gradient;
 
-struct FlameThrowerParticleRenderingData {
-  INDEX ftprd_iFrameX;
-  INDEX ftprd_iFrameY;
-  FLOAT3D ftprd_vPos;
-  FLOAT ftprd_fSize;
-  FLOAT ftprd_fAngle;
-  COLOR ftprd_colColor;
-};
-
-INDEX _ctFlameThrowerParticles=0;
-//INDEX _ctFlameThrowerPipeParticles=0;
-#define MAX_FLAME_PARTICLES INDEX(1024)
-FlameThrowerParticleRenderingData _aftprdFlame[MAX_FLAME_PARTICLES];
-//FlameThrowerParticleRenderingData _aftprdFlamePipe[MAX_FLAME_PARTICLES];
-
 BOOL UpdateGrowthCache(CEntity *pen, CTextureData *ptdGrowthMap, FLOATaabbox3D &boxGrowthMap, CEntity *penEPH, INDEX iDrawPort);
 
 // array for model vertices in absolute space
@@ -592,35 +577,6 @@ void Particles_ViewerLocal(CEntity *penView)
     eph = (CEnvironmentParticlesHolder *)&*eph->m_penNextHolder;
     if (!(IsOfClass(eph, "EnvironmentParticlesHolder"))) break;
   }
-
-  if(_ctFlameThrowerParticles!=0)
-  {
-    Particle_PrepareTexture( &_toFlamethrowerTrail02, PBT_ADDALPHA);
-    INDEX flt_iFramesInRaw=4;
-    INDEX flt_iFramesInColumn=4;
-    for( INDEX iFlame=0; iFlame<ClampUp(_ctFlameThrowerParticles, MAX_FLAME_PARTICLES); iFlame++)
-    {
-      FlameThrowerParticleRenderingData &ftprd=_aftprdFlame[iFlame];
-      Particle_SetTexturePart( 1024/flt_iFramesInRaw, 1024/flt_iFramesInColumn, ftprd.ftprd_iFrameX, ftprd.ftprd_iFrameY);
-      Particle_RenderSquare( ftprd.ftprd_vPos, ftprd.ftprd_fSize, ftprd.ftprd_fAngle, ftprd.ftprd_colColor);
-    }
-    _ctFlameThrowerParticles=0;
-    Particle_Flush();
-  }
-
-  /*
-  if(_ctFlameThrowerPipeParticles!=0)
-  {
-    Particle_PrepareTexture( &_toLavaTrailSmoke, PBT_ADDALPHA);
-    Particle_SetTexturePart( 512, 512, 0, 0);
-    for( INDEX iFlameStart=0; iFlameStart<ClampUp(_ctFlameThrowerPipeParticles, MAX_FLAME_PARTICLES); iFlameStart++)
-    {
-      FlameThrowerParticleRenderingData &ftprd=_aftprdFlamePipe[iFlameStart];
-      Particle_RenderSquare( ftprd.ftprd_vPos, ftprd.ftprd_fSize, ftprd.ftprd_fAngle, ftprd.ftprd_colColor);
-    }
-    _ctFlameThrowerPipeParticles=0;
-    Particle_Flush();
-  }*/
 }
 
 #endif
@@ -1711,7 +1667,7 @@ void Particles_FlameThrower(const CPlacement3D &plLeader, const CPlacement3D &pl
   FLOAT flt_fSizeStart=0.075f; 
   FLOAT flt_fSizeEnd=6;
 
-  //Particle_PrepareTexture( &_toFlamethrowerTrail02, PBT_ADDALPHA);
+  Particle_PrepareTexture( &_toFlamethrowerTrail02, PBT_ADDALPHA);
   CTextureData *pTD = (CTextureData *) _toFlameThrowerGradient.GetData();
 
   const FLOAT3D &vFollower = plFollower.pl_PositionVector;
@@ -1757,7 +1713,7 @@ void Particles_FlameThrower(const CPlacement3D &plLeader, const CPlacement3D &pl
     INDEX iFrame=ClampUp(INDEX(fLiving*flt_iFramesInRaw*flt_iFramesInColumn), INDEX(flt_iFramesInRaw*flt_iFramesInColumn-1));
     INDEX iFrameX=iFrame%flt_iFramesInRaw;
     INDEX iFrameY=iFrame/flt_iFramesInRaw;
-    //Particle_SetTexturePart( 1024/flt_iFramesInRaw, 1024/flt_iFramesInColumn, iFrameX, iFrameY);
+    Particle_SetTexturePart( 1024/flt_iFramesInRaw, 1024/flt_iFramesInColumn, iFrameX, iFrameY);
 
     // calculate time exponents
     FLOAT ft1=1.0f-fOlderThanLeaderTime/(fLeaderLiving-fFollowerLiving);
@@ -1779,25 +1735,16 @@ void Particles_FlameThrower(const CPlacement3D &plLeader, const CPlacement3D &pl
     // size
     FLOAT fSize = flt_fSizeStart+fLiving*(fLiving*0.4f+(flt_fSizeEnd-flt_fSizeStart)*0.6f);
     // angle
-    FLOAT fAngle = fLiving*180.0f*afStarsPositions[iParticle][0];
+    FLOAT fAngle = fLiving*180.0f*afStarsPositions[iParticle % CT_MAX_PARTICLES_TABLE][0];
     // color
     COLOR col = pTD->GetTexel(PIX(Clamp(fLiving*1024.0f, 0.0f, 1023.0f)), 0);
 
-    FlameThrowerParticleRenderingData &ftprd=_aftprdFlame[_ctFlameThrowerParticles+iParticle];
-    ftprd.ftprd_iFrameX=iFrameX;
-    ftprd.ftprd_iFrameY=iFrameY;
-    ftprd.ftprd_vPos=vPos;
-    ftprd.ftprd_fSize=fSize;
-    ftprd.ftprd_fAngle=fAngle;
-    ftprd.ftprd_colColor=col;
-
-//    Particle_RenderSquare( vPos, fSize, fAngle, col);
+    Particle_RenderSquare( vPos, fSize, fAngle, col);
     iParticle++;
     fLiving-=FLAME_INTERTIME/flt_iInterpolations;
   }
   // all done
-//  Particle_Flush();
-  _ctFlameThrowerParticles+=iParticle;
+  Particle_Flush();
 }
 
 #define CT_FTSPARKS 64
@@ -1851,19 +1798,9 @@ void Particles_FlameThrowerStart(const CPlacement3D &plPipe, FLOAT fStartTime, F
       COLOR col = pTD->GetTexel(PIX(ClampUp(fT*1024.0f, 1023.0f)), 0);
       FLOAT fAng=afStarsPositions[iSpark+8][0]*fT*360.0f;
 
-      /*
-      FlameThrowerParticleRenderingData &ftprd=_aftprdFlame[_ctFlameThrowerPipeParticles+iParticle];
-      ftprd.ftprd_vPos=vPos;
-      ftprd.ftprd_fSize=fSize;
-      ftprd.ftprd_fAngle=fAng;
-      ftprd.ftprd_colColor=col;
-      iParticle++;
-      */
-
       Particle_RenderSquare( vPos, fSize, fAng, col);
     }
   }
-  //_ctFlameThrowerPipeParticles+=iParticle;
   // all done
   Particle_Flush();
 }
