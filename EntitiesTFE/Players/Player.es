@@ -746,9 +746,8 @@ void CPlayer_OnInitClass(void)
   // player appearance interface
   _pShell->DeclareSymbol("INDEX SetPlayerAppearance(INDEX, INDEX, INDEX, INDEX);", &SetPlayerAppearance);
 
-  // [Cecil] Custom blood themes
-  extern void DeclareCustomBloodSymbols(void);
-  DeclareCustomBloodSymbols();
+  // [Cecil] Common entities symbols
+  DeclareCommonEntitiesSymbols();
 
   // call player weapons persistant variable initialization
   extern void CPlayerWeapons_Init(void);
@@ -2431,6 +2430,10 @@ functions:
     }
   };
 
+  // [Cecil] Lerped placement without adjustments for prediction
+  CPlacement3D GetLerpedPlacement(void) const {
+    return GetLocalLerpedPlacement(this, this);
+  };
 
   // postmoving for soft player up-down movement
   void PostMoving(void)

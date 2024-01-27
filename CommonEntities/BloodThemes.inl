@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 static INDEX gam_iCustomBloodColor = 0xFF0000FF;
 static INDEX gam_iCustomBloodTheme = BloodTheme::E_AUTO;
 
-void DeclareCustomBloodSymbols(void) {
+static void DeclareCustomBloodSymbols(void) {
   _pShell->DeclareSymbol("persistent user INDEX gam_iCustomBloodColor;", &gam_iCustomBloodColor);
   _pShell->DeclareSymbol("persistent user INDEX gam_iCustomBloodTheme;", &gam_iCustomBloodTheme);
 };

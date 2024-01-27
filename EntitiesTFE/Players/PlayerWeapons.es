@@ -425,10 +425,6 @@ void CPlayerWeapons_Init(void) {
   _pShell->DeclareSymbol("persistent user FLOAT plr_tmSnoopingTime;",  &plr_tmSnoopingTime);
   _pShell->DeclareSymbol("persistent user FLOAT plr_tmSnoopingDelay;", &plr_tmSnoopingDelay);
 
-  // [Cecil] Weapon viewmodel customization
-  extern void DeclareWeaponCustomizationSymbols(void);
-  DeclareWeaponCustomizationSymbols();
-
   // precache base weapons
   CPlayerWeapons_Precache(0x03);
 }

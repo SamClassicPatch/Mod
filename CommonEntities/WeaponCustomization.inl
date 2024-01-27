@@ -42,7 +42,7 @@ static void ResetWeaponPosition(void) {
   wpn_fViewFOV = 1.0f;
 };
 
-void DeclareWeaponCustomizationSymbols(void) {
+static void DeclareWeaponCustomizationSymbols(void) {
   _pShell->DeclareSymbol("persistent user FLOAT wpn_afViewPos[3];", &wpn_afViewPos);
   _pShell->DeclareSymbol("persistent user FLOAT wpn_afViewRot[3];", &wpn_afViewRot);
   _pShell->DeclareSymbol("persistent user FLOAT wpn_fViewFOV;", &wpn_fViewFOV);

@@ -854,9 +854,8 @@ void CPlayer_OnInitClass(void)
   // [Cecil] Spawn invulnerability indicator
   _pShell->DeclareSymbol("persistent user INDEX plr_iSpawnInvulIndicator;", &plr_iSpawnInvulIndicator);
 
-  // [Cecil] Custom blood themes
-  extern void DeclareCustomBloodSymbols(void);
-  DeclareCustomBloodSymbols();
+  // [Cecil] Common entities symbols
+  DeclareCommonEntitiesSymbols();
 
   // call player weapons persistant variable initialization
   extern void CPlayerWeapons_Init(void);
@@ -2827,6 +2826,10 @@ functions:
     }
   };
 
+  // [Cecil] Lerped placement without adjustments for prediction
+  CPlacement3D GetLerpedPlacement(void) const {
+    return GetLocalLerpedPlacement(this, this);
+  };
 
   // postmoving for soft player up-down movement
   void PostMoving(void)

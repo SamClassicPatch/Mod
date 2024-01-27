@@ -81,7 +81,9 @@ functions:
   CPlacement3D GetLerpedPlacement(void) const
   {
     FLOAT fLerpFactor;
-    if (IsPredictor()) {
+
+    // [Cecil] Don't use second lerp factor for local prediction
+    if (IsPredictor() || DisableLocalPrediction(m_penOwner)) {
       fLerpFactor = _pTimer->GetLerpFactor();
     } else {
       fLerpFactor = _pTimer->GetLerpFactor2();

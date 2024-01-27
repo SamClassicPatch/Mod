@@ -22,6 +22,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Include all inline source code
 #include "BloodThemes.inl"
+#include "LocalPrediction.inl"
 #include "WeaponCustomization.inl"
+
+// Declare common symbols
+void DeclareCommonEntitiesSymbols(void)
+{
+  _pShell->DeclareSymbol("persistent user INDEX gam_bDisableLocalPrediction;", &gam_bDisableLocalPrediction);
+
+  DeclareCustomBloodSymbols();
+  DeclareWeaponCustomizationSymbols();
+};
 
 #endif

@@ -596,6 +596,11 @@ components:
 221 texture TEXTURE_MARKER   "Models\\Editor\\Vector.tex"
 
 functions:
+  // [Cecil] Lerped placement without adjustments for prediction
+  CPlacement3D GetLerpedPlacement(void) const {
+    return GetLocalLerpedPlacement(this);
+  };
+
   // premoving
   void PreMoving(void) {
     if (m_tmExpandBox>0) {
