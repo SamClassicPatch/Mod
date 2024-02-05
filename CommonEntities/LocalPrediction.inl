@@ -28,7 +28,7 @@ static INDEX gam_bDisableLocalPrediction = -1; // Auto
 BOOL DisableLocalPrediction(const CEntity *penPlayer)
 {
   if (gam_bDisableLocalPrediction == -1 && penPlayer != NULL) {
-    ASSERT(IsDerivedFromID(pen, CPlayerEntity_ClassID));
+    ASSERT(IsDerivedFromID(const_cast<CEntity *>(penPlayer), CPlayerEntity_ClassID));
 
     TIME tmLatency = ((const CPlayerEntity *)penPlayer)->en_tmPing * 1000.0;
     return tmLatency <= 50;
