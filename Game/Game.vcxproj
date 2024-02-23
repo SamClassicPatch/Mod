@@ -303,7 +303,6 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Cecil\GameThemes.cpp" />
     <ClCompile Include="Cecil\Module.cpp" />
     <ClCompile Include="Cecil\SimpleConfigs.cpp" />
@@ -332,7 +331,6 @@
     <ClCompile Include="WEDInterface.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
     <ClInclude Include="Cecil\GameColors.h" />
     <ClInclude Include="Cecil\GameThemes.h" />
     <ClInclude Include="Cecil\Map.h" />

@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Base/Profiling.h>
 #include <Engine/Base/Statistics.h>
 #include <Engine/CurrentVersion.h>
-#include "Camera.h"
 
 extern FLOAT con_fHeightFactor = 0.5f;
 extern FLOAT con_tmLastLines   = 5.0f;
@@ -1179,8 +1178,6 @@ void CGame::InitInternal( void)
   extern INDEX con_iBigFont;
   _pShell->DeclareSymbol("persistent user INDEX con_iBigFont;", &con_iBigFont);
 
-  ICamera::Init();
-
   // load persistent symbols
   if (!_bDedicatedServer) {
     _pShell->Execute(CTString("include \"")+fnmPersistentSymbols+"\";");
@@ -1444,7 +1441,6 @@ BOOL CGame::StartDemoPlay(const CTFileName &fnDemo)
 
   // start the new session
   try {
-    ICamera::Start(fnDemo); // [Cecil] Start CAM here
     _pNetwork->StartDemoPlay_t( fnDemo);
     CPrintF(LOCALIZE("Started playing demo: %s\n"), fnDemo);
   } catch (char *strError) {
@@ -1547,8 +1543,6 @@ void CGame::StopGame(void)
     // do nothing
     return;
   }
-  // stop eventual camera
-  ICamera::Stop();
   // disable direct input
 //  _pInput->DisableInput();
   // and game
@@ -2375,7 +2369,8 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
     for (INDEX iNonLocal = 0; iNonLocal < CEntity::GetMaxPlayers(); iNonLocal++) {
       CEntity *pen = CEntity::GetPlayerEntity(iNonLocal);
 
-      if (pen != NULL && !_pNetwork->IsPlayerLocal(pen)) {
+      // [Cecil] NOTE: _pNetwork->IsPlayerLocal() seems to produce some issues, so it's replaced with cenViewers.IsMember()
+      if (pen != NULL && !cenViewers.IsMember(pen)) {
         cenNonlocals.Add(pen);
       }
     }
@@ -2414,7 +2409,8 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
         penViewer = penViewer->GetPredictor();
       }
 
-      if (!ICamera::IsOn()) {
+      // [Cecil] Prioritize camera, unless it can't be used at the moment
+      if (!GetGameAPI()->GetCamera().Update(penViewer, pdp)) {
         _bPlayerViewRendered = TRUE;
 
         // Render it
@@ -2423,9 +2419,6 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
       #else
         penViewer->RenderGameView(pdp, (void *)ulFlags, FALSE);
       #endif
-
-      } else {
-        ICamera::Render(penViewer, pdp);
       }
 
       pdp->Unlock();
@@ -2434,6 +2427,10 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
     if (ctViewers == 0) {
       pdpDrawPort->Lock();
       pdpDrawPort->Fill(C_BLACK|CT_OPAQUE);
+
+      // [Cecil] Let observers fly around without active players
+      GetGameAPI()->GetCamera().Update(NULL, pdpDrawPort);
+
       pdpDrawPort->Unlock();
     }
 
@@ -2948,9 +2945,9 @@ void CGame::MenuPostRenderMenu(const char *strMenuName)
 // [Cecil] Rev: Dummy method definitions for compatibility
 #if SE1_GAME == SS_REV
 
-BOOL CGame::IsObservingOn(void) { return ICamera::IsOn(); };
-void CGame::StartObserving(void) { ICamera::Start(CTString("")); };
-void CGame::StopObserving(void) { ICamera::Stop(); };
+BOOL CGame::IsObservingOn(void) { return _cam.IsOn(); };
+void CGame::StartObserving(void) { _cam.Start(CTString("")); };
+void CGame::StopObserving(void) { _cam.Stop(); };
 
 void CGame::SetSurvivalSession(CSessionProperties &sp, INDEX ctMaxPlayers) {};
 void CGame::SetSurvivalProperties(CSessionProperties &sp) {};
