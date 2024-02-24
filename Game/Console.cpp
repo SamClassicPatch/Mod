@@ -647,7 +647,7 @@ void CGame::ConsoleChar( MSG msg)
   if (_pGame->gm_csConsoleState==CS_OFF) return;
 
   // for all keys except tab and shift, discard last found tab browsing symbol
-  char chrKey = msg.wParam;
+  UBYTE chrKey = msg.wParam; // [Cecil] Unsigned because 'isprint(-1)' is 0 and 'isprint(0xFF)' is not
   if( msg.wParam!=VK_TAB && msg.wParam!=VK_SHIFT) strLastExpanded = "";
 
   // if key with letter pressed
