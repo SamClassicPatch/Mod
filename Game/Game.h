@@ -241,6 +241,9 @@ public:
   // [Cecil] Set or reset current controls for a specific local player
   void SetCurrentControls(INDEX iPlayer, BOOL bCurrent);
 
+  // [Cecil] Clear button actions for local players
+  void ClearLocalActions(void);
+
 #if SE1_GAME == SS_REV
   // [Cecil] Rev: Fly-over observing in games & demos using enhanced CAM_*() methods
   virtual BOOL IsObservingOn(void);

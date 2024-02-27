@@ -854,6 +854,27 @@ void CGame::SetCurrentControls(INDEX iPlayer, BOOL bCurrent) {
   }
 };
 
+// [Cecil] Clear button actions for local players up to CORE_MAX_LOCAL_PLAYERS
+void CGame::ClearLocalActions(void)
+{
+  for (INDEX iPlayer = 0; iPlayer < CORE_MAX_LOCAL_PLAYERS; iPlayer++) {
+    CPlayerSource *ppls = gm_lpLocalPlayers[iPlayer].lp_pplsPlayerSource;
+
+    // Player doesn't exist
+    if (ppls == NULL) continue;
+
+    // Create dummy action for the player for this tick
+    CPlayerAction paClearAction = ppls->pls_paAction;
+    paClearAction.pa_vTranslation  = FLOAT3D(0, 0, 0);
+    //paClearAction.pa_aRotation     = ANGLE3D(0, 0, 0);
+    //paClearAction.pa_aViewRotation = ANGLE3D(0, 0, 0);
+    paClearAction.pa_ulButtons     = 0;
+
+    // Clear the action in the client source object
+    ppls->SetAction(paClearAction);
+  }
+};
+
 void CGame::GameHandleTimer(void)
 {
   // if direct input is active
@@ -878,65 +899,53 @@ void CGame::GameHandleTimer(void)
     // read input devices
     _pInput->GetInput(FALSE);
 
-    // if game is currently active, and not paused
-    if (gm_bGameOn && !_pNetwork->IsPaused() && !_pNetwork->GetLocalPause())
-    {
-      // [Cecil] Up to CORE_MAX_LOCAL_PLAYERS
-      for (INDEX iPlayer = 0; iPlayer < CORE_MAX_LOCAL_PLAYERS; iPlayer++)
-      {
-        // if this player exist
-        if( gm_lpLocalPlayers[ iPlayer].lp_pplsPlayerSource != NULL)
-        {
-          // publish player index to console
-          ctl_iCurrentPlayerLocal = iPlayer;
-          ctl_iCurrentPlayer = gm_lpLocalPlayers[ iPlayer].lp_pplsPlayerSource->pls_Index;
-
-          // copy its local controls to current controls
-          SetCurrentControls(iPlayer, TRUE);
-
-          // create action for it for this tick
-          CPlayerAction paAction;
-          INDEX iCurrentPlayer = gm_lpLocalPlayers[ iPlayer].lp_iPlayer;
-          CControls &ctrls = gm_actrlControls[ iCurrentPlayer];
-          ctrls.CreateAction(gm_apcPlayers[iCurrentPlayer], paAction, FALSE);
-          // set the action in the client source object
-          gm_lpLocalPlayers[ iPlayer].lp_pplsPlayerSource->SetAction(paAction);
-
-          // copy the local controls back
-          SetCurrentControls(iPlayer, FALSE);
-        }
-      }
-      // clear player indices
-      ctl_iCurrentPlayerLocal = -1;
-      ctl_iCurrentPlayer = -1;
-    }
-    // execute all button-action shell commands for common controls
+    // if game is currently active
     if (gm_bGameOn) {
+      // [Cecil] Clear player actions if using the camera
+      if (GetGameAPI()->GetCamera().IsActive()) {
+        ClearLocalActions();
+
+      // Otherwise if the game is not paused
+      } else if (!_pNetwork->IsPaused() && !_pNetwork->GetLocalPause()) {
+        // [Cecil] Up to CORE_MAX_LOCAL_PLAYERS
+        for (INDEX iPlayer = 0; iPlayer < CORE_MAX_LOCAL_PLAYERS; iPlayer++)
+        {
+          // if this player exist
+          if( gm_lpLocalPlayers[ iPlayer].lp_pplsPlayerSource != NULL)
+          {
+            // publish player index to console
+            ctl_iCurrentPlayerLocal = iPlayer;
+            ctl_iCurrentPlayer = gm_lpLocalPlayers[ iPlayer].lp_pplsPlayerSource->pls_Index;
+
+            // copy its local controls to current controls
+            SetCurrentControls(iPlayer, TRUE);
+
+            // create action for it for this tick
+            CPlayerAction paAction;
+            INDEX iCurrentPlayer = gm_lpLocalPlayers[ iPlayer].lp_iPlayer;
+            CControls &ctrls = gm_actrlControls[ iCurrentPlayer];
+            ctrls.CreateAction(gm_apcPlayers[iCurrentPlayer], paAction, FALSE);
+            // set the action in the client source object
+            gm_lpLocalPlayers[ iPlayer].lp_pplsPlayerSource->SetAction(paAction);
+
+            // copy the local controls back
+            SetCurrentControls(iPlayer, FALSE);
+          }
+        }
+        // clear player indices
+        ctl_iCurrentPlayerLocal = -1;
+        ctl_iCurrentPlayer = -1;
+      }
+
+      // execute all button-action shell commands for common controls
       _ctrlCommonControls.DoButtonActions();
     }
   }
   // if DirectInput is disabled, and game is currently active
   else if (gm_bGameOn)
   {
-    // [Cecil] Up to CORE_MAX_LOCAL_PLAYERS
-    for (INDEX iPlayer = 0; iPlayer < CORE_MAX_LOCAL_PLAYERS; iPlayer++)
-    { // if this player exist
-      if( gm_lpLocalPlayers[iPlayer].lp_pplsPlayerSource != NULL)
-      { 
-        CPlayerSource &pls = *gm_lpLocalPlayers[iPlayer].lp_pplsPlayerSource;
-        // create dummy action for the player for this tick
-        CPlayerAction paClearAction;
-        // clear actions
-        paClearAction = pls.pls_paAction;
-        paClearAction.pa_vTranslation  = FLOAT3D(0.0f,0.0f,0.0f);
-//        paClearAction.pa_aRotation     = ANGLE3D(0,0,0);
-//        paClearAction.pa_aViewRotation = ANGLE3D(0,0,0);
-        paClearAction.pa_ulButtons     = 0;
-
-        // clear the action in the client source object
-        pls.SetAction(paClearAction);
-      }
-    }
+    // [Cecil] Separate method
+    ClearLocalActions();
   }
 }
 
@@ -2391,6 +2400,10 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
 
     const INDEX ctViewers = Min(cenViewers.Count(), _adpDrawPorts.Count());
 
+    // [Cecil] Disable observer camera by default
+    CObserverCamera &ocam = GetGameAPI()->GetCamera();
+    ocam.cam_bExternalUsage = FALSE;
+
     // Render each view
     for (INDEX iViewer = 0; iViewer < ctViewers; iViewer++) {
       CDrawPort *pdp = &_adpDrawPorts[iViewer];
@@ -2409,8 +2422,11 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
         penViewer = penViewer->GetPredictor();
       }
 
+      // [Cecil] Camera can only be used in PvE modes
+      ocam.cam_bExternalUsage = (GetSP()->sp_bCooperative || GetSP()->sp_bSinglePlayer);
+
       // [Cecil] Prioritize camera, unless it can't be used at the moment
-      if (!GetGameAPI()->GetCamera().Update(penViewer, pdp)) {
+      if (!ocam.Update(penViewer, pdp)) {
         _bPlayerViewRendered = TRUE;
 
         // Render it
@@ -2429,7 +2445,8 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
       pdpDrawPort->Fill(C_BLACK|CT_OPAQUE);
 
       // [Cecil] Let observers fly around without active players
-      GetGameAPI()->GetCamera().Update(NULL, pdpDrawPort);
+      ocam.cam_bExternalUsage = TRUE;
+      ocam.Update(NULL, pdpDrawPort);
 
       pdpDrawPort->Unlock();
     }
