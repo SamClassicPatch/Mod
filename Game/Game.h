@@ -245,7 +245,7 @@ public:
   void ClearLocalActions(void);
 
 #if SE1_GAME == SS_REV
-  // [Cecil] Rev: Fly-over observing in games & demos using enhanced CAM_*() methods
+  // [Cecil] Rev: Fly-over observing in games & demos using enhanced CAM_*() methods (deprecated)
   virtual BOOL IsObservingOn(void);
   virtual void StartObserving(void);
   virtual void StopObserving(void);

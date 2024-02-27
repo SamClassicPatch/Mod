@@ -2962,9 +2962,9 @@ void CGame::MenuPostRenderMenu(const char *strMenuName)
 // [Cecil] Rev: Dummy method definitions for compatibility
 #if SE1_GAME == SS_REV
 
-BOOL CGame::IsObservingOn(void) { return _cam.IsOn(); };
-void CGame::StartObserving(void) { _cam.Start(CTString("")); };
-void CGame::StopObserving(void) { _cam.Stop(); };
+BOOL CGame::IsObservingOn(void) { return FALSE; };
+void CGame::StartObserving(void) {};
+void CGame::StopObserving(void) {};
 
 void CGame::SetSurvivalSession(CSessionProperties &sp, INDEX ctMaxPlayers) {};
 void CGame::SetSurvivalProperties(CSessionProperties &sp) {};
