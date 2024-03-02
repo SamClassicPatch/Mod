@@ -4198,15 +4198,24 @@ functions:
     }
 
   #if CLASSICSPATCH_GAMEPLAY_EXT
-    // [Cecil] Movement speed multiplier
-    if (CoreGEX().fMoveSpeed != 1.0f) {
-      vTranslation(1) *= CoreGEX().fMoveSpeed;
-      vTranslation(3) *= CoreGEX().fMoveSpeed;
+    if (CoreGEX().bEnable) {
+      // [Cecil] Movement speed multiplier
+      if (CoreGEX().fMoveSpeed != 1.0f) {
+        vTranslation(1) *= CoreGEX().fMoveSpeed;
+        vTranslation(3) *= CoreGEX().fMoveSpeed;
+      }
+
+      // [Cecil] Jump height multiplier
+      if (CoreGEX().fJumpHeight != 1.0f) {
+        vTranslation(2) *= CoreGEX().fJumpHeight;
+      }
     }
 
-    // [Cecil] Jump height multiplier
-    if (CoreGEX().fJumpHeight != 1.0f) {
-      vTranslation(2) *= CoreGEX().fJumpHeight;
+    // [Cecil] Infinite air control time
+    if (CoreGEX().bEnable && CoreGEX().bUnlimitedAirControl) {
+      en_tmMaxJumpControl = 1e6;
+    } else {
+      en_tmMaxJumpControl = 0.5f; // Restore
     }
   #endif
 
@@ -6843,13 +6852,6 @@ procedures:
     // set initial vars
     en_tmMaxHoldBreath = 60.0f;
     en_fDensity = 1000.0f;    // same density as water - to be able to dive freely
-
-  #if CLASSICSPATCH_GAMEPLAY_EXT
-    // [Cecil] Infinite air control time
-    if (CoreGEX().bUnlimitedAirControl) {
-      en_tmMaxJumpControl = 1e6;
-    }
-  #endif
 
     ModelChangeNotify();
 
