@@ -40,6 +40,9 @@ BOOL DisableLocalPrediction(const CEntity *penPlayer)
 // Get lerped placement for predicted entities (and not adjusted for prediction)
 CPlacement3D GetLocalLerpedPlacement(const CMovableEntity *pen, const CEntity *penPlayer)
 {
+  // [Cecil] NOTE: There's been a NULL pointer exception near the end at some point, so we're doing this now
+  if (pen == NULL) return CPlacement3D(FLOAT3D(0, 0, 0), ANGLE3D(0, 0, 0));
+
   // It's the original entity or local prediction is kept on
   if (pen->IsPredicted() || !DisableLocalPrediction(penPlayer)) {
     return pen->CMovableEntity::GetLerpedPlacement();
