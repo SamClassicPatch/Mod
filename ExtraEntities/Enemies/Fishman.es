@@ -4,7 +4,7 @@
 #include "Models/Enemies/Fishman/Fishman.h"
 %}
 
-uses "Enemies/EnemyDive";
+uses "EntitiesV/EnemyDive";
 
 %{
 static EntityInfo eiFishmanGround = {

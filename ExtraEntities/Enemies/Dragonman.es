@@ -19,8 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Models/Enemies/Dragonman/Dragonman.h"
 %}
 
-uses "Enemies/EnemyFly";
-uses "Weapons/Projectile";
+uses "EntitiesV/EnemyFly";
+uses "EntitiesV/Projectile";
 
 enum DragonmanType {
   0 DT_SOLDIER    "Soldier",

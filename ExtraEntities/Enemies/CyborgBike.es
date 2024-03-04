@@ -5,8 +5,8 @@
 %}
 
 
-uses "Effects/BasicEffects";
-uses "Effects/Debris";
+uses "EntitiesV/BasicEffects";
+uses "EntitiesV/Debris";
 
 event ECyborgBike {
   FLOAT fSpeed,
