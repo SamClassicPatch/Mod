@@ -61,3 +61,9 @@ EntitiesTFE/**/*.h
 !EntitiesTFE/EntitiesAPI.h
 !EntitiesTFE/StdH.h
 !EntitiesTFE/*.txt
+
+ExtraEntities/**/*.cpp
+ExtraEntities/**/*.h
+!ExtraEntities/LibMain.cpp
+!ExtraEntities/EntitiesAPI.h
+!ExtraEntities/StdH.h
