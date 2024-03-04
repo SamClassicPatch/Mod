@@ -10,7 +10,7 @@ uses "EntitiesV/Bullet";
 %{
 // info structure
 static EntityInfo eiMamutman = {
-  EIBT_FLESH, 60.0f,
+  EIBT_FLESH, 175.0f, // [Cecil] 60 -> 175
   0.0f, 2.0f, 0.0f,
   0.0f, 1.5f, 0.0f,
 };
@@ -47,6 +47,31 @@ components:
  54 sound   SOUND_FIRE      "Models\\Weapons\\Colt\\Sounds\\Fire.wav",
 
 functions:
+  // [Cecil] Precache resources, print kill description and return computer message
+  void Precache(void) {
+    CEnemyBase::Precache();
+
+    PrecacheModel(MODEL_MAMUTMAN);
+    PrecacheTexture(TEXTURE_MAMUTMAN);
+
+    PrecacheSound(SOUND_IDLE);
+    PrecacheSound(SOUND_SIGHT);
+    PrecacheSound(SOUND_WOUND);
+    PrecacheSound(SOUND_FIRE);
+    PrecacheSound(SOUND_DEATH);
+  };
+
+  virtual CTString GetPlayerKillDescription(const CTString &strPlayerName, const EDeath &eDeath) {
+    CTString str;
+    str.PrintF(TRANS("%s has been gunned down by a Mamutman"), strPlayerName);
+    return str;
+  };
+
+  virtual const CTFileName &GetComputerMessageName(void) const {
+    static DECLARE_CTFILENAME(fnm, "Data\\Messages\\Enemies\\Mamutman.txt");
+    return fnm;
+  };
+
   /* Entity info */
   void *GetEntityInfo(void) {
     return &eiMamutman;

@@ -68,6 +68,42 @@ components:
  55 sound   SOUND_DEATH     "Models\\Enemies\\Mamut\\Sounds\\Death.wav",
 
 functions:
+  // [Cecil] Precache resources, print kill description and return computer message
+  void Precache(void) {
+    CEnemyBase::Precache();
+
+    PrecacheModel(MODEL_MAMUT);
+    PrecacheTexture(TEXTURE_MAMUT_SUMMER);
+    PrecacheTexture(TEXTURE_MAMUT_WINTER);
+
+    PrecacheModel(MODEL_MAMUTMAN);
+    PrecacheTexture(TEXTURE_MAMUTMAN);
+
+    PrecacheSound(SOUND_IDLE);
+    PrecacheSound(SOUND_SIGHT);
+    PrecacheSound(SOUND_WOUND);
+    PrecacheSound(SOUND_FIRE);
+    PrecacheSound(SOUND_KICK);
+    PrecacheSound(SOUND_DEATH);
+
+    PrecacheClass(CLASS_AIRWAVE);
+  };
+
+  virtual CTString GetPlayerKillDescription(const CTString &strPlayerName, const EDeath &eDeath) {
+    CTString str;
+    if (eDeath.eLastDamage.dmtType == DMT_CLOSERANGE) {
+      str.PrintF(TRANS("%s was stabbed to death by a Mammooth"), strPlayerName);
+    } else {
+      str.PrintF(TRANS("%s was killed by a Mammoth"), strPlayerName);
+    }
+    return str;
+  };
+
+  virtual const CTFileName &GetComputerMessageName(void) const {
+    static DECLARE_CTFILENAME(fnm, "Data\\Messages\\Enemies\\Mamut.txt");
+    return fnm;
+  };
+
   /* Entity info */
   void *GetEntityInfo(void) {
     return &eiMamut;
@@ -442,7 +478,7 @@ procedures:
     m_fIgnoreRange = 200.0f;
     // damage/explode properties
     m_fBlowUpAmount = 250.0f;
-    m_fBodyParts = 5;
+    m_fBodyParts = 24; // [Cecil] 5 -> 24
     m_fDamageWounded = 200.0f;
     m_iScore = 5000;
 

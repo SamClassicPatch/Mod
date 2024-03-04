@@ -8,12 +8,12 @@ uses "EntitiesV/EnemyDive";
 
 %{
 static EntityInfo eiFishmanGround = {
-  EIBT_FLESH, 100.0f,
+  EIBT_FLESH, 150.0f, // [Cecil] 100 -> 150
   0.0f, 1.4f, 0.0f,
   0.0f, 1.0f, 0.0f,
 };
 static EntityInfo eiFishmanLiquid = {
-  EIBT_FLESH, 33.3f,
+  EIBT_FLESH, 175.0f, // [Cecil] 33.3 -> 175
   0.0f, 0.0f, 0.0f,
   0.0f, 0.0f, 0.0f,
 };
@@ -34,6 +34,8 @@ components:
   1 model   MODEL_FISHMAN     "Models\\Enemies\\Fishman\\Fishman.mdl",
   2 texture TEXTURE_FISHMAN   "Models\\Enemies\\Fishman\\Fishman.tex",
 
+ 10 class   CLASS_PROJECTILE  "Classes\\Projectile.ecl",
+
 // ************** SOUNDS **************
  50 sound   SOUND_IDLE_WATER    "Models\\Enemies\\Fishman\\Sounds\\IdleWater.wav",
  51 sound   SOUND_IDLE_GROUND   "Models\\Enemies\\Fishman\\Sounds\\IdleGround.wav",
@@ -47,6 +49,42 @@ components:
  59 sound   SOUND_KICK          "Models\\Enemies\\Fishman\\Sounds\\Kick.wav",
 
 functions:
+  // [Cecil] Precache resources, print kill description and return computer message
+  void Precache(void) {
+    CEnemyBase::Precache();
+
+    PrecacheModel(MODEL_FISHMAN);
+    PrecacheTexture(TEXTURE_FISHMAN);
+
+    PrecacheSound(SOUND_IDLE_WATER);
+    PrecacheSound(SOUND_IDLE_GROUND);
+    PrecacheSound(SOUND_SIGHT_WATER);
+    PrecacheSound(SOUND_SIGHT_GROUND);
+    PrecacheSound(SOUND_WOUND_WATER);
+    PrecacheSound(SOUND_WOUND_GROUND);
+    PrecacheSound(SOUND_DEATH_WATER);
+    PrecacheSound(SOUND_DEATH_GROUND);
+    PrecacheSound(SOUND_FIRE);
+    PrecacheSound(SOUND_KICK);
+
+    PrecacheClass(CLASS_PROJECTILE, PRT_FISHMAN_FIRE);
+  };
+
+  virtual CTString GetPlayerKillDescription(const CTString &strPlayerName, const EDeath &eDeath) {
+    CTString str;
+    if (eDeath.eLastDamage.dmtType == DMT_CLOSERANGE) {
+      str.PrintF(TRANS("%s was ripped apart by a Fishman"), strPlayerName);
+    } else {
+      str.PrintF(TRANS("%s was killed by a Fishman"), strPlayerName);
+    }
+    return str;
+  };
+
+  virtual const CTFileName &GetComputerMessageName(void) const {
+    static DECLARE_CTFILENAME(fnm, "Data\\Messages\\Enemies\\Fishman.txt");
+    return fnm;
+  };
+
   /* Entity info */
   void *GetEntityInfo(void) {
     if (m_bInLiquid) {
@@ -230,6 +268,11 @@ procedures:
       autowait(GetModelObject()->GetCurrentAnimLength() - GetModelObject()->GetPassedTime());
     }
 
+    // [Cecil]
+    if (m_bInLiquid) {
+      jump DiveFire();
+    }
+
     // fire projectile
     StartModelAnim(FISHMAN_ANIM_GROUNDATTACK02, 0);
     autowait(0.3f);
@@ -247,6 +290,11 @@ procedures:
       // run to enemy
       m_fShootTime = _pTimer->CurrentTick() + 0.25f;
       return EReturn();
+    }
+
+    // [Cecil]
+    if (m_bInLiquid) {
+      jump DiveHit();
     }
 
     // wait anim end

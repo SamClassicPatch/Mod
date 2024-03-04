@@ -8,7 +8,7 @@ uses "EntitiesV/EnemyDive";
 
 %{
 static EntityInfo eiMantamanLiquid = {
-  EIBT_FLESH, 150.0f,
+  EIBT_FLESH, 175.0f, // [Cecil] 150 -> 175
   0.0f, 0.0f, 0.0f,
   0.0f, 0.0f, 0.0f,
 
@@ -29,6 +29,8 @@ components:
   1 model   MODEL_MANTAMAN    "Models\\Enemies\\Mantaman\\Mantaman.mdl",
   2 texture TEXTURE_MANTAMAN  "Models\\Enemies\\Mantaman\\Mantaman.tex",
 
+ 10 class   CLASS_PROJECTILE  "Classes\\Projectile.ecl",
+
 // ************** SOUNDS **************
  50 sound   SOUND_IDLE      "Models\\Enemies\\Mantaman\\Sounds\\Idle.wav",
  51 sound   SOUND_SIGHT     "Models\\Enemies\\Mantaman\\Sounds\\Sight.wav",
@@ -38,6 +40,34 @@ components:
  55 sound   SOUND_DEATH     "Models\\Enemies\\Mantaman\\Sounds\\Death.wav",
 
 functions:
+  // [Cecil] Precache resources, print kill description and return computer message
+  void Precache(void) {
+    CEnemyBase::Precache();
+
+    PrecacheModel(MODEL_MANTAMAN);
+    PrecacheTexture(TEXTURE_MANTAMAN);
+
+    PrecacheSound(SOUND_IDLE);
+    PrecacheSound(SOUND_SIGHT);
+    PrecacheSound(SOUND_WOUND);
+    PrecacheSound(SOUND_FIRE);
+    PrecacheSound(SOUND_KICK);
+    PrecacheSound(SOUND_DEATH);
+
+    PrecacheClass(CLASS_PROJECTILE, PRT_MANTAMAN_FIRE);
+  };
+
+  virtual CTString GetPlayerKillDescription(const CTString &strPlayerName, const EDeath &eDeath) {
+    CTString str;
+    str.PrintF(TRANS("%s was killed by a Mantaman"), strPlayerName);
+    return str;
+  };
+
+  virtual const CTFileName &GetComputerMessageName(void) const {
+    static DECLARE_CTFILENAME(fnm, "Data\\Messages\\Enemies\\Mantaman.txt");
+    return fnm;
+  };
+
   /* Entity info */
   void *GetEntityInfo(void) {
     return &eiMantamanLiquid;

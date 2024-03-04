@@ -17,12 +17,19 @@ event EAirWave {
 
 
 %{
+// [Cecil] Precache resources
+void CAirWave_OnPrecache(CDLLEntityClass *pdec, INDEX iUser) {
+  pdec->PrecacheModel(MODEL_AIRWAVE);
+  pdec->PrecacheTexture(TEXTURE_AIRWAVE);
+};
+
 #define SLIDE_TIME 5.0f
 %}
 
 class CAirWave : CMovableModelEntity {
 name      "Air wave";
 thumbnail "";
+features "ImplementsOnPrecache"; // [Cecil]
 
 properties:
   1 CEntityPointer m_penLauncher, // entity which launch it

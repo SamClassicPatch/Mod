@@ -99,6 +99,49 @@ components:
  55 sound   SOUND_DEATH     "Models\\Enemies\\Dragonman\\Sounds\\Death.wav",
 
 functions:
+  // [Cecil] Precache resources, print kill description and return computer message
+  void Precache(void) {
+    CEnemyBase::Precache();
+
+    PrecacheModel(MODEL_DRAGONMAN);
+    PrecacheTexture(TEXTURE_DRAGONMAN1);
+    PrecacheTexture(TEXTURE_DRAGONMAN2);
+    PrecacheTexture(TEXTURE_DRAGONMAN3);
+
+    PrecacheSound(SOUND_IDLE);
+    PrecacheSound(SOUND_SIGHT);
+    PrecacheSound(SOUND_WOUND);
+    PrecacheSound(SOUND_FIRE);
+    PrecacheSound(SOUND_KICK);
+    PrecacheSound(SOUND_DEATH);
+
+    PrecacheClass(CLASS_PROJECTILE, PRT_DRAGONMAN_FIRE);
+    PrecacheClass(CLASS_PROJECTILE, PRT_DRAGONMAN_STRONG_FIRE);
+  };
+
+  virtual CTString GetPlayerKillDescription(const CTString &strPlayerName, const EDeath &eDeath) {
+    CTString str;
+    if (eDeath.eLastDamage.dmtType == DMT_CLOSERANGE) {
+      str.PrintF(TRANS("%s was kicked to death by a Dragon"), strPlayerName);
+    } else {
+      str.PrintF(TRANS("%s was killed by a Dragon"), strPlayerName);
+    }
+    return str;
+  };
+
+  virtual const CTFileName &GetComputerMessageName(void) const {
+    static DECLARE_CTFILENAME(fnmSoldier,  "Data\\Messages\\Enemies\\DragonmanSoldier.txt");
+    static DECLARE_CTFILENAME(fnmSergeant, "Data\\Messages\\Enemies\\DragonmanSergeant.txt");
+    static DECLARE_CTFILENAME(fnmMonster,  "Data\\Messages\\Enemies\\DragonmanMonster.txt");
+
+    switch (m_EdtType) {
+      default: ASSERT(FALSE);
+      case DT_SOLDIER:  return fnmSoldier;
+      case DT_SERGEANT: return fnmSergeant;
+      case DT_MONSTER:  return fnmMonster;
+    }
+  };
+
   /* Entity info */
   void *GetEntityInfo(void) {
     if (m_bInAir) {
@@ -435,6 +478,11 @@ procedures:
   };
 
   Fire(EVoid) : CEnemyBase::Fire {
+    // [Cecil]
+    if (m_bInAir) {
+      jump FlyFire();
+    }
+
     // fire projectile
     StartModelAnim(DRAGONMAN_ANIM_GROUNDATTACKCLOSELOOP, 0);
     autowait(0.3f);
@@ -458,6 +506,11 @@ procedures:
   };
 
   Hit(EVoid) : CEnemyBase::Hit {
+    // [Cecil]
+    if (m_bInAir) {
+      jump FlyBurn();
+    }
+
     // burn enemy
     if (m_EdtType == DT_SERGEANT && CalcDist(m_penEnemy) <= 6.0f  ||
         m_EdtType == DT_MONSTER  && CalcDist(m_penEnemy) <= 20.0f) {

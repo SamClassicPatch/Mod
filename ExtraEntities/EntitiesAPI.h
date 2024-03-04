@@ -14,7 +14,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 // Include some base vanilla entities
-#pragma comment(lib, "EntitiesV.lib")
+#ifndef NDEBUG
+  #pragma comment(lib, "EntitiesVD.lib")
+#else
+  #pragma comment(lib, "EntitiesV.lib")
+#endif
+
 #include <EntitiesV/StdH/StdH.h>
 #include <EntitiesV/EnemyBase.h>
 #include <EntitiesV/EnemyDive.h>

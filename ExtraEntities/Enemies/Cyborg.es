@@ -99,6 +99,53 @@ components:
 212 texture TEX_SPEC_STRONG             "Models\\SpecularTextures\\Strong.tex",
 
 functions:
+  // [Cecil] Precache resources, print kill description and return computer message
+  void Precache(void) {
+    CEnemyBase::Precache();
+
+    PrecacheModel(MODEL_CYBORG);
+    PrecacheModel(MODEL_ASS);
+    PrecacheModel(MODEL_TORSO);
+    PrecacheModel(MODEL_HEAD);
+    PrecacheModel(MODEL_RIGHT_UPPER_ARM);
+    PrecacheModel(MODEL_RIGHT_LOWER_ARM);
+    PrecacheModel(MODEL_LEFT_UPPER_ARM);
+    PrecacheModel(MODEL_LEFT_LOWER_ARM);
+    PrecacheModel(MODEL_RIGHT_UPPER_LEG);
+    PrecacheModel(MODEL_RIGHT_LOWER_LEG);
+    PrecacheModel(MODEL_LEFT_UPPER_LEG);
+    PrecacheModel(MODEL_LEFT_LOWER_LEG);
+    PrecacheModel(MODEL_FOOT);
+    PrecacheModel(MODEL_BIKE);
+
+    PrecacheTexture(TEXTURE_CYBORG);
+    PrecacheTexture(TEXTURE_BIKE);
+
+    PrecacheSound(SOUND_IDLE);
+    PrecacheSound(SOUND_SIGHT);
+    PrecacheSound(SOUND_WOUND);
+    PrecacheSound(SOUND_FIRE);
+    PrecacheSound(SOUND_KICK);
+    PrecacheSound(SOUND_DEATH);
+
+    PrecacheClass(CLASS_PROJECTILE, PRT_CYBORG_LASER);
+  };
+
+  virtual CTString GetPlayerKillDescription(const CTString &strPlayerName, const EDeath &eDeath) {
+    CTString str;
+    if (eDeath.eLastDamage.dmtType == DMT_CLOSERANGE) {
+      str.PrintF(TRANS("%s was beaten to death by a Cyborg"), strPlayerName);
+    } else {
+      str.PrintF(TRANS("Cyborg blew %s away"), strPlayerName);
+    }
+    return str;
+  };
+
+  virtual const CTFileName &GetComputerMessageName(void) const {
+    static DECLARE_CTFILENAME(fnm, "Data\\Messages\\Enemies\\Cyborg.txt");
+    return fnm;
+  };
+
   /* Entity info */
   void *GetEntityInfo(void) {
     if (m_EctType!=CBT_GROUND) {
@@ -118,6 +165,10 @@ functions:
     }
   };
 
+  // [Cecil] No stain
+  void LeaveStain(BOOL bGrow)
+  {
+  };
 
   // damage anim
   INDEX AnimForDamage(FLOAT fDamage) {
@@ -206,10 +257,11 @@ functions:
     FLOATaabbox3D box;
     GetBoundingBox(box);
     FLOAT fEntitySize = box.Size().MaxNorm();
+    FLOAT3D vBodySpeed = en_vCurrentTranslationAbsolute-en_vGravityDir*(en_vGravityDir%en_vCurrentTranslationAbsolute);
 
     // spawn debris
-    Debris_Begin(EIBT_ROBOT, DPR_SMOKETRAIL, BET_EXPLOSIONSTAIN, fEntitySize, m_vDamage*0.3f,
-      en_vCurrentTranslationAbsolute, 1.0f, 0.0f);
+    // [Cecil] Flesh type makes it not explode on impact
+    Debris_Begin(EIBT_FLESH, DPR_SMOKETRAIL, BET_EXPLOSIONSTAIN, fEntitySize, m_vDamage*0.3f, vBodySpeed, 1.0f, 0.0f);
     
     Debris_Spawn(this, this, MODEL_ASS, TEXTURE_CYBORG, TEX_REFL_LIGHTMETAL01, TEX_SPEC_MEDIUM, 0,
       0, 0.0f, FLOAT3D(FRnd()*0.6f+0.2f, FRnd()*0.6f+0.2f, FRnd()*0.6f+0.2f));
@@ -712,6 +764,10 @@ procedures:
       SetPhysicsFlags(EPF_MODEL_WALKING);
       m_iScore = 500;
     }
+
+    // [Cecil] Electricity spray
+    m_sptType = CHOOSE_FOR_GAME(SPT_ELECTRICITY_SPARKS, SPT_ELECTRICITY_SPARKS_NO_BLOOD, SPT_ELECTRICITY_SPARKS_NO_BLOOD);
+
     StandingAnim();
     // setup moving speed
     m_fWalkSpeed = FRnd()*3.0f + 6.0f;

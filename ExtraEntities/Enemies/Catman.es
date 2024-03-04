@@ -35,6 +35,8 @@ components:
   1 model   MODEL_CATMAN      "Models\\Enemies\\Catman\\Catman.mdl",
   2 texture TEXTURE_SOLDIER   "Models\\Enemies\\Catman\\Catman03.tex",
 
+ 10 class   CLASS_PROJECTILE  "Classes\\Projectile.ecl",
+
 // ************** SOUNDS **************
  50 sound   SOUND_IDLE      "Models\\Enemies\\Catman\\Sounds\\Idle.wav",
  51 sound   SOUND_SIGHT     "Models\\Enemies\\Catman\\Sounds\\Sight.wav",
@@ -44,6 +46,34 @@ components:
  55 sound   SOUND_DEATH     "Models\\Enemies\\Catman\\Sounds\\Death.wav",
 
 functions:
+  // [Cecil] Precache resources, print kill description and return computer message
+  void Precache(void) {
+    CEnemyBase::Precache();
+
+    PrecacheModel(MODEL_CATMAN);
+    PrecacheTexture(TEXTURE_SOLDIER);
+
+    PrecacheSound(SOUND_IDLE);
+    PrecacheSound(SOUND_SIGHT);
+    PrecacheSound(SOUND_WOUND);
+    PrecacheSound(SOUND_FIRE);
+    PrecacheSound(SOUND_KICK);
+    PrecacheSound(SOUND_DEATH);
+
+    PrecacheClass(CLASS_PROJECTILE, PRT_CATMAN_FIRE);
+  };
+
+  virtual CTString GetPlayerKillDescription(const CTString &strPlayerName, const EDeath &eDeath) {
+    CTString str;
+    str.PrintF(TRANS("%s was shot by a Catman"), strPlayerName);
+    return str;
+  };
+
+  virtual const CTFileName &GetComputerMessageName(void) const {
+    static DECLARE_CTFILENAME(fnm, "Data\\Messages\\Enemies\\Catman.txt");
+    return fnm;
+  };
+
   /* Entity info */
   void *GetEntityInfo(void) {
     return &eiCatman;
@@ -175,6 +205,7 @@ procedures:
     m_fBlowUpAmount = 35.0f;
     m_fBodyParts = 4;
     m_fDamageWounded = 0.0f;
+    m_iScore = 250; // [Cecil]
 
     // continue behavior in base class
     jump CEnemyBase::MainLoop();

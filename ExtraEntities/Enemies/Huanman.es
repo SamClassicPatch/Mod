@@ -9,7 +9,7 @@ uses "EntitiesV/EnemyBase";
 %{
 // info structure
 static EntityInfo eiHuanman = {
-  EIBT_FLESH, 125.0f,
+  EIBT_FLESH, 200.0f, // [Cecil] 125 -> 200
   0.0f, 2.1f, 0.0f,
   0.0f, 1.1f, 0.0f,
 };
@@ -26,6 +26,7 @@ thumbnail "Thumbnails\\Huanman.tbn";
 properties:
 components:
   0 class   CLASS_BASE          "Classes\\EnemyBase.ecl",
+  1 class   CLASS_PROJECTILE    "Classes\\Projectile.ecl",
 
  10 model   MODEL_HUANMAN       "Models\\Enemies\\Huanman\\Huanman.mdl",
  11 texture TEXTURE_HUANMAN     "Models\\Enemies\\Huanman\\Huanman.tex",
@@ -39,6 +40,34 @@ components:
  55 sound   SOUND_DEATH     "Models\\Enemies\\Huanman\\Sounds\\Death.wav",
 
 functions:
+  // [Cecil] Precache resources, print kill description and return computer message
+  void Precache(void) {
+    CEnemyBase::Precache();
+
+    PrecacheModel(MODEL_HUANMAN);
+    PrecacheTexture(TEXTURE_HUANMAN);
+
+    PrecacheSound(SOUND_IDLE);
+    PrecacheSound(SOUND_SIGHT);
+    PrecacheSound(SOUND_WOUND);
+    PrecacheSound(SOUND_FIRE);
+    PrecacheSound(SOUND_KICK);
+    PrecacheSound(SOUND_DEATH);
+
+    PrecacheClass(CLASS_PROJECTILE, PRT_HUANMAN_FIRE);
+  };
+
+  virtual CTString GetPlayerKillDescription(const CTString &strPlayerName, const EDeath &eDeath) {
+    CTString str;
+    str.PrintF(TRANS("Huanman blew %s away"), strPlayerName);
+    return str;
+  };
+
+  virtual const CTFileName &GetComputerMessageName(void) const {
+    static DECLARE_CTFILENAME(fnm, "Data\\Messages\\Enemies\\Huanman.txt");
+    return fnm;
+  };
+
   /* Entity info */
   void *GetEntityInfo(void) {
     return &eiHuanman;
