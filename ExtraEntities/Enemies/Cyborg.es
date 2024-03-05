@@ -20,9 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 %}
 
 
-uses "EntitiesV/EnemyFly";
-uses "EntitiesV/Projectile";
-uses "EntitiesV/CyborgBike";
+uses "Enemies/EnemyFly";
+uses "Weapons/Projectile";
+uses "Enemies/CyborgBike";
 
 
 enum CyborgType {

@@ -14,16 +14,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 // Include some base vanilla entities
-#ifndef NDEBUG
-  #pragma comment(lib, "EntitiesVD.lib")
+#if SE1_GAME == SS_TFE
+  #include <EntitiesTFE/EntitiesAPI.h>
+  #include <EntitiesTFE/Enemies/EnemyBase.h>
+  #include <EntitiesTFE/Enemies/EnemyDive.h>
+  #include <EntitiesTFE/Enemies/EnemyFly.h>
 #else
-  #pragma comment(lib, "EntitiesV.lib")
+  #include <Entities/EntitiesAPI.h>
+  #include <Entities/Enemies/EnemyBase.h>
+  #include <Entities/Enemies/EnemyDive.h>
+  #include <Entities/Enemies/EnemyFly.h>
 #endif
-
-#include <EntitiesV/StdH/StdH.h>
-#include <EntitiesV/EnemyBase.h>
-#include <EntitiesV/EnemyDive.h>
-#include <EntitiesV/EnemyFly.h>
 
 #undef DECL_DLL
 

@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Models/Enemies/Fishman/Fishman.h"
 %}
 
-uses "EntitiesV/EnemyDive";
+uses "Enemies/EnemyDive";
 
 %{
 static EntityInfo eiFishmanGround = {

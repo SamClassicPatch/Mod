@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 %}
 
-uses "EntitiesV/EnemyFly";
+uses "Enemies/EnemyFly";
 
 enum RobotFlyingChar {
   0 RFC_KAMIKAZE   "Kamikaze",

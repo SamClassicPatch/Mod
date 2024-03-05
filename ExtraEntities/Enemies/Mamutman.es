@@ -19,8 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Models/Enemies/Mamutman/Mamutman.h"
 %}
 
-uses "EntitiesV/EnemyBase";
-uses "EntitiesV/Bullet";
+uses "Enemies/EnemyBase";
+uses "Weapons/Bullet";
 
 %{
 // info structure

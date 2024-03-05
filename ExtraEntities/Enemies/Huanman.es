@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Models/Enemies/Huanman/Huanman.h"
 %}
 
-uses "EntitiesV/EnemyBase";
+uses "Enemies/EnemyBase";
 
 %{
 // info structure

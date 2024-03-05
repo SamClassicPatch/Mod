@@ -18,8 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdH.h"
 %}
 
-uses "EntitiesV/EnemyBase";
-uses "EntitiesV/Projectile";
+uses "Enemies/EnemyBase";
+uses "Weapons/Projectile";
 
 enum RobotDrivingChar {
   0 RDC_R2D2      "R2D2",

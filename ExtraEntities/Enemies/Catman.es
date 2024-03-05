@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Models/Enemies/Catman/Catman.h"
 %}
 
-uses "EntitiesV/EnemyBase";
+uses "Enemies/EnemyBase";
 
 enum CatmanType {
   0 CMT_SOLDIER    "Soldier",

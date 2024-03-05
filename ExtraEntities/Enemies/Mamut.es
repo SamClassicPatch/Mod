@@ -20,10 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Models/Enemies/Mamutman/Mamutman.h"
 %}
 
-uses "EntitiesV/EnemyBase";
+uses "Enemies/EnemyBase";
 uses "Enemies/Mamutman";
 uses "Weapons/AirWave";
-uses "EntitiesV/Bullet";
+uses "Weapons/Bullet";
 
 
 enum MamutChar {

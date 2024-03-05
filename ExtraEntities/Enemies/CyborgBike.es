@@ -20,8 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 %}
 
 
-uses "EntitiesV/BasicEffects";
-uses "EntitiesV/Debris";
+uses "Effects/BasicEffects";
+uses "Effects/Debris";
 
 event ECyborgBike {
   FLOAT fSpeed,
