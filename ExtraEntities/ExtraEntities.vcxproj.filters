@@ -24,6 +24,9 @@
     <Filter Include="Source Files\Entity sources">
       <UniqueIdentifier>{6432fa98-fede-4062-b006-07d4eb9b0371}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Class Files\Brushes">
+      <UniqueIdentifier>{6f374ef7-9395-41f6-8d4f-2157c79fa58e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LibMain.cpp">
@@ -66,6 +69,9 @@
       <Filter>Source Files\Entity sources</Filter>
     </ClCompile>
     <ClCompile Include="Enemies\RobotFlying.cpp">
+      <Filter>Source Files\Entity sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Brushes\Terrain.cpp">
       <Filter>Source Files\Entity sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -116,6 +122,9 @@
     </CustomBuild>
     <CustomBuild Include="Weapons\AirWave.es">
       <Filter>Class Files\Weapons</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Brushes\Terrain.es">
+      <Filter>Class Files\Brushes</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>
