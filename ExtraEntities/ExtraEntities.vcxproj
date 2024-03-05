@@ -324,11 +324,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_SSR110|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Enemies\RobotFixed.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_TSE107|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_SSR110|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_TSE105|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_TSE107|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_TFE105|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Enemies\RobotFlying.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_SSR110|Win32'">true</ExcludedFromBuild>
