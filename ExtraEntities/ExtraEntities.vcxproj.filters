@@ -27,6 +27,9 @@
     <Filter Include="Class Files\Brushes">
       <UniqueIdentifier>{6f374ef7-9395-41f6-8d4f-2157c79fa58e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Class Files\Tools">
+      <UniqueIdentifier>{ec87d045-f8fd-4638-8a95-4227a37e4029}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LibMain.cpp">
@@ -72,6 +75,18 @@
       <Filter>Source Files\Entity sources</Filter>
     </ClCompile>
     <ClCompile Include="Brushes\Terrain.cpp">
+      <Filter>Source Files\Entity sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Tools\Achievement.cpp">
+      <Filter>Source Files\Entity sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Tools\ControlZone.cpp">
+      <Filter>Source Files\Entity sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Tools\SpectatorCamera.cpp">
+      <Filter>Source Files\Entity sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Tools\WorldInfo.cpp">
       <Filter>Source Files\Entity sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -125,6 +140,18 @@
     </CustomBuild>
     <CustomBuild Include="Brushes\Terrain.es">
       <Filter>Class Files\Brushes</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Tools\Achievement.es">
+      <Filter>Class Files\Tools</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Tools\ControlZone.es">
+      <Filter>Class Files\Tools</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Tools\SpectatorCamera.es">
+      <Filter>Class Files\Tools</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Tools\WorldInfo.es">
+      <Filter>Class Files\Tools</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>
