@@ -42,8 +42,10 @@ thumbnail "Thumbnails\\RobotFlying.tbn";
 
 properties:
   1 enum RobotFlyingChar m_rfcChar   "Character" 'C' = RFC_FIGHTER,
+
 components:
   0 class   CLASS_BASE        "Classes\\EnemyFly.ecl",
+  1 class   CLASS_PROJECTILE    "Classes\\Projectile.ecl",
 
  10 model   MODEL_KAMIKAZE      "Models\\Enemies\\Robots\\FloatKamikaze\\FloatKamikaze.mdl",
  11 texture TEXTURE_KAMIKAZE    "Models\\Enemies\\Robots\\SentryBall\\Ball.tex",
@@ -60,6 +62,42 @@ components:
  55 sound   SOUND_DEATH     "Models\\Enemies\\Woman\\Sounds\\Death.wav",
 
 functions:
+  // [Cecil] Precache resources, print kill description and return computer message
+  void Precache(void) {
+    CEnemyBase::Precache();
+
+    PrecacheModel(MODEL_KAMIKAZE);
+    PrecacheTexture(TEXTURE_KAMIKAZE);
+    PrecacheModel(MODEL_FIGHTER);
+    PrecacheTexture(TEXTURE_FIGHTER);
+
+    PrecacheSound(SOUND_IDLE);
+    PrecacheSound(SOUND_SIGHT);
+    PrecacheSound(SOUND_WOUND);
+    PrecacheSound(SOUND_FIRE);
+    PrecacheSound(SOUND_KICK);
+    PrecacheSound(SOUND_DEATH);
+
+    PrecacheClass(CLASS_PROJECTILE, PRT_CYBORG_LASER);
+  };
+
+  virtual CTString GetPlayerKillDescription(const CTString &strPlayerName, const EDeath &eDeath) {
+    CTString str;
+    str.PrintF(TRANS("%s was blown away by a flying robot"), strPlayerName);
+    return str;
+  };
+
+  virtual const CTFileName &GetComputerMessageName(void) const {
+    static DECLARE_CTFILENAME(fnmKamikaze, "Data\\Messages\\Enemies\\RobotKamikaze.txt");
+    static DECLARE_CTFILENAME(fnmFighter,  "Data\\Messages\\Enemies\\RobotFighter.txt");
+
+    if (m_rfcChar == RFC_KAMIKAZE) {
+      return fnmKamikaze;
+    } else {
+      return fnmFighter;
+    }
+  };
+
   /* Entity info */
   void *GetEntityInfo(void) {
     return &eiRobotFlying;
@@ -214,6 +252,7 @@ procedures:
       m_fFlyCloseFireTime = 0.2f;
       m_fFlyIgnoreRange = 200.0f;
       m_fFlyHeight = 2.5f;
+      m_iScore = 500; // [Cecil]
           } break;
     default: ASSERT(FALSE);
     }

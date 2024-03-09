@@ -34,7 +34,9 @@ static EntityInfo eiRobotDriving = {
   0.0f, 1.5f, 0.0f,   // target
 };
 
-#define FIRE_POS  FLOAT3D(0.0f, 1.0f, -1.0f)
+// [Cecil] Left and right fire offsets
+#define FIRE_POS_L FLOAT3D(-1.0f, 1.0f, -1.0f)
+#define FIRE_POS_R FLOAT3D(+1.0f, 1.0f, -1.0f)
 %}
 
 
@@ -68,6 +70,43 @@ components:
  56 sound   SOUND_DEATH       "Models\\Enemies\\Walker\\Sounds\\Death.wav",
 
 functions:
+  // [Cecil] Precache resources, print kill description and return computer message
+  void Precache(void) {
+    CEnemyBase::Precache();
+
+    PrecacheModel(MODEL_R2D2);
+    PrecacheTexture(TEXTURE_R2D2);
+    PrecacheModel(MODEL_SPIDER);
+    PrecacheTexture(TEXTURE_SPIDER);
+
+    PrecacheSound(SOUND_IDLE);
+    PrecacheSound(SOUND_SIGHT);
+    PrecacheSound(SOUND_WOUND);
+    PrecacheSound(SOUND_FIRE_LASER);
+    PrecacheSound(SOUND_KICK);
+    PrecacheSound(SOUND_DEATH);
+
+    PrecacheClass(CLASS_PROJECTILE, PRT_CYBORG_LASER);
+    PrecacheClass(CLASS_PROJECTILE, PRT_HEADMAN_BOMBERMAN);
+  };
+
+  virtual CTString GetPlayerKillDescription(const CTString &strPlayerName, const EDeath &eDeath) {
+    CTString str;
+    str.PrintF(TRANS("%s was killed by a robot"), strPlayerName);
+    return str;
+  };
+
+  virtual const CTFileName &GetComputerMessageName(void) const {
+    static DECLARE_CTFILENAME(fnmR2D2,   "Data\\Messages\\Enemies\\RobotR2D2.txt");
+    static DECLARE_CTFILENAME(fnmSpider, "Data\\Messages\\Enemies\\RobotSpider.txt");
+
+    if (m_rdcChar == RDC_R2D2) {
+      return fnmR2D2;
+    } else {
+      return fnmSpider;
+    }
+  };
+
   /* Entity info */
   void *GetEntityInfo(void) {
     return &eiRobotDriving;
@@ -126,10 +165,10 @@ procedures:
       StopMoving();
       //StartModelAnim(WALKER_ANIM_ATTACK02LEFT, AOF_LOOPING);
 
-      ShootProjectile(PRT_CYBORG_LASER, FIRE_POS*m_fSize, ANGLE3D(0, 0, 0));
+      ShootProjectile(PRT_CYBORG_LASER, FIRE_POS_R * m_fSize, ANGLE3D(0, 0, 0));
       PlaySound(m_soFire0, SOUND_FIRE_LASER, SOF_3D);
       autowait(0.25f);
-      ShootProjectile(PRT_CYBORG_LASER, FIRE_POS*m_fSize, ANGLE3D(0, 0, 0));
+      ShootProjectile(PRT_CYBORG_LASER, FIRE_POS_L * m_fSize, ANGLE3D(0, 0, 0));
       PlaySound(m_soFire1, SOUND_FIRE_LASER, SOF_3D);
 
       // wait for a while
