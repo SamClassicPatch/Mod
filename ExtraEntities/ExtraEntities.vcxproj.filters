@@ -30,6 +30,9 @@
     <Filter Include="Class Files\Tools">
       <UniqueIdentifier>{ec87d045-f8fd-4638-8a95-4227a37e4029}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Class Files\Items">
+      <UniqueIdentifier>{e6b484b1-f6cf-4ec1-b57d-c27c118c5b6b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LibMain.cpp">
@@ -87,6 +90,9 @@
       <Filter>Source Files\Entity sources</Filter>
     </ClCompile>
     <ClCompile Include="Tools\WorldInfo.cpp">
+      <Filter>Source Files\Entity sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Items\FlagItem.cpp">
       <Filter>Source Files\Entity sources</Filter>
     </ClCompile>
     <ClCompile Include="Enemies\Destroyer.cpp">
@@ -161,6 +167,9 @@
     </CustomBuild>
     <CustomBuild Include="Enemies\Ughzy.es">
       <Filter>Class Files\Enemies</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Items\FlagItem.es">
+      <Filter>Class Files\Items</Filter>
     </CustomBuild>
     <CustomBuild Include="Enemies\Destroyer.es">
       <Filter>Class Files\Enemies</Filter>
