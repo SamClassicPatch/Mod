@@ -249,9 +249,12 @@ functions:
     return DEVIL_ANIM_DEATH;
   };
 
-  // [Cecil] Remove electricity beam on death
   void DeathNotify(void) {
+    // [Cecil] Remove electricity beam on death
     m_bRenderElectricity = FALSE;
+
+    // Corpse becomes an obstacle
+    SetCollisionFlags(ECF_MODEL);
   };
 
   // Animation functions
