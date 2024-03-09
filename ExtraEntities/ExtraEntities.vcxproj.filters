@@ -89,6 +89,9 @@
     <ClCompile Include="Tools\WorldInfo.cpp">
       <Filter>Source Files\Entity sources</Filter>
     </ClCompile>
+    <ClCompile Include="Enemies\Destroyer.cpp">
+      <Filter>Source Files\Entity sources</Filter>
+    </ClCompile>
     <ClCompile Include="Enemies\Ughzy.cpp">
       <Filter>Source Files\Entity sources</Filter>
     </ClCompile>
@@ -157,6 +160,9 @@
       <Filter>Class Files\Tools</Filter>
     </CustomBuild>
     <CustomBuild Include="Enemies\Ughzy.es">
+      <Filter>Class Files\Enemies</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Enemies\Destroyer.es">
       <Filter>Class Files\Enemies</Filter>
     </CustomBuild>
   </ItemGroup>
