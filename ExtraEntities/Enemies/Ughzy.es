@@ -172,6 +172,11 @@ functions:
     return str;
   };
 
+  virtual const CTFileName &GetComputerMessageName(void) const {
+    static DECLARE_CTFILENAME(fnm, "Data\\Messages\\Enemies\\DevilSmall.txt");
+    return fnm;
+  };
+
   void *GetEntityInfo(void) {
     return &eiUghzy;
   };

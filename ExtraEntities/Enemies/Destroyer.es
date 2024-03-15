@@ -78,7 +78,7 @@ functions:
   };
 
   virtual const CTFileName &GetComputerMessageName(void) const {
-    static DECLARE_CTFILENAME(fnmDemon, "DataMP\\Messages\\Enemies\\Demon.txt");
+    static DECLARE_CTFILENAME(fnmDemon, "Data\\Messages\\Enemies\\Destroyer.txt");
     return fnmDemon;
   };
 
