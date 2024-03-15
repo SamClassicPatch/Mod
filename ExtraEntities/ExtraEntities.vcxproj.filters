@@ -101,6 +101,15 @@
     <ClCompile Include="Enemies\Ughzy.cpp">
       <Filter>Source Files\Entity sources</Filter>
     </ClCompile>
+    <ClCompile Include="Enemies\Elemental.cpp">
+      <Filter>Source Files\Entity sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemies\Headman.cpp">
+      <Filter>Source Files\Entity sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemies\Walker.cpp">
+      <Filter>Source Files\Entity sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdH.h">
@@ -172,6 +181,15 @@
       <Filter>Class Files\Items</Filter>
     </CustomBuild>
     <CustomBuild Include="Enemies\Destroyer.es">
+      <Filter>Class Files\Enemies</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Enemies\Headman.es">
+      <Filter>Class Files\Enemies</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Enemies\Walker.es">
+      <Filter>Class Files\Enemies</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Enemies\Elemental.es">
       <Filter>Class Files\Enemies</Filter>
     </CustomBuild>
   </ItemGroup>
