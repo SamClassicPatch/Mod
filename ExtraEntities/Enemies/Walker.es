@@ -440,6 +440,7 @@ procedures:
     }
     autowait(0.25f);
 
+  #if SE1_GAME != SS_TFE
     FLOAT fStretch=2.0f;
     if (m_EwcChar==WLC_SERGEANT)
     {
@@ -456,6 +457,7 @@ procedures:
     plSmoke.pl_PositionVector+=FLOAT3D(0,0.35f*ese.vStretch(2),0);
     CEntityPointer penFX = CreateEntity(plSmoke, CLASS_BASIC_EFFECT);
     penFX->Initialize(ese);
+  #endif
 
     autowait(0.35f);
 

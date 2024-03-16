@@ -620,7 +620,9 @@ functions:
     eSpawnSpray.fSizeMultiplier = 0.5f;
     eSpawnSpray.sptType = SPT_LAVA_STONES;
     eSpawnSpray.vDirection = FLOAT3D(0,-0.5f,0);
+  #if SE1_GAME != SS_TFE
     eSpawnSpray.colBurnColor=C_WHITE|CT_OPAQUE;
+  #endif
     eSpawnSpray.penOwner = pen;
     penSpray->Initialize( eSpawnSpray);
     m_ctSpawned++;
@@ -690,10 +692,28 @@ functions:
     penProjectile->Initialize(eLaunch);
   }
 
+  // [Cecil] Wrapper method for compatibility
+  class CWorldSettingsController *GetWSC(void) {
+  #if SE1_GAME != SS_TFE
+    return ::GetWSC(this);
+
+  #else
+    // Obtain world settings controller from the background viewer
+    CWorldSettingsController *pwsc = NULL;
+    CBackgroundViewer *penBcgViewer = (CBackgroundViewer *)GetWorld()->GetBackgroundViewer();
+
+    if (penBcgViewer != NULL) {
+      pwsc = (CWorldSettingsController *)&*penBcgViewer->m_penWorldSettingsController;
+    }
+
+    return pwsc;
+  #endif
+  };
+
   /* Shake ground */
   void ShakeItBaby(FLOAT tmShaketime, FLOAT fPower)
   {
-    CWorldSettingsController *pwsc = GetWSC(this);
+    CWorldSettingsController *pwsc = GetWSC();
     if (pwsc!=NULL) {
       pwsc->m_tmShakeStarted = tmShaketime;
       pwsc->m_vShakePos = GetPlacement().pl_PositionVector;
@@ -707,7 +727,9 @@ functions:
       pwsc->m_fShakeIntensityB = 2.5f*fPower;
       pwsc->m_tmShakeFrequencyB = 7.2f;
 
+    #if SE1_GAME != SS_TFE
       pwsc->m_bShakeFadeIn = FALSE;
+    #endif
     }
   }
 

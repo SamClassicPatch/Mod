@@ -427,6 +427,7 @@ functions:
       eSpawnEffect.vStretch = FLOAT3D(1.0f,1.0f,1.0f);
       penExplosion->Initialize(eSpawnEffect);
 
+    #if SE1_GAME != SS_TFE
       // explosion debris
       eSpawnEffect.betType = BET_EXPLOSION_DEBRIS;
       CEntityPointer penExplosionDebris = CreateEntity(plExplosion, CLASS_BASIC_EFFECT);
@@ -436,6 +437,7 @@ functions:
       eSpawnEffect.betType = BET_EXPLOSION_SMOKE;
       CEntityPointer penExplosionSmoke = CreateEntity(plExplosion, CLASS_BASIC_EFFECT);
       penExplosionSmoke->Initialize(eSpawnEffect);
+    #endif
     }
   };
 
