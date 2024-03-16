@@ -84,7 +84,7 @@ components:
   5 model   MODEL_SCORPMAN    "Models\\Enemies\\Scorpman\\Scorpman.mdl",
   6 texture TEXTURE_SOLDIER   "Models\\Enemies\\Scorpman\\Soldier.tex",
   7 texture TEXTURE_GENERAL   "Models\\Enemies\\Scorpman\\General.tex",
-//  8 texture TEXTURE_MONSTER   "Models\\Enemies\\Scorpman\\Monster.tex",
+  8 texture TEXTURE_MONSTER   "Models\\Enemies\\Scorpman\\Monster.tex", // [Cecil] Rev
  12 texture TEXTURE_SPECULAR  "Models\\SpecularTextures\\Medium.tex",
   9 model   MODEL_GUN         "Models\\Enemies\\Scorpman\\Gun.mdl",
  10 model   MODEL_FLARE       "Models\\Enemies\\Scorpman\\Flare.mdl",
@@ -142,12 +142,12 @@ functions:
   }
 
   virtual const CTFileName &GetComputerMessageName(void) const {
-    //static DECLARE_CTFILENAME(fnmMonster, "Data\\Messages\\Enemies\\ScorpmanMonster.txt");
+    static DECLARE_CTFILENAME(fnmMonster, "Data\\Messages\\Enemies\\ScorpmanMonster.txt");
     static DECLARE_CTFILENAME(fnmGeneral, "Data\\Messages\\Enemies\\ScorpmanGeneral.txt");
     static DECLARE_CTFILENAME(fnmSoldier, "Data\\Messages\\Enemies\\ScorpmanSoldier.txt");
     switch(m_smtType) {
     default: ASSERT(FALSE);
-    case SMT_MONSTER: //return fnmMonster;
+    case SMT_MONSTER: return fnmMonster;
     case SMT_GENERAL: return fnmGeneral;
     case SMT_SOLDIER: return fnmSoldier;
     }
@@ -548,7 +548,8 @@ procedures:
  *                       M  A  I  N                         *
  ************************************************************/
   Main(EVoid) {
-    if (m_smtType==SMT_MONSTER) {
+    // [Cecil] Rev: Allow Monster type to be used
+    if (_EnginePatches._eWorldFormat != E_LF_SSR && m_smtType == SMT_MONSTER) {
       m_smtType=SMT_GENERAL;
     }
 
@@ -605,7 +606,7 @@ procedures:
 
       case SMT_MONSTER:
         // set your texture
-        SetModelMainTexture(TEXTURE_GENERAL);
+        SetModelMainTexture(TEXTURE_MONSTER); // [Cecil] Rev
         SetModelSpecularTexture(TEXTURE_SPECULAR);
         SetHealth(1200.0f);
         m_fMaxHealth = 1200.0f;
