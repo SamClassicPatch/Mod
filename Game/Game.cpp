@@ -1176,8 +1176,10 @@ void CGame::InitInternal( void)
   _pShell->DeclareSymbol("user FLOAT ctl_afAddViewRotation[3];", &ctl_aav.afViewRotation);
 
   // [Cecil] Use bigger font in computer
-  extern INDEX gam_bBigComputerFont;
-  _pShell->DeclareSymbol("persistent user INDEX gam_bBigComputerFont;", &gam_bBigComputerFont);
+  extern INDEX cmp_bBigFont;
+  extern FLOAT cmp_fBigFontScale;
+  _pShell->DeclareSymbol("persistent user INDEX cmp_bBigFont;", &cmp_bBigFont);
+  _pShell->DeclareSymbol("persistent user FLOAT cmp_fBigFontScale;", &cmp_fBigFontScale);
 
   // [Cecil] Customizable fade time
   extern FLOAT con_tmConsoleFade;
@@ -1185,7 +1187,9 @@ void CGame::InitInternal( void)
 
   // [Cecil] Use bigger font in console
   extern INDEX con_iBigFont;
+  extern FLOAT con_fBigFontScale;
   _pShell->DeclareSymbol("persistent user INDEX con_iBigFont;", &con_iBigFont);
+  _pShell->DeclareSymbol("persistent user FLOAT con_fBigFontScale;", &con_fBigFontScale);
 
   // load persistent symbols
   if (!_bDedicatedServer) {

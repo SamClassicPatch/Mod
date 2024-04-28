@@ -96,7 +96,8 @@ static COLOR _colDark;
 static COLOR _colBoxes;
 
 // [Cecil] Use bigger font in computer
-INDEX gam_bBigComputerFont = TRUE;
+INDEX cmp_bBigFont = TRUE;
+FLOAT cmp_fBigFontScale = 1.0f;
 
 static void SetFont1(CDrawPort *pdp)
 {
@@ -114,7 +115,7 @@ static void SetFont2(CDrawPort *pdp)
 
 // [Cecil] Check if should use big message font
 static inline BOOL UseBigFont(void) {
-  return (gam_bBigComputerFont && _pixSizeJ >= 720);
+  return (cmp_bBigFont && _pixSizeJ >= 720);
 };
 
 // [Cecil] Set message font
@@ -498,7 +499,7 @@ static void UpdateSize(CDrawPort *pdp)
     pfd = _pfdDisplayFont;
     iSubHeight = 3;
 
-    FLOAT fMul = pixSizeJ / 720.0f;
+    FLOAT fMul = (pixSizeJ / 720.0f) * Clamp(cmp_fBigFontScale, 0.1f, 3.0f);
     _fScaling *= fMul;
     _fScaling2 *= fMul;
     _fSliderWidthMul = 1.5f;

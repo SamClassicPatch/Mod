@@ -40,6 +40,7 @@ FLOAT con_tmConsoleFade = 0.5f;
 
 // [Cecil] Use bigger font in console (0 - never; 1 - only last lines; 2 - always)
 INDEX con_iBigFont = 0;
+FLOAT con_fBigFontScale = 1.0f;
 
 // [Cecil] Screen height
 static PIX _pixSizeJ = 0;
@@ -61,7 +62,7 @@ static void SetConsoleFont(CDrawPort *pdp, BOOL bLastLines) {
   pdp->SetFont(_pfdCurrentFont);
 
   if (bBig) {
-    FLOAT fScaling = ClampDn((FLOAT)_pixSizeJ / 900.0f, 0.8f);
+    FLOAT fScaling = ClampDn((FLOAT)_pixSizeJ / 900.0f, 0.8f) * Clamp(con_fBigFontScale, 0.1f, 10.0f);
 
     if (bLastLines) {
       _pfdDisplayFont->SetVariableWidth();
