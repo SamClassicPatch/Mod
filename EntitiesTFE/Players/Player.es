@@ -2043,10 +2043,12 @@ functions:
     CPerspectiveProjection3D prPerspectiveProjection;
     plr_fFOV = Clamp( plr_fFOV, 1.0f, 160.0f);
     ANGLE aFOV = plr_fFOV;
-    // disable zoom in deathmatch
+
+    // [Cecil] Limit FOV in Deathmatch
     if (!GetSP()->sp_bCooperative) {
-      aFOV = 90.0f;
+      aFOV = Clamp(aFOV, 60.0f, 110.0f);
     }
+
     if (m_pstState==PST_DIVE && iViewState == PVT_PLAYEREYES) {
       TIME tmNow = _pTimer->GetLerpedCurrentTick();
       aFOV+=sin(tmNow*0.79f)*2.0f;

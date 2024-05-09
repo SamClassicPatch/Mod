@@ -2396,16 +2396,17 @@ functions:
     CPerspectiveProjection3D prPerspectiveProjection;
     plr_fFOV = Clamp( plr_fFOV, 1.0f, 160.0f);
     ANGLE aFOV = plr_fFOV;
-    // disable zoom in deathmatch
+
+    // [Cecil] Limit FOV in Deathmatch
     if (!GetSP()->sp_bCooperative) {
-      aFOV = 90.0f;
+      aFOV = Clamp(aFOV, 60.0f, 110.0f);
     }
-    // if sniper active
-    if (((CPlayerWeapons&)*m_penWeapons).m_iCurrentWeapon==WEAPON_SNIPER)
-    {
-      aFOV = Lerp(((CPlayerWeapons&)*m_penWeapons).m_fSniperFOVlast,
-                  ((CPlayerWeapons&)*m_penWeapons).m_fSniperFOV,
-                  _pTimer->GetLerpFactor());
+
+    CPlayerWeapons &enWeapons = (CPlayerWeapons &)*m_penWeapons;
+
+    // [Cecil] Apply sniper zoom only during active sniping
+    if (enWeapons.m_iCurrentWeapon == WEAPON_SNIPER && enWeapons.m_bSniping) {
+      aFOV = Lerp(enWeapons.m_fSniperFOVlast, enWeapons.m_fSniperFOV, _pTimer->GetLerpFactor());
     }
 
     if (m_pstState==PST_DIVE && iViewState == PVT_PLAYEREYES) {
