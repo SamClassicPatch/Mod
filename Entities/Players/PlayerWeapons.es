@@ -1437,7 +1437,7 @@ functions:
       const FLOAT fMaxD = 100.0f;
       fDistance = Clamp( fDistance, fMinD, fMaxD);
       const FLOAT fRatio   = (fDistance-fMinD) / (fMaxD-fMinD);
-      const FLOAT fMaxSize = (FLOAT)pdp->GetWidth() / 640.0f;
+      const FLOAT fMaxSize = HEIGHT_SCALING(pdp);
       const FLOAT fMinSize = fMaxSize * hud_fCrosshairRatio;
       const FLOAT fSize    = 16 * Lerp( fMaxSize, fMinSize, fRatio) * hud_fCrosshairScale;
       // draw crosshair

@@ -1953,7 +1953,7 @@ static void PrintStats( CDrawPort *pdpDrawPort)
   SLONG slDPHeight = pdpDrawPort->GetHeight();
   
   // determine proper text scale for statistics display
-  FLOAT fTextScale = (FLOAT)slDPWidth/640.0f;
+  FLOAT fTextScale = HEIGHT_SCALING(pdpDrawPort);
   
   // display resolution info (if needed)
   if( hud_bShowResolution) {

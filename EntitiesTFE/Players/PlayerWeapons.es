@@ -1253,7 +1253,7 @@ functions:
       const FLOAT fMaxD = 100.0f;
       fDistance = Clamp( fDistance, fMinD, fMaxD);
       const FLOAT fRatio   = (fDistance-fMinD) / (fMaxD-fMinD);
-      const FLOAT fMaxSize = (FLOAT)pdp->GetWidth() / 640.0f;
+      const FLOAT fMaxSize = HEIGHT_SCALING(pdp);
       const FLOAT fMinSize = fMaxSize * hud_fCrosshairRatio;
       const FLOAT fSize    = 16 * Lerp( fMaxSize, fMinSize, fRatio) * hud_fCrosshairScale;
       // draw crosshair
@@ -1272,7 +1272,7 @@ functions:
       // printout current target info
       SLONG slDPWidth  = pdp->GetWidth();
       SLONG slDPHeight = pdp->GetHeight();
-      FLOAT fScaling   = (FLOAT)slDPWidth/640.0f;
+      FLOAT fScaling   = HEIGHT_SCALING(pdp);
       // set font and scale
       pdp->SetFont( _pfdDisplayFont);
       pdp->SetTextScaling( fScaling);
@@ -1303,7 +1303,7 @@ functions:
       // set font and scale
       pdp->SetFont( _pfdDisplayFont);
       pdp->SetTextAspect( 1.0f);
-      pdp->SetTextScaling( (FLOAT)slDPWidth/640.0f);
+      pdp->SetTextScaling(HEIGHT_SCALING(pdp));
       // do printout only if coordinates are valid
       const FLOAT fMax = Max( Max( vRayHit(1), vRayHit(2)), vRayHit(3));
       const FLOAT fMin = Min( Min( vRayHit(1), vRayHit(2)), vRayHit(3));

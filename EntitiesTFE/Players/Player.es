@@ -2126,7 +2126,7 @@ functions:
       // print a message
       PIX pixDPWidth  = pdp->GetWidth();
       PIX pixDPHeight = pdp->GetHeight();
-      FLOAT fScale = (FLOAT)pixDPWidth/640.0f;
+      FLOAT fScale = HEIGHT_SCALING(pdp);
       pdp->SetFont( _pfdDisplayFont);
       pdp->SetTextScaling( fScale);
       pdp->SetTextAspect( 1.0f);
@@ -2316,7 +2316,7 @@ functions:
     if (_pTimer->CurrentTick()<m_tmCenterMessageEnd) {
       PIX pixDPWidth  = pdp->GetWidth();
       PIX pixDPHeight = pdp->GetHeight();
-      FLOAT fScale = (FLOAT)pixDPWidth/640.0f;
+      FLOAT fScale = HEIGHT_SCALING(pdp);
       pdp->SetFont( _pfdDisplayFont);
       pdp->SetTextScaling( fScale);
       pdp->SetTextAspect( 1.0f);
