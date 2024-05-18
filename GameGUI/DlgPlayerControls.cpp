@@ -167,6 +167,13 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CDlgPlayerControls message handlers
 
+// [Cecil] Method for setting text from CTString into a configuration-specific buffer for convenience
+static inline void SetTextToBuffer(LPTSTR *pBuffer, const CTString &str) {
+  CString strText = str;
+  *pBuffer = strText.GetBuffer(str.Length());
+  strText.ReleaseBuffer();
+};
+
 void CDlgPlayerControls::FillActionsList(void)
 {
   // get selected item
@@ -184,31 +191,19 @@ void CDlgPlayerControls::FillActionsList(void)
   // now add all button actions
   FOREACHINLIST( CButtonAction, ba_lnNode, m_ctrlControls.ctrl_lhButtonActions, itButtonAction)
   {
-    #if SE1_VER == SE1_110
-      // macro for adding single button action into list control
-      itItem.iItem = ctItemsAdded;
-      itItem.iSubItem = 0;
-      itItem.pszText = (wchar_t *)(const char *)itButtonAction->ba_strName;
-      m_listButtonActions.InsertItem( &itItem);
-      itItem.iSubItem = 1;
-      itItem.pszText = (wchar_t *)(const char *)_pInput->GetButtonName( itButtonAction->ba_iFirstKey);
-      m_listButtonActions.SetItem( &itItem);
-      itItem.iSubItem = 2;
-      itItem.pszText = (wchar_t *)(const char *)_pInput->GetButtonName( itButtonAction->ba_iSecondKey);
-      m_listButtonActions.SetItem( &itItem);
-    #else
-      // macro for adding single button action into list control
-      itItem.iItem = ctItemsAdded;
-      itItem.iSubItem = 0;
-      itItem.pszText = (char *)(const char *) itButtonAction->ba_strName;
-      m_listButtonActions.InsertItem( &itItem);
-      itItem.iSubItem = 1;
-      itItem.pszText = (char *)(const char *)_pInput->GetButtonName( itButtonAction->ba_iFirstKey);
-      m_listButtonActions.SetItem( &itItem);
-      itItem.iSubItem = 2;
-      itItem.pszText = (char *)(const char *)_pInput->GetButtonName( itButtonAction->ba_iSecondKey);
-      m_listButtonActions.SetItem( &itItem);
-    #endif
+    // macro for adding single button action into list control
+    itItem.iItem = ctItemsAdded;
+    itItem.iSubItem = 0;
+    SetTextToBuffer(&itItem.pszText, itButtonAction->ba_strName); // [Cecil]
+    m_listButtonActions.InsertItem(&itItem);
+
+    itItem.iSubItem = 1;
+    SetTextToBuffer(&itItem.pszText, _pInput->GetButtonName(itButtonAction->ba_iFirstKey)); // [Cecil]
+    m_listButtonActions.SetItem(&itItem);
+
+    itItem.iSubItem = 2;
+    SetTextToBuffer(&itItem.pszText, _pInput->GetButtonName(itButtonAction->ba_iSecondKey)); // [Cecil]
+    m_listButtonActions.SetItem(&itItem);
 
     ctItemsAdded++;
   }
@@ -241,22 +236,13 @@ void CDlgPlayerControls::FillAxisList(void)
     itItem.iItem = iAxis;
     itItem.iSubItem = 0;
 
-    #if SE1_VER == SE1_110
-      itItem.pszText = (wchar_t*)(const char*)_pGame->gm_astrAxisNames[iAxis];
-    #else
-      itItem.pszText = (char*)(const char*)_pGame->gm_astrAxisNames[iAxis];
-    #endif
+    SetTextToBuffer(&itItem.pszText, _pGame->gm_astrAxisNames[iAxis]); // [Cecil]
 
     m_listAxisActions.InsertItem( &itItem);
     itItem.iSubItem = 1;
 
-    #if SE1_VER == SE1_110
-      itItem.pszText = (wchar_t *)(const char *)_pInput->GetAxisName(
-        m_ctrlControls.ctrl_aaAxisActions[iAxis].aa_iAxisAction);
-    #else
-      itItem.pszText = (char *)(const char *)_pInput->GetAxisName(
-        m_ctrlControls.ctrl_aaAxisActions[iAxis].aa_iAxisAction);
-    #endif
+    SetTextToBuffer(&itItem.pszText, _pInput->GetAxisName(
+      m_ctrlControls.ctrl_aaAxisActions[iAxis].aa_iAxisAction)); // [Cecil]
 
     m_listAxisActions.SetItem( &itItem);
   }
@@ -326,21 +312,12 @@ void CDlgPlayerControls::SetFirstAndSecondButtonNames(void)
   CButtonAction *pbaCurrent = GetSelectedButtonAction();
   if( pbaCurrent != NULL)
   {
-    #if SE1_VER == SE1_110
-      // type first currently mounted button's name
-      m_editFirstControl.SetWindowText( CString(
-        _pInput->GetButtonName( pbaCurrent->ba_iFirstKey) ));
-      // type second currently mounted button's name
-      m_editSecondControl.SetWindowText( CString(
-        _pInput->GetButtonName( pbaCurrent->ba_iSecondKey) ));
-    #else
-      // type first currently mounted button's name
-      m_editFirstControl.SetWindowText( (char *)(const char *)
-        _pInput->GetButtonName( pbaCurrent->ba_iFirstKey) );
-      // type second currently mounted button's name
-      m_editSecondControl.SetWindowText( (char *)(const char *)
-        _pInput->GetButtonName( pbaCurrent->ba_iSecondKey) );
-    #endif
+    // type first currently mounted button's name
+    m_editFirstControl.SetWindowText( CString(
+      _pInput->GetButtonName( pbaCurrent->ba_iFirstKey) ));
+    // type second currently mounted button's name
+    m_editSecondControl.SetWindowText( CString(
+      _pInput->GetButtonName( pbaCurrent->ba_iSecondKey) ));
 
     // enable edit key and "none" controls
     bEnablePressKeyControls = TRUE;
