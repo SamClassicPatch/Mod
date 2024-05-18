@@ -849,6 +849,12 @@ functions:
     FLOAT3D vRot(wpn_fH[iWeaponData], wpn_fP[iWeaponData], wpn_fB[iWeaponData]);
     FLOAT3D vDummy(0, 0, 0);
     FLOAT fWeaponFOV = wpn_fFOV[iWeaponData];
+
+    // Adjust Cannon position
+    if (m_iCurrentWeapon == WEAPON_IRONCANNON) {
+      GetCannonPos(vPos(1), vPos(2), vPos(3), fWeaponFOV);
+    }
+
     RenderPos(vPos, vRot, vDummy, fWeaponFOV);
 
     // store FOV for Crosshair
@@ -901,7 +907,7 @@ functions:
         plWeaponMirror.pl_OrientationAngle(1) = -plWeaponMirror.pl_OrientationAngle(1);
         plWeaponMirror.pl_OrientationAngle(3) = -plWeaponMirror.pl_OrientationAngle(3);
       }
-      ((CPerspectiveProjection3D &)prMirror).FOVL() = AngleDeg(wpn_fFOV[iWeaponData]);
+      ((CPerspectiveProjection3D &)prMirror).FOVL() = fWeaponFOV;
       CAnyProjection3D apr;
       apr = prMirror;
       Stereo_AdjustProjection(*apr, iEye, 0.1f);
@@ -930,7 +936,7 @@ functions:
     prProjection.FrontClipDistanceL() = wpn_fClip[iWeaponData];
     prProjection.DepthBufferNearL() = 0.0f;
     prProjection.DepthBufferFarL() = 0.1f;
-    ((CPerspectiveProjection3D &)prProjection).FOVL() = AngleDeg(wpn_fFOV[iWeaponData]);
+    ((CPerspectiveProjection3D &)prProjection).FOVL() = fWeaponFOV;
 
     CAnyProjection3D apr;
     apr = prProjection;

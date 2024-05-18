@@ -27,6 +27,8 @@ static FLOAT wpn_afViewPos[3] = { 1.0f, 1.0f, 1.0f };
 static FLOAT wpn_afViewRot[3] = { 1.0f, 1.0f, 1.0f };
 static FLOAT wpn_fViewFOV = 1.0f;
 
+static INDEX wpn_bTSECannon = CHOOSE_FOR_GAME(FALSE, TRUE, TRUE);
+
 INDEX wpn_bViewMirrored = FALSE;
 
 #if SE1_GAME != SS_TFE
@@ -48,6 +50,7 @@ static void DeclareWeaponCustomizationSymbols(void) {
   _pShell->DeclareSymbol("persistent user FLOAT wpn_fViewFOV;", &wpn_fViewFOV);
   _pShell->DeclareSymbol("user void ResetWeaponPosition(void);", &ResetWeaponPosition);
 
+  _pShell->DeclareSymbol("persistent user INDEX wpn_bTSECannon;", &wpn_bTSECannon);
   _pShell->DeclareSymbol("persistent user INDEX wpn_bViewMirrored;", &wpn_bViewMirrored);
 
 #if SE1_GAME != SS_TFE
@@ -86,6 +89,24 @@ void RenderPos(FLOAT3D &vPos, FLOAT3D &vRot, FLOAT3D &vFire, FLOAT &fFOV) {
   vFire(3) *= wpn_afViewPos[2];
 
   fFOV = Clamp(fFOV * wpn_fViewFOV, 1.0f, 170.0f);
+};
+
+// Get weapon position for Cannon depending on the game
+void GetCannonPos(FLOAT &fX, FLOAT &fY, FLOAT &fZ, FLOAT &fFOV) {
+  static const FLOAT afTFE[4] = { 0.225f, -0.345f, -0.570f, 57.0f };
+  static const FLOAT afTSE[4] = { 0.170f, -0.300f, -0.625f, 50.0f };
+  
+  if (!wpn_bTSECannon) {
+    fX   = afTFE[0];
+    fY   = afTFE[1];
+    fZ   = afTFE[2];
+    fFOV = afTFE[3];
+  } else {
+    fX   = afTSE[0];
+    fY   = afTSE[1];
+    fZ   = afTSE[2];
+    fFOV = afTSE[3];
+  }
 };
 
 #endif

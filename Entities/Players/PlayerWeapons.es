@@ -961,6 +961,12 @@ functions:
     FLOAT3D vRot(wpn_fH[iWeaponData], wpn_fP[iWeaponData], wpn_fB[iWeaponData]);
     FLOAT3D vDummy(0, 0, 0);
     FLOAT fWeaponFOV = wpn_fFOV[iWeaponData];
+
+    // Adjust Cannon position
+    if (m_iCurrentWeapon == WEAPON_IRONCANNON) {
+      GetCannonPos(vPos(1), vPos(2), vPos(3), fWeaponFOV);
+    }
+
     RenderPos(vPos, vRot, vDummy, fWeaponFOV);
 
     // store FOV for Crosshair
