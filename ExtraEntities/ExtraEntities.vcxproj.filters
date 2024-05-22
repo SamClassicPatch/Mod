@@ -110,6 +110,12 @@
     <ClCompile Include="Enemies\Walker.cpp">
       <Filter>Source Files\Entity sources</Filter>
     </ClCompile>
+    <ClCompile Include="Tools\Damager.cpp">
+      <Filter>Source Files\Entity sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Tools\SoundHolder.cpp">
+      <Filter>Source Files\Entity sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdH.h">
@@ -191,6 +197,12 @@
     </CustomBuild>
     <CustomBuild Include="Enemies\Elemental.es">
       <Filter>Class Files\Enemies</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Tools\SoundHolder.es">
+      <Filter>Class Files\Tools</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Tools\Damager.es">
+      <Filter>Class Files\Tools</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

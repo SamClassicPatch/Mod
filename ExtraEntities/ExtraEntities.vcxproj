@@ -329,6 +329,8 @@
     </ClCompile>
     <ClCompile Include="Tools\Achievement.cpp" />
     <ClCompile Include="Tools\ControlZone.cpp" />
+    <ClCompile Include="Tools\Damager.cpp" />
+    <ClCompile Include="Tools\SoundHolder.cpp" />
     <ClCompile Include="Tools\SpectatorCamera.cpp" />
     <ClCompile Include="Tools\WorldInfo.cpp" />
     <ClCompile Include="Weapons\AirWave.cpp" />
@@ -777,6 +779,44 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_TSE105|Win32'">%(RelativeDir)%(Filename).cpp;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_TSE107|Win32'">%(RelativeDir)%(Filename).cpp;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_TFE105|Win32'">%(RelativeDir)%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Tools\Damager.es">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_TSE107|Win32'">%(RelativeDir)%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_SSR110|Win32'">%(RelativeDir)%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_TSE105|Win32'">%(RelativeDir)%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_TSE107|Win32'">%(RelativeDir)%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_TFE105|Win32'">%(RelativeDir)%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_TSE107|Win32'">$(ProjectName)\%(RelativeDir)%(Filename).es</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_SSR110|Win32'">$(ProjectName)\%(RelativeDir)%(Filename).es</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_TSE105|Win32'">$(ProjectName)\%(RelativeDir)%(Filename).es</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_TSE107|Win32'">$(ProjectName)\%(RelativeDir)%(Filename).es</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_TFE105|Win32'">$(ProjectName)\%(RelativeDir)%(Filename).es</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_TSE107|Win32'">cd "$(SolutionDir)Mod\" &amp;&amp; ecc "$(ProjectName)\%(RelativeDir)%(Filename).es"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_SSR110|Win32'">cd "$(SolutionDir)Mod\" &amp;&amp; ecc "$(ProjectName)\%(RelativeDir)%(Filename).es"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_TSE105|Win32'">cd "$(SolutionDir)Mod\" &amp;&amp; ecc "$(ProjectName)\%(RelativeDir)%(Filename).es"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_TSE107|Win32'">cd "$(SolutionDir)Mod\" &amp;&amp; ecc "$(ProjectName)\%(RelativeDir)%(Filename).es"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_TFE105|Win32'">cd "$(SolutionDir)Mod\" &amp;&amp; ecc "$(ProjectName)\%(RelativeDir)%(Filename).es"</Command>
+    </CustomBuild>
+    <CustomBuild Include="Tools\SoundHolder.es">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_TSE107|Win32'">%(RelativeDir)%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_SSR110|Win32'">%(RelativeDir)%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_TSE105|Win32'">%(RelativeDir)%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_TSE107|Win32'">%(RelativeDir)%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_TFE105|Win32'">%(RelativeDir)%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug_TSE107|Win32'">$(ProjectName)\%(RelativeDir)%(Filename).es</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_SSR110|Win32'">$(ProjectName)\%(RelativeDir)%(Filename).es</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_TSE105|Win32'">$(ProjectName)\%(RelativeDir)%(Filename).es</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_TSE107|Win32'">$(ProjectName)\%(RelativeDir)%(Filename).es</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_TFE105|Win32'">$(ProjectName)\%(RelativeDir)%(Filename).es</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_TSE107|Win32'">cd "$(SolutionDir)Mod\" &amp;&amp; ecc "$(ProjectName)\%(RelativeDir)%(Filename).es"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_SSR110|Win32'">cd "$(SolutionDir)Mod\" &amp;&amp; ecc "$(ProjectName)\%(RelativeDir)%(Filename).es"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_TSE105|Win32'">cd "$(SolutionDir)Mod\" &amp;&amp; ecc "$(ProjectName)\%(RelativeDir)%(Filename).es"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_TSE107|Win32'">cd "$(SolutionDir)Mod\" &amp;&amp; ecc "$(ProjectName)\%(RelativeDir)%(Filename).es"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_TFE105|Win32'">cd "$(SolutionDir)Mod\" &amp;&amp; ecc "$(ProjectName)\%(RelativeDir)%(Filename).es"</Command>
     </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
