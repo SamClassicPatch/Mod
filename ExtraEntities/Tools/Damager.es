@@ -33,6 +33,12 @@ properties:
  10 CEntityPointer m_penLastDamaged,
  11 FLOAT m_tmLastDamage = 0.0f,
 
+ // [Cecil] Rev: New properties
+ 20 BOOL  m_bRangeDamage  "Damage in range" = FALSE,
+ 21 RANGE m_fRangeHotspot "Damage range hotspot" = 1.0f,
+ 22 RANGE m_fRangeFalloff "Damage range falloff" = 4.0f,
+ 30 BOOL  m_bHeal         "Heal" = FALSE,
+
 components:
   1 model   MODEL_TELEPORT     "Models\\Editor\\Copier.mdl",
   2 texture TEXTURE_TELEPORT   "Models\\Editor\\Copier.tex",
@@ -76,10 +82,24 @@ procedures:
           if (penVictim!=NULL) {
             if (!(penVictim==m_penLastDamaged && _pTimer->CurrentTick()<m_tmLastDamage+0.1f))
             {
-            InflictDirectDamage(penVictim, penInflictor,  m_dmtType, m_fAmmount, 
-              penVictim->GetPlacement().pl_PositionVector, FLOAT3D(0,1,0));
-              m_penLastDamaged = penVictim;
-              m_tmLastDamage = _pTimer->CurrentTick();
+              // [Cecil] Rev: Heal instead
+              if (m_bHeal) {
+                if (IsDerivedFromClass(penVictim, "MovableEntity")) {
+                  CMovableEntity *penMovable = (CMovableEntity *)penVictim;
+                  penMovable->SetHealth(penMovable->GetHealth() + m_fAmmount);
+                }
+
+              // [Cecil] Rev: Damage in some range
+              } else if (m_bRangeDamage) {
+                InflictRangeDamage(penInflictor, m_dmtType, m_fAmmount,
+                  GetPlacement().pl_PositionVector, m_fRangeHotspot, m_fRangeFalloff);
+
+              } else {
+                InflictDirectDamage(penVictim, penInflictor,  m_dmtType, m_fAmmount, 
+                  penVictim->GetPlacement().pl_PositionVector, FLOAT3D(0,1,0));
+                m_penLastDamaged = penVictim;
+                m_tmLastDamage = _pTimer->CurrentTick();
+              }
             }
           }
           stop;

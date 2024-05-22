@@ -259,7 +259,7 @@ functions:
       FLOAT fDeathFactor=1.0f;
       if( m_fSpiritStartTime!=0.0f)
       {
-        fDeathFactor=1.0f-Clamp((_pTimer->CurrentTick()-m_fSpiritStartTime)/DEATH_BURN_TIME, 0.0f, 1.0f);
+        fDeathFactor=1.0f-Clamp(FLOAT(_pTimer->CurrentTick()-m_fSpiritStartTime)/DEATH_BURN_TIME, 0.0f, 1.0f);
       }
 
       // [Cecil] Rev: Only lava ones burn naturally
