@@ -41,6 +41,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define BET_PLASMA      BasicEffectType(56)
 #define SPT_SMALLPLASMA SprayParticlesType(17)
 
+#define PRT_WATERMAN_OLD      ProjectileType(30)
+#define PRT_WATERMAN_BIG      ProjectileType(31)
+#define PRT_WATERMAN_LARGE    ProjectileType(32)
+#define PRT_WATERMAN_SMALL    ProjectileType(33)
+#define PRT_PLASMA            ProjectileType(78)
+#define PRT_RAILBOLT          ProjectileType(79)
+#define PRT_RAILBOLT_SPRAY    ProjectileType(80)
+#define PRT_AIRMAN_LARGE      ProjectileType(81)
+#define PRT_AIRMAN_BIG        ProjectileType(82)
+#define PRT_AIRMAN_SMALL      ProjectileType(83)
+#define PRT_EARTHMAN_BIG_BOMB ProjectileType(90)
+#define PRT_EARTHMAN_BIG      ProjectileType(91)
+#define PRT_EARTHMAN_STONE    ProjectileType(92)
+
 // Max ammo
 #define MAX_BULLETS INDEX(500)
 #define MAX_SHELLS INDEX(100)
