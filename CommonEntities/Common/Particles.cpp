@@ -4474,6 +4474,13 @@ void Particles_BloodSpray(enum SprayParticlesType sptType, FLOAT3D vSource, FLOA
       fDamagePower*=2.0f;
       break;
     }
+
+    // [Cecil] Spray particles from Revolution
+    case SPT_SMALLPLASMA: {
+      Particle_PrepareTexture(&_toLarvaProjectileSpray, PBT_BLEND);
+      fDamagePower *= 0.25f;
+    } break;
+
     case SPT_NONE:
     {
       return;

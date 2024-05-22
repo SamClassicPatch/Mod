@@ -37,6 +37,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define SURFACE_WOOD_NOIMPACT     27
 #define SURFACE_SNOW_NOIMPACT     28
 
+// [Cecil] New types from Revolution
+#define BET_PLASMA      BasicEffectType(56)
+#define SPT_SMALLPLASMA SprayParticlesType(17)
+
 // Max ammo
 #define MAX_BULLETS INDEX(500)
 #define MAX_SHELLS INDEX(100)
