@@ -2429,8 +2429,9 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
       // [Cecil] Camera can only be used in PvE modes
       ocam.cam_bExternalUsage = (GetSP()->sp_bCooperative || GetSP()->sp_bSinglePlayer);
 
-      // [Cecil] Prioritize camera, unless it can't be used at the moment
-      if (!ocam.Update(penViewer, pdp)) {
+      // [Cecil] Camera is updated via CPlayer::RenderGameView() patch now
+      //if (!ocam.Update(penViewer, pdp))
+      {
         _bPlayerViewRendered = TRUE;
 
         // Render it
