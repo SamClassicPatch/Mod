@@ -217,16 +217,16 @@ functions:
   virtual CTString GetPlayerKillDescription(const CTString &strPlayerName, const EDeath &eDeath)
   {
     CTString str;
-    str.PrintF(LOCALIZE("%s was killed by an elemental"), strPlayerName);
+    str.PrintF(TRANS("%s was killed by an elemental"), strPlayerName);
 
     // [Cecil] Rev: Message per type
     switch (m_EetType) {
-      case ELT_AIR:   str.PrintF(LOCALIZE("%s was blown away by a Air Golem"), strPlayerName); break;
+      case ELT_AIR:   str.PrintF(TRANS("%s was blown away by a Air Golem"), strPlayerName); break;
       default: ASSERT(FALSE);
       case ELT_LAVA:  str.PrintF(LOCALIZE("%s was killed by a Lava Golem"), strPlayerName); break;
-      case ELT_STONE: str.PrintF(LOCALIZE("Earth Golem buried %s in the ground"), strPlayerName); break;
-      case ELT_WATER: str.PrintF(LOCALIZE("%s was drowned by a Water Golem"), strPlayerName); break;
-      case ELT_OMNI:  str.PrintF(LOCALIZE("Omni Golem blew %s into quantum state"), strPlayerName); break;
+      case ELT_STONE: str.PrintF(TRANS("Earth Golem buried %s in the ground"), strPlayerName); break;
+      case ELT_WATER: str.PrintF(TRANS("%s was drowned by a Water Golem"), strPlayerName); break;
+      case ELT_OMNI:  str.PrintF(TRANS("Omni Golem blew %s into quantum state"), strPlayerName); break;
     }
 
     return str;
