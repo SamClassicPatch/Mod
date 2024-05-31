@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "CompMessage.h"
 
 // [Cecil]
-#include <CoreLib/Interfaces/DataFunctions.h>
 #include "Cecil/Map.h"
 
 static const FLOAT tmComputerFade   = 1.0f;  // how many seconds it takes computer to fade in/out

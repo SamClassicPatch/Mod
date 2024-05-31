@@ -961,7 +961,7 @@ void CGame::InitInternal( void)
     ZeroMemory(&cif, sizeof(STARTUPINFOA));
     PROCESS_INFORMATION pi;
 
-    CTString strCmd = CCoreAPI::AppPath() + "Bin\\SeriousSam_Custom.exe";
+    CTString strCmd = IDir::AppPath() + "Bin\\SeriousSam_Custom.exe";
     CTString strParam = " +game ClassicsPatchMod";
 
     if (!CreateProcessA(strCmd.str_String, strParam.str_String, NULL, NULL, FALSE, CREATE_DEFAULT_ERROR_MODE, NULL, NULL, &cif, &pi)) {

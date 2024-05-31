@@ -17,9 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "CompMessage.h"
 
-// [Cecil]
-#include <CoreLib/Interfaces/DataFunctions.h>
-
 extern CTString _strStatsDetails;
 
 CCompMessage::CCompMessage(void)
