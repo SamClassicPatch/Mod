@@ -81,8 +81,8 @@ void CGame::QuickTest(const CTFileName &fnMapName,
   gm_strNetworkProvider = "Local";
   gm_aiStartLocalPlayers[0] = gm_iWEDSinglePlayer;
 
-  // [Cecil] Up to CORE_MAX_LOCAL_PLAYERS
-  for (INDEX iPlayer = 1; iPlayer < CORE_MAX_LOCAL_PLAYERS; iPlayer++) {
+  // [Cecil] Up to ICore::MAX_LOCAL_PLAYERS
+  for (INDEX iPlayer = 1; iPlayer < ICore::MAX_LOCAL_PLAYERS; iPlayer++) {
     gm_aiStartLocalPlayers[iPlayer] = -1;
   }
 

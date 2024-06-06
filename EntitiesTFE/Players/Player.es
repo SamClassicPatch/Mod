@@ -3610,22 +3610,28 @@ functions:
     //en_fDeceleration *= 0.8f;
     }
 
-  #if CLASSICSPATCH_GAMEPLAY_EXT
-    if (CoreGEX().bEnable) {
+  #if _PATCHCONFIG_GAMEPLAY_EXT
+    BOOL bGexEnabled = IConfig::gex[k_EGameplayExt_Enable].GetIndex();
+
+    if (bGexEnabled) {
       // [Cecil] Movement speed multiplier
-      if (CoreGEX().fMoveSpeed != 1.0f) {
-        vTranslation(1) *= CoreGEX().fMoveSpeed;
-        vTranslation(3) *= CoreGEX().fMoveSpeed;
+      FLOAT fMul = IConfig::gex[k_EGameplayExt_MoveSpeed].GetFloat();
+
+      if (fMul != 1.0f) {
+        vTranslation(1) *= fMul;
+        vTranslation(3) *= fMul;
       }
 
       // [Cecil] Jump height multiplier
-      if (CoreGEX().fJumpHeight != 1.0f) {
-        vTranslation(2) *= CoreGEX().fJumpHeight;
+      fMul = IConfig::gex[k_EGameplayExt_JumpHeight].GetFloat();
+
+      if (fMul != 1.0f) {
+        vTranslation(2) *= fMul;
       }
     }
 
     // [Cecil] Infinite air control time
-    if (CoreGEX().bEnable && CoreGEX().bUnlimitedAirControl) {
+    if (bGexEnabled && IConfig::gex[k_EGameplayExt_UnlimitedAirControl]) {
       en_tmMaxJumpControl = 1e6;
     } else {
       en_tmMaxJumpControl = 0.5f; // Restore

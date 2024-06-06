@@ -33,7 +33,7 @@ static struct GameGUI_interface _Interface;
 void Initialize(const CTFileName &fnGameSettings)
 {
   // [Cecil] Load Game library through the API
-  GetAPI()->LoadGameLib(fnGameSettings);
+  GetPluginAPI()->LoadGameLib(fnGameSettings);
 }
 
 // save settings and cleanup

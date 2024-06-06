@@ -119,7 +119,7 @@ functions:
   void Write_t(CTStream *istr) {
     CEntity::Write_t(istr);
 
-    if (_EnginePatches._eWorldFormat == E_LF_SSR && !GetAPI()->IsEditorApp())
+    if (_EnginePatches._eWorldFormat == E_LF_SSR && !ClassicsCore_IsEditorApp())
     {
       istr->WriteID_t(TOGGLED_LIGHTS_CHUNK);
 

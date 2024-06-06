@@ -20,9 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef ENTITIES_EXPORTS
   // [Cecil] Link appropriate library
   #ifdef NDEBUG
-    #pragma comment(lib, "Entities_Custom.lib")
+    #pragma comment(lib, "Entities" CLASSICSPATCH_SUFFIX ".lib")
   #else
-    #pragma comment(lib, "Entities_CustomD.lib")
+    #pragma comment(lib, "Entities" CLASSICSPATCH_SUFFIX "D.lib")
   #endif
 
   #define DECL_DLL __declspec(dllimport)

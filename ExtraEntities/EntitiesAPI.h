@@ -33,9 +33,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef EXTRAENTITIES_EXPORTS
   // Link appropriate library
   #ifdef NDEBUG
-    #pragma comment(lib, "ClassicsExtras_Custom.lib")
+    #pragma comment(lib, "ClassicsExtras" CLASSICSPATCH_SUFFIX ".lib")
   #else
-    #pragma comment(lib, "ClassicsExtras_CustomD.lib")
+    #pragma comment(lib, "ClassicsExtras" CLASSICSPATCH_SUFFIX "D.lib")
   #endif
 
   #define DECL_DLL __declspec(dllimport)

@@ -348,7 +348,7 @@ void SpawnHitTypeEffect(CEntity *pen, enum BulletHitType bhtType, BOOL bSound, F
 template<class Type> inline
 void ResetCompatibilityValue(Type &prop, Type valCheck, Type valResetTo)
 {
-  if (GetAPI()->IsEditorApp() && prop == valCheck) {
+  if (ClassicsCore_IsEditorApp() && prop == valCheck) {
     prop = valResetTo;
     WarningMessage("[Classics Patch] This value cannot be used due to being added for compatibility reasons (e.g. Revolution map conversions).");
   }

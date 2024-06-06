@@ -62,27 +62,27 @@ extern "C" __declspec (dllexport) CGame *GAME_Create(void)
 {
 #if SE1_GAME == SS_REV
   // [Cecil] TEMP: Initialize the patch on the fly for Revolution
-  if (GetAPI() == NULL) {
+  if (!ClassicsPatchAPI_IsRunning()) {
     // [Cecil] Mark as a game
-    CCoreAPI::Setup(CCoreAPI::APP_GAME);
+    ClassicsPatch_Setup(k_EClassicsPatchAppType_Game);
 
     // Initialize the core
-    ClassicsPatch_InitCore();
+    ClassicsPatch_Init();
 
-  #if CLASSICSPATCH_ENGINEPATCHES
+  #if _PATCHCONFIG_ENGINEPATCHES
 
     // Function patches
     CPutString("--- Sam: Intercepting Engine functions ---\n");
     _EnginePatches.CorePatches();
     CPutString("--- Done! ---\n");
 
-  #endif // CLASSICSPATCH_ENGINEPATCHES
+  #endif // _PATCHCONFIG_ENGINEPATCHES
 
     _pGame = new CGame;
     GetGameAPI()->HookFields();
 
     // Load needed plugins after the Game library
-    GetAPI()->LoadPlugins(PLF_GAME);
+    GetPluginAPI()->LoadPlugins(k_EPluginFlagGame);
 
     return _pGame;
   }
@@ -100,7 +100,7 @@ static BOOL  _bDumpNextTime = FALSE;
 static BOOL  _bStartProfilingNextTime = FALSE;
 static BOOL  _bProfiling = FALSE;
 static INDEX _ctProfileRecording = 0;
-static FLOAT gam_iRecordHighScore = -1.0f;
+static INDEX gam_iRecordHighScore = -1; // [Cecil] FLOAT -> INDEX
 
 
 extern FLOAT gam_afAmmoQuantity[5]        = {2.0f,  2.0f,  1.0f, 1.0f , 2.0f };
@@ -854,10 +854,10 @@ void CGame::SetCurrentControls(INDEX iPlayer, BOOL bCurrent) {
   }
 };
 
-// [Cecil] Clear button actions for local players up to CORE_MAX_LOCAL_PLAYERS
+// [Cecil] Clear button actions for local players up to ICore::MAX_LOCAL_PLAYERS
 void CGame::ClearLocalActions(void)
 {
-  for (INDEX iPlayer = 0; iPlayer < CORE_MAX_LOCAL_PLAYERS; iPlayer++) {
+  for (INDEX iPlayer = 0; iPlayer < ICore::MAX_LOCAL_PLAYERS; iPlayer++) {
     CPlayerSource *ppls = gm_lpLocalPlayers[iPlayer].lp_pplsPlayerSource;
 
     // Player doesn't exist
@@ -883,8 +883,8 @@ void CGame::GameHandleTimer(void)
 
     // check if any active control uses joystick
     BOOL bAnyJoy = _ctrlCommonControls.UsesJoystick();
-    // [Cecil] Up to CORE_MAX_LOCAL_PLAYERS
-    for (INDEX iPlayer = 0; iPlayer < CORE_MAX_LOCAL_PLAYERS; iPlayer++) {
+    // [Cecil] Up to ICore::MAX_LOCAL_PLAYERS
+    for (INDEX iPlayer = 0; iPlayer < ICore::MAX_LOCAL_PLAYERS; iPlayer++) {
       if( gm_lpLocalPlayers[ iPlayer].lp_pplsPlayerSource != NULL) {
         INDEX iCurrentPlayer = gm_lpLocalPlayers[ iPlayer].lp_iPlayer;
         CControls &ctrls = gm_actrlControls[ iCurrentPlayer];
@@ -907,8 +907,8 @@ void CGame::GameHandleTimer(void)
 
       // Otherwise if the game is not paused
       } else if (!_pNetwork->IsPaused() && !_pNetwork->GetLocalPause()) {
-        // [Cecil] Up to CORE_MAX_LOCAL_PLAYERS
-        for (INDEX iPlayer = 0; iPlayer < CORE_MAX_LOCAL_PLAYERS; iPlayer++)
+        // [Cecil] Up to ICore::MAX_LOCAL_PLAYERS
+        for (INDEX iPlayer = 0; iPlayer < ICore::MAX_LOCAL_PLAYERS; iPlayer++)
         {
           // if this player exist
           if( gm_lpLocalPlayers[ iPlayer].lp_pplsPlayerSource != NULL)
@@ -961,13 +961,13 @@ void CGame::InitInternal( void)
     ZeroMemory(&cif, sizeof(STARTUPINFOA));
     PROCESS_INFORMATION pi;
 
-    CTString strCmd = IDir::AppPath() + "Bin\\SeriousSam_Custom.exe";
+    CTString strCmd = IDir::AppPath() + "Bin\\SeriousSam" + CLASSICSPATCH_SUFFIX + ".exe";
     CTString strParam = " +game ClassicsPatchMod";
 
     if (!CreateProcessA(strCmd.str_String, strParam.str_String, NULL, NULL, FALSE, CREATE_DEFAULT_ERROR_MODE, NULL, NULL, &cif, &pi)) {
       // Couldn't start the patch
       FatalError(TRANS("Mod from Classics Patch can only be launched from the patch itself by using its executables!\n\n"
-                       "Could not locate 'SeriousSam_Custom.exe'. Please reinstall the patch or locate the appropriate executable, if it has been renamed."));
+        "Could not locate 'SeriousSam" CLASSICSPATCH_SUFFIX ".exe'. Please reinstall the patch or locate the appropriate executable, if it has been renamed."));
 
     } else {
       // Close vanilla game
@@ -977,7 +977,7 @@ void CGame::InitInternal( void)
   }
 
   // [Cecil] Hook new fields
-  GetGameAPI()->ctLocalPlayers = CORE_MAX_LOCAL_PLAYERS;
+  GetGameAPI()->ctLocalPlayers = ICore::MAX_LOCAL_PLAYERS;
   GetGameAPI()->aiMenuLocalPlayers = &gm_aiMenuLocalPlayers[0];
   GetGameAPI()->aiStartLocalPlayers = &gm_aiStartLocalPlayers[0];
   GetGameAPI()->aLocalPlayers = (UBYTE *)&gm_lpLocalPlayers[0];
@@ -1035,8 +1035,8 @@ void CGame::InitInternal( void)
   gm_bFirstLoading = FALSE;
   gm_aiMenuLocalPlayers[0] =  0;
 
-  // [Cecil] Up to CORE_MAX_LOCAL_PLAYERS
-  for (INDEX iPlayer = 1; iPlayer < CORE_MAX_LOCAL_PLAYERS; iPlayer++) {
+  // [Cecil] Up to ICore::MAX_LOCAL_PLAYERS
+  for (INDEX iPlayer = 1; iPlayer < ICore::MAX_LOCAL_PLAYERS; iPlayer++) {
     gm_aiMenuLocalPlayers[iPlayer] = -1;
   }
 
@@ -1361,7 +1361,7 @@ BOOL CGame::JoinGame(CNetworkSession &session)
   try {
     INDEX ctLocalPlayers = 0;
     // [Cecil] Up to amount of local players
-    if (gm_StartSplitScreenCfg >= SSC_PLAY1 && gm_StartSplitScreenCfg < SSC_PLAY1 + CORE_MAX_LOCAL_PLAYERS) {
+    if (gm_StartSplitScreenCfg >= SSC_PLAY1 && gm_StartSplitScreenCfg < SSC_PLAY1 + ICore::MAX_LOCAL_PLAYERS) {
       ctLocalPlayers = (gm_StartSplitScreenCfg-SSC_PLAY1)+1;
     }
     _pNetwork->JoinSession_t(session, ctLocalPlayers);
@@ -1564,8 +1564,8 @@ void CGame::StopGame(void)
   _pNetwork->StopGame();
   // stop the provider
   _pNetwork->StopProvider();
-  // [Cecil] Up to CORE_MAX_LOCAL_PLAYERS
-  for (INDEX iPlayer = 0; iPlayer < CORE_MAX_LOCAL_PLAYERS; iPlayer++)
+  // [Cecil] Up to ICore::MAX_LOCAL_PLAYERS
+  for (INDEX iPlayer = 0; iPlayer < ICore::MAX_LOCAL_PLAYERS; iPlayer++)
   {
     // mark that current player does not exist any more
     gm_lpLocalPlayers[ iPlayer].lp_bActive = FALSE;
@@ -1869,8 +1869,8 @@ void CGame::SavePlayersAndControls( void)
   // skip checking of players if game isn't on
   if( !gm_bGameOn) return;
 
-  // [Cecil] Up to CORE_MAX_LOCAL_PLAYERS
-  for (INDEX i = 0; i < CORE_MAX_LOCAL_PLAYERS; i++) {
+  // [Cecil] Up to ICore::MAX_LOCAL_PLAYERS
+  for (INDEX i = 0; i < ICore::MAX_LOCAL_PLAYERS; i++) {
     CLocalPlayer &lp = gm_lpLocalPlayers[i];
     // if active
     if( lp.lp_bActive && lp.lp_pplsPlayerSource!=NULL && lp.lp_iPlayer>=0 && lp.lp_iPlayer<8) {
@@ -1895,8 +1895,8 @@ void CGame::SavePlayersAndControls( void)
 // 3. Set profile indices for each player in a loop using 'GetGameAPI()->SetStartPlayer(<player>, <profile index>)'
 void CGame::SetupLocalPlayers( void)
 {
-  // [Cecil] Setup local players and their controls up to CORE_MAX_LOCAL_PLAYERS
-  for (INDEX i = 0; i < CORE_MAX_LOCAL_PLAYERS; i++)
+  // [Cecil] Setup local players and their controls up to ICore::MAX_LOCAL_PLAYERS
+  for (INDEX i = 0; i < ICore::MAX_LOCAL_PLAYERS; i++)
   {
     if (gm_StartSplitScreenCfg < CGame::SSC_PLAY1 + i) {
       gm_lpLocalPlayers[i].lp_iPlayer = -1;
@@ -1910,8 +1910,8 @@ BOOL CGame::AddPlayers(void)
 {
   // add local player(s) into game
   try {
-    // [Cecil] Up to CORE_MAX_LOCAL_PLAYERS
-    for (INDEX i = 0; i < CORE_MAX_LOCAL_PLAYERS; i++) {
+    // [Cecil] Up to ICore::MAX_LOCAL_PLAYERS
+    for (INDEX i = 0; i < ICore::MAX_LOCAL_PLAYERS; i++) {
       CLocalPlayer &lp = gm_lpLocalPlayers[i];
       INDEX iPlayer = lp.lp_iPlayer;
       if (iPlayer>=0) {
@@ -2345,8 +2345,8 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
     {
       CTSingleLock csTimer(&_pTimer->tm_csHooks, TRUE);
 
-      // [Cecil] Go through local players up to CORE_MAX_LOCAL_PLAYERS
-      for (INDEX iLocal = 0; iLocal < CORE_MAX_LOCAL_PLAYERS; iLocal++) {
+      // [Cecil] Go through local players up to ICore::MAX_LOCAL_PLAYERS
+      for (INDEX iLocal = 0; iLocal < ICore::MAX_LOCAL_PLAYERS; iLocal++) {
         CPlayerSource *ppls = gm_lpLocalPlayers[iLocal].lp_pplsPlayerSource;
 
         if (ppls == NULL) continue;
@@ -2415,7 +2415,7 @@ void CGame::GameRedrawView( CDrawPort *pdpDrawPort, ULONG ulFlags)
       if (!pdp->Lock()) continue;
 
       // [Cecil] Adjust aspect ratio for the HUD
-      if (CoreVarData().bAdjustAR && _EnginePatches._bAdjustForAspectRatio) {
+      if (IConfig::mod[k_EModDataProps_AdjustAR] && _EnginePatches._bAdjustForAspectRatio) {
         pdp->dp_fWideAdjustment = ((FLOAT)pdp->GetHeight() / (FLOAT)pdp->GetWidth()) * (4.0f / 3.0f);
       }
 
@@ -2640,7 +2640,7 @@ void CGame::RecordHighScore(void)
     return;
   }
   // find that player
-  INDEX ipl= Clamp(int(gam_iRecordHighScore), 0, CORE_MAX_GAME_PLAYERS);
+  INDEX ipl= Clamp(gam_iRecordHighScore, (INDEX)0, ICore::MAX_GAME_PLAYERS);
   CPlayer *penpl = (CPlayer *)&*CEntity::GetPlayerEntity(ipl);
   if (penpl==NULL) {
     //CPrintF( LOCALIZE("Warning: cannot record score for player %d!\n"), ipl);
@@ -2691,7 +2691,7 @@ INDEX CGame::GetLivePlayersCount(void)
 {
   INDEX ctLive = 0;
 
-  for (INDEX ipl=0; ipl<CORE_MAX_GAME_PLAYERS; ipl++) {
+  for (INDEX ipl=0; ipl<ICore::MAX_GAME_PLAYERS; ipl++) {
     CEntity *penpl = CEntity::GetPlayerEntity(ipl);
     if (penpl!=NULL && (penpl->GetFlags()&ENF_ALIVE)) {
       ctLive++;
@@ -2705,7 +2705,7 @@ INDEX CGame::GetPlayersCount(void)
 {
   INDEX ctPlayers = 0;
 
-  for (INDEX ipl=0; ipl<CORE_MAX_GAME_PLAYERS; ipl++) {
+  for (INDEX ipl=0; ipl<ICore::MAX_GAME_PLAYERS; ipl++) {
     CEntity *penpl = CEntity::GetPlayerEntity(ipl);
     if (penpl!=NULL) {
       ctPlayers++;
@@ -2865,7 +2865,7 @@ void CGame::GameMainLoop(void)
   }
   if (gam_iRecordHighScore>=0) {
     RecordHighScore();
-    gam_iRecordHighScore = -1.0f;
+    gam_iRecordHighScore = -1;
   }
   // if server was restarted
   if (gm_bGameOn && !_pNetwork->IsServer() && _pNetwork->IsGameFinished() && _pNetwork->IsDisconnected()) {

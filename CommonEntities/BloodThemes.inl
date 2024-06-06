@@ -77,11 +77,11 @@ BloodTheme GetBloodTheme(void) {
 
   // Based on the current event
   if (eType == BloodTheme::E_AUTO) {
-    switch (GetAPI()->GetCurrentEvent()) {
-      case CCoreAPI::SPEV_VALENTINE: return BloodTheme(BloodTheme::E_FORCED, 0xFF00AFFF);
-      case CCoreAPI::SPEV_BD_PARTY:  return BloodTheme(BloodTheme::E_PARTY);
-      case CCoreAPI::SPEV_HALLOWEEN: return BloodTheme(BloodTheme::E_FORCED, 0xFF7F00FF);
-      case CCoreAPI::SPEV_CHRISTMAS: return BloodTheme(BloodTheme::E_CHRISTMAS);
+    switch (ClassicsCore_GetSeason()) {
+      case k_EClassicsPatchSeason_Valentine: return BloodTheme(BloodTheme::E_FORCED, 0xFF00AFFF);
+      case k_EClassicsPatchSeason_Birthday:  return BloodTheme(BloodTheme::E_PARTY);
+      case k_EClassicsPatchSeason_Halloween: return BloodTheme(BloodTheme::E_FORCED, 0xFF7F00FF);
+      case k_EClassicsPatchSeason_Christmas: return BloodTheme(BloodTheme::E_CHRISTMAS);
     }
 
     // Reset to simple coloring

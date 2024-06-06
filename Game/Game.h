@@ -220,10 +220,10 @@ public:
   void *gm_pvGlobalPlayerControls;
   // index of local player
   // (-1) if not active
-  INDEX gm_aiMenuLocalPlayers[CORE_MAX_LOCAL_PLAYERS]; // [Cecil] Different amount
-  INDEX gm_aiStartLocalPlayers[CORE_MAX_LOCAL_PLAYERS]; // [Cecil] Different amount
+  INDEX gm_aiMenuLocalPlayers[ICore::MAX_LOCAL_PLAYERS]; // [Cecil] Different amount
+  INDEX gm_aiStartLocalPlayers[ICore::MAX_LOCAL_PLAYERS]; // [Cecil] Different amount
   // players that are currently playing on local machine (up to 4)
-  CLocalPlayer gm_lpLocalPlayers[CORE_MAX_LOCAL_PLAYERS]; // [Cecil] Different amount
+  CLocalPlayer gm_lpLocalPlayers[ICore::MAX_LOCAL_PLAYERS]; // [Cecil] Different amount
 
   // Operations
   void InitInternal(void);

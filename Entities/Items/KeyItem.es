@@ -380,7 +380,7 @@ procedures:
 
   Main() {
     // [Cecil] Replace TFE keys with TSE
-    if (GetAPI()->IsEditorApp()) {
+    if (ClassicsCore_IsEditorApp()) {
       INDEX iKey = -1;
 
       switch (m_kitType) {

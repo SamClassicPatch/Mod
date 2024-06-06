@@ -461,7 +461,7 @@ procedures:
     m_iScore = 1000;
 
     // [Cecil] Reset attached kamikaze in editor
-    if (GetAPI()->IsEditorApp()) {
+    if (ClassicsCore_IsEditorApp()) {
       m_bKamikazeAttached = FALSE;
     }
 
