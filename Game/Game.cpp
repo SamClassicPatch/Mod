@@ -1892,7 +1892,7 @@ void CGame::SavePlayersAndControls( void)
 // [Cecil] NOTE: How to add local players to Game library from anywhere:
 // 1. Determine desired amount of local players (let's say it's stored in a constant called CT_PLAYERS)
 // 2. Set CGame::gm_StartSplitScreenCfg using 'GetGameAPI()->SetStartSplitCfg(CGame::SSC_PLAY1 + CT_PLAYERS - 1)'
-// 3. Set profile indices for each player in a loop using 'GetGameAPI()->SetStartPlayer(<player>, <profile index>)'
+// 3. Set profiles for each local player in a loop using 'GetGameAPI()->SetProfileForStart(<local player>, <profile>)'
 void CGame::SetupLocalPlayers( void)
 {
   // [Cecil] Setup local players and their controls up to ICore::MAX_LOCAL_PLAYERS
