@@ -19,9 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdAfx.h"
 
 #ifdef _DEBUG
-  #define GAMEGUI_DLL_NAME "GameGUIMPD.dll"
+  #define GAMEGUI_DLL_NAME "GameGUI" CLASSICSPATCH_SUFFIX "D.dll"
 #else
-  #define GAMEGUI_DLL_NAME "GameGUIMP.dll"
+  #define GAMEGUI_DLL_NAME "GameGUI" CLASSICSPATCH_SUFFIX ".dll"
 #endif
 
 // global game object
