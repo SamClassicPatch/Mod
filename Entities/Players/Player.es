@@ -1460,7 +1460,10 @@ functions:
       m_iFirstEmptySLD = penOther->m_iFirstEmptySLD;
       // all messages in the inbox
       m_acmiMessages.Clear();
-      m_ctUnreadMessages = 0;
+
+      // [Cecil] Only copy the message counter for predictors
+      m_ctUnreadMessages = penOther->m_ctUnreadMessages;
+
       //m_lsLightSource;
       SetupLightSource(); //? is this ok !!!!
 
@@ -1985,6 +1988,9 @@ functions:
   // check if message is in inbox
   BOOL HasMessage( const CTFileName &fnmMessage)
   {
+    // [Cecil] Predictions treat every message as new, so pretend that they are already there
+    if (IsPredictor()) { return TRUE; }
+
     ULONG ulHash = fnmMessage.GetHash();
     INDEX ctMsg = m_acmiMessages.Count();
     for(INDEX iMsg=0; iMsg<ctMsg; iMsg++) {
