@@ -982,6 +982,9 @@ void CGame::InitInternal( void)
   GetGameAPI()->aiStartLocalPlayers = &gm_aiStartLocalPlayers[0];
   GetGameAPI()->aLocalPlayers = (UBYTE *)&gm_lpLocalPlayers[0];
 
+  // [Cecil] Register old camera commands
+  GetGameAPI()->GetCamera().HookOldCamCommands();
+
   gam_strCustomLevel = ""; // filename of custom level chosen
   gam_strSessionName = LOCALIZE("Unnamed session"); // name of multiplayer network session
   gam_strJoinAddress = LOCALIZE("serveraddress");   // join address
