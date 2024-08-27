@@ -955,7 +955,7 @@ void CGame::GameHandleTimer(void)
 void CGame::InitInternal( void)
 {
   // [Cecil] Launched from vanilla game for some reason
-  if (_pShell->GetSymbol("CoreAPI", TRUE) == NULL) {
+  if (_pShell->GetSymbol("ClassicsPatchAPI", TRUE) == NULL) {
     // Try to restart the mod on the patched executable
     STARTUPINFOA cif;
     ZeroMemory(&cif, sizeof(STARTUPINFOA));
