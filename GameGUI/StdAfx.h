@@ -50,6 +50,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <GameGUI/GameGUI.h>
 #include <Engine/GameShell.h>
 
+// [Cecil] Custom mod is disabled
+#if !_PATCHCONFIG_CUSTOM_MOD
+  #error Custom mod has been disabled in this build!
+#endif
+
 /////////////////////////////////////////////////////////////////////////////
 
 #include "resource.h"

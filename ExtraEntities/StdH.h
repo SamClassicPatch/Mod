@@ -18,6 +18,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <CoreLib/Core.h>
 #include <EnginePatches/Patches.h>
 
+// [Cecil] Custom mod entities are disabled
+#if !_PATCHCONFIG_CUSTOM_MOD || !_PATCHCONFIG_CUSTOM_MOD_ENTITIES
+  #error Custom mod entities have been disabled in this build!
+#endif
+
 // Include common header for the library itself
 #define EXTRAENTITIES_EXPORTS
 #include "EntitiesAPI.h"

@@ -18,14 +18,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <CoreLib/Core.h>
 #include <EnginePatches/Patches.h>
 
+// [Cecil] Custom mod is disabled
+#if !_PATCHCONFIG_CUSTOM_MOD
+  #error Custom mod has been disabled in this build!
+#endif
+
 #include "Game.h"
 
 // [Cecil] Include new features
 #include "Cecil/GameColors.h"
 #include "Cecil/GameThemes.h"
 
+// [Cecil] Link vanilla Entities if custom mod ones are disabled
+#if !_PATCHCONFIG_CUSTOM_MOD || !_PATCHCONFIG_CUSTOM_MOD_ENTITIES
+  #include <EntitiesV/StdH/StdH.h>
+  #include <EntitiesV/Player.h>
+
+  #ifdef NDEBUG
+    #pragma comment(lib, "EntitiesV.lib")
+  #else
+    #pragma comment(lib, "EntitiesVD.lib")
+  #endif
+
 // [Cecil] Include common header for Entities
-#if SE1_GAME != SS_TFE
+#elif SE1_GAME != SS_TFE
   #include <Entities/EntitiesAPI.h>
   #include <Entities/Players/Player.h>
 #else
