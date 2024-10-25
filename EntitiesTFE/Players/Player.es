@@ -3594,6 +3594,10 @@ functions:
 
   void ActiveActions(const CPlayerAction &paAction)
   {
+  #if _PATCHCONFIG_GAMEPLAY_EXT
+    const BOOL bGexEnabled = IConfig::gex[k_EGameplayExt_Enable].GetIndex();
+  #endif
+
     // translation
     FLOAT3D vTranslation = paAction.pa_vTranslation;
     // turbo speed cheat
@@ -3602,8 +3606,16 @@ functions:
     }
 
     // enable faster moving if holding knife in DM
-    if( ((CPlayerWeapons&)*m_penWeapons).m_iCurrentWeapon==WEAPON_KNIFE &&
-         !GetSP()->sp_bCooperative) {
+    BOOL bFastKnifeMode = !GetSP()->sp_bCooperative;
+
+  #if _PATCHCONFIG_GAMEPLAY_EXT
+    // [Cecil] Allow fast knife in any gamemode
+    if (bGexEnabled && IConfig::gex[k_EGameplayExt_FastKnife]) {
+      bFastKnifeMode = TRUE;
+    }
+  #endif
+
+    if (((CPlayerWeapons &)*m_penWeapons).m_iCurrentWeapon == WEAPON_KNIFE && bFastKnifeMode) {
       vTranslation *= 1.3f;
     }
     
@@ -3617,8 +3629,6 @@ functions:
     }
 
   #if _PATCHCONFIG_GAMEPLAY_EXT
-    BOOL bGexEnabled = IConfig::gex[k_EGameplayExt_Enable].GetIndex();
-
     if (bGexEnabled) {
       // [Cecil] Movement speed multiplier
       FLOAT fMul = IConfig::gex[k_EGameplayExt_MoveSpeed].GetFloat();
