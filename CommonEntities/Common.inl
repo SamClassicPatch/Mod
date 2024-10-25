@@ -25,10 +25,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "LocalPrediction.inl"
 #include "WeaponCustomization.inl"
 
+// Gradual crosshair coloring
+INDEX hud_bCrosshairGradualColoring = FALSE;
+
 // Declare common symbols
 void DeclareCommonEntitiesSymbols(void)
 {
   _pShell->DeclareSymbol("persistent user INDEX gam_bDisableLocalPrediction;", &gam_bDisableLocalPrediction);
+  _pShell->DeclareSymbol("persistent user INDEX hud_bCrosshairGradualColoring;", &hud_bCrosshairGradualColoring);
 
   DeclareCustomBloodSymbols();
   DeclareWeaponCustomizationSymbols();

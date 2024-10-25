@@ -1409,9 +1409,25 @@ functions:
       prProjection.ProjectCoordinate( vRayHit, vOnScreen);
       // if required, show enemy health thru crosshair color
       if( hud_bCrosshairColoring && m_fEnemyHealth>0) {
-             if( m_fEnemyHealth<0.25f) { colCrosshair = C_RED;    }
-        else if( m_fEnemyHealth<0.60f) { colCrosshair = C_YELLOW; }
-        else                         { colCrosshair = C_GREEN;  }
+        // [Cecil] Gradual color change
+        if (hud_bCrosshairGradualColoring)
+        {
+          if (m_fEnemyHealth >= 1.0f) {
+            colCrosshair = C_GREEN;
+          } else if (m_fEnemyHealth >= 0.5f) {
+            colCrosshair = LerpColor(C_YELLOW, C_GREEN, (m_fEnemyHealth - 0.5f) / 0.5f);
+          } else {
+            colCrosshair = LerpColor(C_RED, C_YELLOW, m_fEnemyHealth / 0.5f);
+          }
+
+        // Vanilla coloring
+        } else if (m_fEnemyHealth < 0.25f) {
+          colCrosshair = C_RED;
+        } else if (m_fEnemyHealth < 0.60f) {
+          colCrosshair = C_YELLOW;
+        } else {
+          colCrosshair = C_GREEN;
+        }
       }
     }
     // if didn't hit anything
