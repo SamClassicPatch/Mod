@@ -509,7 +509,7 @@ void Particles_ViewerLocal(CEntity *penView)
     boxViewTreshold = eph->m_boxHeightMap;
     boxViewTreshold += eph->GetPlacement().pl_PositionVector;
     
-    FLOAT fRangeMod = Clamp(gfx_fEnvParticlesRange, 0.1f, 2.0f);
+    FLOAT fRangeMod = Clamp(gfx_fEnvParticlesRange, 0.1f, 10.0f); // [Cecil] 2 -> 10
     if (eph->m_eptType == EPTH_GROWTH) {
       boxViewTreshold.Expand(eph->m_fGrowthRenderingRadius*fRangeMod+5.0f);
     }
@@ -2621,7 +2621,7 @@ BOOL UpdateGrowthCache(CEntity *pen, CTextureData *ptdGrowthMap, FLOATaabbox3D &
   FLOAT texY;
   FLOAT fRawHeight;
   
-  FLOAT fRangeMod = Clamp(gfx_fEnvParticlesRange, 0.1f, 2.0f);
+  FLOAT fRangeMod = Clamp(gfx_fEnvParticlesRange, 0.1f, 10.0f); // [Cecil] 2 -> 10
   FLOAT GROWTH_RENDERING_RADIUS_OPAQUE = (eph->m_fGrowthRenderingRadius - eph->m_fGrowthRenderingRadiusFade)*fRangeMod;
   FLOAT GROWTH_RENDERING_RADIUS_FADE = eph->m_fGrowthRenderingRadius*fRangeMod;
   BOOL  GROWTH_HIGHRES_MAP = eph->m_bGrowthHighresMap;
@@ -2813,7 +2813,7 @@ void Particles_Growth(CEntity *pen, CTextureData *ptdGrowthMap, FLOATaabbox3D &b
   // calculate viewer position
   FLOAT3D vPos = prPlayerProjection->pr_vViewerPosition;
 
-  FLOAT fRangeMod = Clamp(gfx_fEnvParticlesRange, 0.1f, 2.0f);
+  FLOAT fRangeMod = Clamp(gfx_fEnvParticlesRange, 0.1f, 10.0f); // [Cecil] 2 -> 10
   FLOAT GROWTH_RENDERING_RADIUS_FADE = eph->m_fGrowthRenderingRadius*fRangeMod;
   FLOAT GROWTH_RENDERING_RADIUS_OPAQUE = (eph->m_fGrowthRenderingRadius - eph->m_fGrowthRenderingRadiusFade)*fRangeMod;
 
