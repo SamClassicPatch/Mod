@@ -28,11 +28,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Gradual crosshair coloring
 INDEX hud_bCrosshairGradualColoring = FALSE;
 
+// ModelHolder2 mip factor adjustment
+INDEX gfx_bAdjustModelHolderMipFactor = TRUE;
+
 // Declare common symbols
 void DeclareCommonEntitiesSymbols(void)
 {
   _pShell->DeclareSymbol("persistent user INDEX gam_bDisableLocalPrediction;", &gam_bDisableLocalPrediction);
   _pShell->DeclareSymbol("persistent user INDEX hud_bCrosshairGradualColoring;", &hud_bCrosshairGradualColoring);
+  _pShell->DeclareSymbol("persistent user INDEX gfx_bAdjustModelHolderMipFactor;", &gfx_bAdjustModelHolderMipFactor);
 
   DeclareCustomBloodSymbols();
   DeclareWeaponCustomizationSymbols();

@@ -277,12 +277,17 @@ functions:
   /* Adjust model mip factor if needed. */
   void AdjustMipFactor(FLOAT &fMipFactor)
   {
+    CModelObject *pmo = GetModelObject();
+    if (pmo == NULL) { return; }
+
+    // [Cecil] Ignore mip adjustments and restore opacity
+    if (!gfx_bAdjustModelHolderMipFactor) {
+      pmo->mo_colBlendColor |= 0xFF;
+      return;
+    }
+
     // if should fade last mip
     if (m_fMipFadeDist>0) {
-      CModelObject *pmo = GetModelObject();
-      if(pmo==NULL) {
-        return;
-      }
       // adjust for stretch
       FLOAT fMipForFade = fMipFactor;
       if (pmo->mo_Stretch != FLOAT3D(1,1,1)) {

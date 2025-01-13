@@ -28,6 +28,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Gradual crosshair coloring
 extern INDEX hud_bCrosshairGradualColoring;
 
+// ModelHolder2 mip factor adjustment
+extern INDEX gfx_bAdjustModelHolderMipFactor;
+
 // Declare common symbols
 void DeclareCommonEntitiesSymbols(void);
 
