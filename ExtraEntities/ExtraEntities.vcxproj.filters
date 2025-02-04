@@ -113,7 +113,7 @@
     <ClCompile Include="Tools\Damager.cpp">
       <Filter>Source Files\Entity sources</Filter>
     </ClCompile>
-    <ClCompile Include="Tools\SoundHolder.cpp">
+    <ClCompile Include="Tools\SoundHolderRev.cpp">
       <Filter>Source Files\Entity sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -198,7 +198,7 @@
     <CustomBuild Include="Enemies\Elemental.es">
       <Filter>Class Files\Enemies</Filter>
     </CustomBuild>
-    <CustomBuild Include="Tools\SoundHolder.es">
+    <CustomBuild Include="Tools\SoundHolderRev.es">
       <Filter>Class Files\Tools</Filter>
     </CustomBuild>
     <CustomBuild Include="Tools\Damager.es">

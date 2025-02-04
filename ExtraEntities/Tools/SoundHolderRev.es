@@ -79,12 +79,12 @@ functions:
   SLONG GetUsedMemory(void)
   {
     // initial
-    SLONG slUsedMemory = sizeof(CSoundHolder) - sizeof(CRationalEntity) + CRationalEntity::GetUsedMemory();
+    SLONG slUsedMemory = sizeof(CSoundHolderRev) - sizeof(CRationalEntity) + CRationalEntity::GetUsedMemory();
     // add some more
     slUsedMemory += m_strName.Length();
     slUsedMemory += m_strDescription.Length();
     slUsedMemory += m_fnSound.Length();
-    slUsedMemory += 1* sizeof(CSoundObject);
+    slUsedMemory += 1* sizeof(CSoundHolderRev);
     return slUsedMemory;
   }
 #endif
