@@ -79,6 +79,7 @@ BloodTheme GetBloodTheme(void) {
   if (eType == BloodTheme::E_AUTO) {
     switch (ClassicsCore_GetSeason()) {
       case k_EClassicsPatchSeason_Valentine: return BloodTheme(BloodTheme::E_FORCED, 0xFF00AFFF);
+      case k_EClassicsPatchSeason_Anniversary:
       case k_EClassicsPatchSeason_Birthday:  return BloodTheme(BloodTheme::E_PARTY);
       case k_EClassicsPatchSeason_Halloween: return BloodTheme(BloodTheme::E_FORCED, 0xFF7F00FF);
       case k_EClassicsPatchSeason_Christmas: return BloodTheme(BloodTheme::E_CHRISTMAS);
